@@ -7,345 +7,135 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --navy: #0d2b5e;
-    --navy-light: #1a3d7c;
-    --navy-dark: #071a3e;
-    --gold: #c9a84c;
-    --gold-light: #e2c97e;
-    --gold-dark: #a8882e;
-    --white: #ffffff;
-    --off-white: #f4f6fa;
-    --light-blue: #dce8f5;
-    --text-dark: #0d1f3c;
-    --text-mid: #4a5568;
-    --success: #22c55e;
-    --danger: #ef4444;
-    --border: #c8d8ee;
-    --shadow: 0 8px 32px rgba(13,43,94,0.13);
-    --shadow-sm: 0 2px 8px rgba(13,43,94,0.08);
+    --navy: #0d2b5e; --navy-light: #1a3d7c; --navy-dark: #071a3e;
+    --gold: #c9a84c; --gold-light: #e2c97e; --gold-dark: #a8882e;
+    --white: #ffffff; --off-white: #f4f6fa; --light-blue: #dce8f5;
+    --text-dark: #0d1f3c; --text-mid: #4a5568;
+    --success: #22c55e; --danger: #ef4444;
+    --border: #c8d8ee; --shadow-sm: 0 2px 8px rgba(13,43,94,0.08);
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     font-family: 'DM Sans', sans-serif;
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, #143566 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
     padding: 24px 12px;
-    position: relative;
-    overflow-x: hidden;
   }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: 
-      radial-gradient(circle at 15% 20%, rgba(201,168,76,0.08) 0%, transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(201,168,76,0.06) 0%, transparent 35%);
-    pointer-events: none;
-  }
-
   .card {
-    width: 100%;
-    max-width: 480px;
-    background: var(--white);
-    border-radius: 20px;
-    overflow: hidden;
+    width: 100%; max-width: 480px; background: var(--white);
+    border-radius: 20px; overflow: hidden;
     box-shadow: 0 24px 80px rgba(7,26,62,0.5), 0 0 0 1px rgba(201,168,76,0.15);
-    position: relative;
     animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
   }
-
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(28px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
+  @keyframes cardIn { from { opacity:0; transform:translateY(28px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
   .header {
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-light) 100%);
-    padding: 22px 24px 18px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    padding: 22px 24px 18px; display: flex; align-items: center; gap: 14px;
     border-bottom: 3px solid var(--gold);
-    position: relative;
   }
-
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: -3px; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
-  }
-
   .sia-logo { width: 44px; height: 44px; flex-shrink: 0; }
-
-  .header-text h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px;
-    color: var(--white);
-    line-height: 1.2;
-    letter-spacing: 0.3px;
-  }
-
-  .header-text p {
-    font-size: 11px;
-    color: var(--gold-light);
-    font-weight: 300;
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-
-  .form-body {
-    padding: 20px 22px 24px;
-    background: var(--off-white);
-  }
-
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
+  .header-text h1 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--white); }
+  .header-text p { font-size: 11px; color: var(--gold-light); font-weight: 300; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 2px; }
+  .form-body { padding: 20px 22px 24px; background: var(--off-white); }
+  .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .field {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    align-items: stretch;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
+    display: grid; grid-template-columns: 140px 1fr;
+    border-radius: 10px; overflow: hidden;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
     transition: box-shadow 0.2s, border-color 0.2s;
   }
-
-  .field:focus-within {
-    box-shadow: 0 0 0 2px var(--gold-light), var(--shadow-sm);
-    border-color: var(--gold);
-  }
-
+  .field:focus-within { box-shadow: 0 0 0 2px var(--gold-light); border-color: var(--gold); }
   .field-label {
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-    color: var(--white);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    display: flex;
-    align-items: center;
-    padding: 10px 12px;
-    line-height: 1.3;
+    color: var(--white); font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; padding: 10px 12px; line-height: 1.3;
   }
-
-  .field-input { background: var(--white); position: relative; }
-
-  .field-input input,
-  .field-input select {
-    width: 100%;
-    height: 100%;
-    min-height: 42px;
-    padding: 8px 12px;
-    border: none;
-    outline: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text-dark);
-    background: transparent;
-    appearance: none;
+  .field-input { background: var(--white); }
+  .field-input input, .field-input select {
+    width: 100%; height: 100%; min-height: 42px; padding: 8px 12px;
+    border: none; outline: none; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text-dark); background: transparent; appearance: none;
   }
-
   .field-input select {
     cursor: pointer;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230d2b5e' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 32px;
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
   }
-
-  .field-input input::placeholder {
-    color: #a0aec0;
-    font-style: italic;
-    font-size: 12px;
-  }
-
-  .field.textarea-field { align-items: stretch; }
-
+  .field-input input::placeholder { color: #a0aec0; font-style: italic; font-size: 12px; }
   .field.textarea-field .field-input textarea {
-    width: 100%;
-    min-height: 64px;
-    padding: 10px 12px;
-    border: none;
-    outline: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text-dark);
-    background: transparent;
-    resize: vertical;
+    width: 100%; min-height: 64px; padding: 10px 12px;
+    border: none; outline: none; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--text-dark); background: transparent; resize: vertical;
   }
-
   .field-input.accent { background: var(--light-blue); }
-
   .submit-area { display: flex; justify-content: center; margin-top: 18px; }
-
   .btn-submit {
     background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%);
-    color: var(--navy-dark);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: 0.4px;
-    border: none;
-    padding: 14px 48px;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(201,168,76,0.35), 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
-    position: relative;
-    overflow: hidden;
+    color: var(--navy-dark); font-family: 'DM Sans', sans-serif; font-weight: 600;
+    font-size: 15px; border: none; padding: 14px 48px; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.35); transition: transform 0.18s, box-shadow 0.18s;
   }
-
-  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.45); filter: brightness(1.05); }
-  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.45); }
   .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
   .footer {
-    background: var(--navy-dark);
-    padding: 14px 22px;
-    display: flex;
-    justify-content: center;
-    gap: 28px;
-    align-items: center;
+    background: var(--navy-dark); padding: 14px 22px;
+    display: flex; justify-content: center; gap: 28px; align-items: center;
   }
-
   .footer-logo { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.75; }
   .footer-logo svg { width: 28px; height: 28px; }
   .footer-logo span { font-size: 8px; color: var(--gold-light); letter-spacing: 0.8px; font-weight: 500; }
-
   #successPanel {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 32px;
-    background: var(--white);
-    animation: fadeIn 0.4s ease both;
+    display: none; flex-direction: column; align-items: center;
+    justify-content: center; padding: 48px 32px; background: var(--white);
   }
-
-  @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
   .success-icon {
-    width: 72px;
-    height: 72px;
-    background: var(--success);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+    width: 72px; height: 72px; background: var(--success); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
     box-shadow: 0 8px 24px rgba(34,197,94,0.35);
-    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
   }
-
-  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-
   .success-icon svg { width: 36px; height: 36px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-
-  .success-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    color: var(--navy);
-    text-align: center;
-    margin-bottom: 6px;
-  }
-
+  .success-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); text-align: center; margin-bottom: 6px; }
   .success-sub { font-size: 13px; color: var(--text-mid); text-align: center; margin-bottom: 8px; }
-
   .request-id {
-    background: var(--light-blue);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 18px;
-    font-size: 12px;
-    color: var(--navy);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    margin-bottom: 28px;
+    background: var(--light-blue); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 18px; font-size: 12px; color: var(--navy); font-weight: 600; margin-bottom: 28px;
   }
-
   .btn-cancel {
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    border: none;
-    padding: 12px 40px;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(13,43,94,0.3);
-    transition: transform 0.18s, box-shadow 0.18s;
+    color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 600;
+    font-size: 14px; border: none; padding: 12px 40px; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(13,43,94,0.3); transition: transform 0.18s;
   }
-
-  .btn-cancel:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,43,94,0.4); }
-
+  .btn-cancel:hover { transform: translateY(-2px); }
   .spinner {
-    display: inline-block;
-    width: 16px; height: 16px;
-    border: 2px solid rgba(13,43,94,0.3);
-    border-top-color: var(--navy-dark);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(13,43,94,0.3); border-top-color: var(--navy-dark);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 8px;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
-
   .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
+    position: fixed; bottom: 24px; left: 50%;
     transform: translateX(-50%) translateY(80px);
-    background: var(--danger);
-    color: white;
-    padding: 12px 22px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 4px 20px rgba(239,68,68,0.4);
+    background: var(--danger); color: white; padding: 12px 22px;
+    border-radius: 50px; font-size: 13px; font-weight: 500;
     transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-    z-index: 999;
-    white-space: nowrap;
+    z-index: 999; white-space: nowrap;
   }
-
   .toast.show { transform: translateX(-50%) translateY(0); }
-
   .section-divider {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--navy);
-    opacity: 0.45;
-    margin: 4px 0 2px;
-    padding-left: 2px;
+    font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--navy); opacity: 0.45;
+    margin: 4px 0 2px; padding-left: 2px;
   }
 </style>
 </head>
 <body>
-
-<div class="card" id="mainCard">
-
+<div class="card">
   <div class="header">
-    <svg class="sia-logo" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg class="sia-logo" viewBox="0 0 44 44" fill="none">
       <circle cx="22" cy="22" r="22" fill="#0d2b5e"/>
       <path d="M22 10 C18 14 10 16 8 22 C12 20 17 21 20 24 L18 34 C20 30 22 27 24 24 C27 21 32 20 36 22 C34 16 26 14 22 10Z" fill="#c9a84c"/>
-      <path d="M20 24 C21 25.5 22 27 22 28 C22 27 23 25.5 24 24 Z" fill="#e2c97e"/>
     </svg>
     <div class="header-text">
       <h1>Spare Parts Request</h1>
@@ -356,14 +146,11 @@
   <div id="formPanel">
     <div class="form-body">
       <form id="requestForm" novalidate>
-
         <p class="section-divider">Job Details</p>
         <div class="field-group">
           <div class="field">
             <div class="field-label">Job Card Number</div>
-            <div class="field-input">
-              <input type="text" id="jobCardNumber" placeholder="Enter Job Card No." required />
-            </div>
+            <div class="field-input"><input type="text" id="jobCardNumber" placeholder="Enter Job Card No." required /></div>
           </div>
           <div class="field">
             <div class="field-label">Employee Name</div>
@@ -378,9 +165,7 @@
           </div>
           <div class="field">
             <div class="field-label">Staff Number</div>
-            <div class="field-input">
-              <input type="text" id="staffNumber" placeholder="e.g. 21672" required />
-            </div>
+            <div class="field-input"><input type="text" id="staffNumber" placeholder="e.g. 21672" required /></div>
           </div>
         </div>
 
@@ -398,9 +183,7 @@
           </div>
           <div class="field">
             <div class="field-label">Vehicle Type</div>
-            <div class="field-input">
-              <input type="text" id="vehicleType" placeholder="e.g. Kalmar" required />
-            </div>
+            <div class="field-input"><input type="text" id="vehicleType" placeholder="e.g. Kalmar" required /></div>
           </div>
         </div>
 
@@ -420,14 +203,12 @@
           </div>
           <div class="field textarea-field">
             <div class="field-label">Description</div>
-            <div class="field-input accent">
-              <textarea id="description" placeholder="Describe the part or issue…" required></textarea>
-            </div>
+            <div class="field-input accent"><textarea id="description" placeholder="Describe the part or issue…" required></textarea></div>
           </div>
           <div class="field">
             <div class="field-label">Quantity Number</div>
             <div class="field-input">
-              <select id="quantityNumber" required>
+              <select id="quantityNumber">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -442,7 +223,6 @@
         <div class="submit-area">
           <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
         </div>
-
       </form>
     </div>
 
@@ -471,7 +251,6 @@
     <div class="request-id" id="requestIdDisplay">Request ID: —</div>
     <button class="btn-cancel" onclick="cancelRequest()">Cancel Request</button>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
@@ -479,11 +258,7 @@
 <script>
   // ====================================================
   // PASTE YOUR GOOGLE APPS SCRIPT URL BELOW
-  // ====================================================
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSPOuf5BFHw4OhdhaJCdk5hvTMdOHaFzb1XGbOEkUH_wCUxC3EyFrZP9wPS8pGD14o/exec";
-
-  // PASTE YOUR POWER AUTOMATE URL BELOW (optional)
-  const POWER_AUTOMATE_URL = "YOUR_POWER_AUTOMATE_URL_HERE";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
   // ====================================================
 
   let lastRequestId = null;
@@ -502,8 +277,11 @@
     setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  function getFormData() {
-    return {
+  document.getElementById('requestForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const data = {
+      requestId:       generateRequestId(),
       jobCardNumber:   document.getElementById('jobCardNumber').value.trim(),
       employeeName:    document.getElementById('employeeName').value,
       staffNumber:     document.getElementById('staffNumber').value.trim(),
@@ -513,57 +291,31 @@
       description:     document.getElementById('description').value.trim(),
       quantityNumber:  document.getElementById('quantityNumber').value,
       timestamp:       new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
-      status:          'Pending',
-      requestId:       generateRequestId()
+      status:          'Pending'
     };
-  }
 
-  function validateForm(data) {
     const required = ['jobCardNumber','employeeName','staffNumber','equipmentNumber','vehicleType','partNumber','description'];
     for (const key of required) {
-      if (!data[key]) return `Please fill in: ${key.replace(/([A-Z])/g,' $1')}`;
+      if (!data[key]) { showToast('⚠ Please fill in all fields'); return; }
     }
-    return null;
-  }
-
-  document.getElementById('requestForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const data = getFormData();
-    const error = validateForm(data);
-    if (error) { showToast('⚠ ' + error); return; }
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Submitting…';
-
     lastRequestId = data.requestId;
 
     try {
-      await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+      const params = new URLSearchParams(data);
+      await fetch(APPS_SCRIPT_URL + '?' + params.toString(), {
+        method: 'GET',
+        mode: 'no-cors'
       });
-
-      try {
-        await fetch(POWER_AUTOMATE_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-      } catch (_) {
-        console.warn('Power Automate not reachable.');
-      }
 
       document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
       document.getElementById('formPanel').style.display = 'none';
-      const sp = document.getElementById('successPanel');
-      sp.style.display = 'flex';
+      document.getElementById('successPanel').style.display = 'flex';
 
     } catch (err) {
-      console.error(err);
       showToast('❌ Submission failed. Check your connection.');
       btn.disabled = false;
       btn.innerHTML = 'Submit Request';
@@ -572,24 +324,14 @@
 
   async function cancelRequest() {
     if (!lastRequestId) return;
-
-    const cancelData = {
-      requestId: lastRequestId,
-      status: 'Cancelled',
-      cancelledAt: new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' })
-    };
-
     try {
-      await fetch(APPS_SCRIPT_URL + '?action=cancel', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cancelData)
+      const params = new URLSearchParams({ action: 'cancel', requestId: lastRequestId });
+      await fetch(APPS_SCRIPT_URL + '?' + params.toString(), {
+        method: 'GET',
+        mode: 'no-cors'
       });
-      showToast('Request cancelled successfully.', '#0d2b5e');
-    } catch (_) {
-      showToast('Could not reach server to cancel.');
-    }
+      showToast('Request cancelled.', '#0d2b5e');
+    } catch (_) {}
 
     setTimeout(() => {
       document.getElementById('successPanel').style.display = 'none';
@@ -602,6 +344,5 @@
     }, 1500);
   }
 </script>
-
 </body>
 </html>
