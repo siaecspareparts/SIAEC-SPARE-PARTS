@@ -351,11 +351,17 @@ function initCombos() {
     }
   );
 
-  const qtys = ['1','2','3','4','5','6','7','8','9','10'];
-  combo('quantityNumber', 'dl-quantity',
-    q => qtys.filter(v => v.startsWith(q) || !q).map(v => ({ main: v, sub: '' })),
-    item => { document.getElementById('quantityNumber').value = item.main; }
-  );
+combo('quantityNumber', 'dl-quantity',
+  q => {
+    const results = [];
+    for (let i = 1; i <= 999; i++) {
+      if (!q || String(i).startsWith(q)) results.push({ main: String(i), sub: '' });
+      if (results.length >= 30) break;
+    }
+    return results;
+  },
+  item => { document.getElementById('quantityNumber').value = item.main; }
+);
 }
 
 function loadData() {
