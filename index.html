@@ -29,13 +29,13 @@
   }
   @keyframes cardIn { from{opacity:0;transform:translateY(28px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
   
-  /* --- UPDATED HEADER LOGO STYLES --- */
   .header {
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-light) 100%);
     padding: 22px 24px 18px; display: flex; align-items: center; gap: 14px;
     border-bottom: 3px solid var(--gold);
   }
-  .sia-logo-img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
+  /* --- SVG LOGO STYLES --- */
+  .sia-logo-svg { width: 44px; height: 44px; flex-shrink: 0; fill: var(--gold); }
   .header-text h1 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--white); }
   .header-text p { font-size: 11px; color: var(--gold-light); font-weight: 300; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 2px; }
   
@@ -97,10 +97,9 @@
   .btn-submit:hover { transform: translateY(-2px); }
   .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   
-  /* --- UPDATED FOOTER LOGO STYLES --- */
   .footer { background: var(--navy-dark); padding: 14px 22px; display: flex; justify-content: center; gap: 28px; align-items: center; }
   .footer-logo { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.85; }
-  .footer-logo img { width: 32px; height: 32px; object-fit: contain; }
+  .footer-logo svg { width: 30px; height: 30px; fill: var(--gold); }
   .footer-logo span { font-size: 8px; color: var(--gold-light); letter-spacing: 0.8px; font-weight: 500; text-align: center; }
   
   #successPanel { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 32px; background: var(--white); }
@@ -129,7 +128,9 @@
 
 <div class="card">
   <div class="header">
-    <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" class="sia-logo-img" alt="SIA Logo">
+    <svg class="sia-logo-svg" viewBox="0 0 512 512">
+      <path d="M472.6,183.1c-19.1,12.7-44.1,20.8-71.1,23.3l-81.5,7.7l133.5,108.3l-10.4,14.6L242.4,228.4l-72.3,6.8l20.4,124.9l-16.7,5.5L145,237.6l-50.5,4.8c-23.3,2.2-46.1-5.7-61.9-20.1c40.4-2.2,80.7-18.7,113.6-47.3l122-106.1c38.7-33.6,89.5-52.1,140.4-52.1C448,16.8,485.6,56.6,485.6,106C485.6,134.1,480.9,161.2,472.6,183.1z M401.5,214.1c11.6,0,23.1-0.9,34.4-2.6c3.1-0.5,6.1-1.1,9.1-1.8c7.4-18.4,11.5-39.7,11.5-62.7c0-11-1-21.7-2.8-32c-15.6,18-35.3,32.3-57.2,42c-21.6,9.6-45,14.5-68.4,14.5c-4.1,0-8.2-0.1-12.3-0.4l35,3.3C370.4,212.9,385.9,214.1,401.5,214.1z"/>
+    </svg>
     <div class="header-text">
       <h1>Spare Parts Request</h1>
       <p>Singapore Airlines Engineering</p>
@@ -228,15 +229,15 @@
 
     <div class="footer">
       <div class="footer-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" alt="SIA Logo">
+        <svg viewBox="0 0 512 512"><path d="M472.6,183.1c-19.1,12.7-44.1,20.8-71.1,23.3l-81.5,7.7l133.5,108.3l-10.4,14.6L242.4,228.4l-72.3,6.8l20.4,124.9l-16.7,5.5L145,237.6l-50.5,4.8c-23.3,2.2-46.1-5.7-61.9-20.1c40.4-2.2,80.7-18.7,113.6-47.3l122-106.1c38.7-33.6,89.5-52.1,140.4-52.1C448,16.8,485.6,56.6,485.6,106C485.6,134.1,480.9,161.2,472.6,183.1z"/></svg>
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
       <div class="footer-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" alt="SIA Logo">
+        <svg viewBox="0 0 512 512"><path d="M472.6,183.1c-19.1,12.7-44.1,20.8-71.1,23.3l-81.5,7.7l133.5,108.3l-10.4,14.6L242.4,228.4l-72.3,6.8l20.4,124.9l-16.7,5.5L145,237.6l-50.5,4.8c-23.3,2.2-46.1-5.7-61.9-20.1c40.4-2.2,80.7-18.7,113.6-47.3l122-106.1c38.7-33.6,89.5-52.1,140.4-52.1C448,16.8,485.6,56.6,485.6,106C485.6,134.1,480.9,161.2,472.6,183.1z"/></svg>
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
       <div class="footer-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" alt="SIA Logo">
+        <svg viewBox="0 0 512 512"><path d="M472.6,183.1c-19.1,12.7-44.1,20.8-71.1,23.3l-81.5,7.7l133.5,108.3l-10.4,14.6L242.4,228.4l-72.3,6.8l20.4,124.9l-16.7,5.5L145,237.6l-50.5,4.8c-23.3,2.2-46.1-5.7-61.9-20.1c40.4-2.2,80.7-18.7,113.6-47.3l122-106.1c38.7-33.6,89.5-52.1,140.4-52.1C448,16.8,485.6,56.6,485.6,106C485.6,134.1,480.9,161.2,472.6,183.1z"/></svg>
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
     </div>
@@ -257,6 +258,7 @@
 
 <script>
 // ============================================================
+// PASTE YOUR GOOGLE APPS SCRIPT URL HERE
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
 // ============================================================
 
@@ -384,7 +386,6 @@ function loadData() {
   document.head.appendChild(s);
 }
 
-// --- UPDATED SUBMIT LISTENER WITH VALIDATION ---
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const data = {
@@ -401,16 +402,15 @@ document.getElementById('requestForm').addEventListener('submit', async function
     status:          'Pending'
   };
 
-  // Check if auto-filled fields are empty (means user didn't pick from list)
+  // Validation: Ensure staff number and vehicle type were auto-filled (means valid selection)
   if (!data.staffNumber || !data.vehicleType) {
-    toast('⚠ Please select a valid Employee and Equipment from the list.');
+    toast('⚠ Please select a valid Employee and Equipment from the dropdown list.');
     return;
   }
 
-  // Check all other fields
   for (const [key, val] of Object.entries(data)) {
     if (key === 'status') continue;
-    if (!val) { toast('⚠ All fields are required.'); return; }
+    if (!val) { toast('⚠ Please fill in all fields'); return; }
   }
 
   const btn = document.getElementById('submitBtn');
