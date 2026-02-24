@@ -266,7 +266,7 @@
   function generateRequestId() {
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
-    return `SPR-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${Math.floor(Math.random()*9000+1000)}`;
+    return `SPR-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${Date.now().toString().slice(-6)}`;
   }
 
   function showToast(msg, color = '#ef4444') {
