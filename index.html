@@ -255,7 +255,7 @@
 <script>
 // ============================================================
 // PASTE YOUR GOOGLE APPS SCRIPT URL HERE
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
+const APPS_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 // ============================================================
 
 let appData = { employees: [], equipment: [], parts: [] };
@@ -351,17 +351,12 @@ function initCombos() {
     }
   );
 
-combo('quantityNumber', 'dl-quantity',
-  q => {
-    const results = [];
-    for (let i = 1; i <= 999; i++) {
-      if (!q || String(i).startsWith(q)) results.push({ main: String(i), sub: '' });
-      if (results.length >= 30) break;
-    }
-    return results;
-  },
-  item => { document.getElementById('quantityNumber').value = item.main; }
-);
+  const qtys = Array.from({length: 999}, (_, i) => String(i + 1));
+  combo('quantityNumber', 'dl-quantity',
+    q => qtys.filter(v => v.startsWith(q) || !q).map(v => ({ main: v, sub: '' })),
+    item => { document.getElementById('quantityNumber').value = item.main; }
+  );
+}
 
 function loadData() {
   const cb = 'cb_' + Date.now();
