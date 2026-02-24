@@ -28,14 +28,17 @@
     animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
   }
   @keyframes cardIn { from{opacity:0;transform:translateY(28px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+  
+  /* --- UPDATED HEADER LOGO STYLES --- */
   .header {
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-light) 100%);
     padding: 22px 24px 18px; display: flex; align-items: center; gap: 14px;
     border-bottom: 3px solid var(--gold);
   }
-  .sia-logo { width: 44px; height: 44px; flex-shrink: 0; }
+  .sia-logo-img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
   .header-text h1 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--white); }
   .header-text p { font-size: 11px; color: var(--gold-light); font-weight: 300; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 2px; }
+  
   .form-body { padding: 20px 22px 24px; background: var(--off-white); }
   .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .field {
@@ -93,10 +96,13 @@
   }
   .btn-submit:hover { transform: translateY(-2px); }
   .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  
+  /* --- UPDATED FOOTER LOGO STYLES --- */
   .footer { background: var(--navy-dark); padding: 14px 22px; display: flex; justify-content: center; gap: 28px; align-items: center; }
-  .footer-logo { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.75; }
-  .footer-logo svg { width: 28px; height: 28px; }
-  .footer-logo span { font-size: 8px; color: var(--gold-light); letter-spacing: 0.8px; font-weight: 500; }
+  .footer-logo { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.85; }
+  .footer-logo img { width: 32px; height: 32px; object-fit: contain; }
+  .footer-logo span { font-size: 8px; color: var(--gold-light); letter-spacing: 0.8px; font-weight: 500; text-align: center; }
+  
   #successPanel { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 32px; background: var(--white); }
   .success-icon { width: 72px; height: 72px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(34,197,94,0.35); }
   .success-icon svg { width: 36px; height: 36px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
@@ -123,10 +129,7 @@
 
 <div class="card">
   <div class="header">
-    <svg class="sia-logo" viewBox="0 0 44 44" fill="none">
-      <circle cx="22" cy="22" r="22" fill="#0d2b5e"/>
-      <path d="M22 10 C18 14 10 16 8 22 C12 20 17 21 20 24 L18 34 C20 30 22 27 24 24 C27 21 32 20 36 22 C34 16 26 14 22 10Z" fill="#c9a84c"/>
-    </svg>
+    <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" class="sia-logo-img" alt="SIA Logo">
     <div class="header-text">
       <h1>Spare Parts Request</h1>
       <p>Singapore Airlines Engineering</p>
@@ -225,15 +228,15 @@
 
     <div class="footer">
       <div class="footer-logo">
-        <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#1a3d7c"/><path d="M14 5 C11 8 6 10 5 14 C8 12 11 13 13 15 L12 22 C13 19 14 17 15 15 C17 13 20 12 23 14 C22 10 17 8 14 5Z" fill="#c9a84c"/></svg>
+        <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" alt="SIA Logo">
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
       <div class="footer-logo">
-        <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#1a3d7c"/><path d="M14 5 C11 8 6 10 5 14 C8 12 11 13 13 15 L12 22 C13 19 14 17 15 15 C17 13 20 12 23 14 C22 10 17 8 14 5Z" fill="#c9a84c"/></svg>
+        <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" alt="SIA Logo">
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
       <div class="footer-logo">
-        <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#1a3d7c"/><path d="M14 5 C11 8 6 10 5 14 C8 12 11 13 13 15 L12 22 C13 19 14 17 15 15 C17 13 20 12 23 14 C22 10 17 8 14 5Z" fill="#c9a84c"/></svg>
+        <img src="https://upload.wikimedia.org/wikipedia/sco/6/6b/Singapore_Airlines_Logo.png" alt="SIA Logo">
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
     </div>
@@ -254,7 +257,6 @@
 
 <script>
 // ============================================================
-// PASTE YOUR GOOGLE APPS SCRIPT URL HERE
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
 // ============================================================
 
@@ -319,7 +321,7 @@ function initCombos() {
       .map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
     item => {
       document.getElementById('equipmentNumber').value = item.data.equipmentNumber;
-      document.getElementById('vehicleType').value     = item.data.vehicleType;
+      document.getElementById('vehicleType').value      = item.data.vehicleType;
     }
   );
 
@@ -351,17 +353,17 @@ function initCombos() {
     }
   );
 
-combo('quantityNumber', 'dl-quantity',
-  q => {
-    const results = [];
-    for (let i = 1; i <= 999; i++) {
-      if (!q || String(i).startsWith(q)) results.push({ main: String(i), sub: '' });
-      if (results.length >= 30) break;
-    }
-    return results;
-  },
-  item => { document.getElementById('quantityNumber').value = item.main; }
-);
+  combo('quantityNumber', 'dl-quantity',
+    q => {
+      const results = [];
+      for (let i = 1; i <= 999; i++) {
+        if (!q || String(i).startsWith(q)) results.push({ main: String(i), sub: '' });
+        if (results.length >= 30) break;
+      }
+      return results;
+    },
+    item => { document.getElementById('quantityNumber').value = item.main; }
+  );
 }
 
 function loadData() {
@@ -382,6 +384,7 @@ function loadData() {
   document.head.appendChild(s);
 }
 
+// --- UPDATED SUBMIT LISTENER WITH VALIDATION ---
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const data = {
@@ -398,9 +401,16 @@ document.getElementById('requestForm').addEventListener('submit', async function
     status:          'Pending'
   };
 
+  // Check if auto-filled fields are empty (means user didn't pick from list)
+  if (!data.staffNumber || !data.vehicleType) {
+    toast('⚠ Please select a valid Employee and Equipment from the list.');
+    return;
+  }
+
+  // Check all other fields
   for (const [key, val] of Object.entries(data)) {
     if (key === 'status') continue;
-    if (!val) { toast('⚠ Please fill in all fields'); return; }
+    if (!val) { toast('⚠ All fields are required.'); return; }
   }
 
   const btn = document.getElementById('submitBtn');
