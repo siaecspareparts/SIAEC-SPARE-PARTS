@@ -29,7 +29,6 @@
   }
   @keyframes cardIn { from{opacity:0;transform:translateY(28px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
   
-  /* --- HEADER LOGO STYLES (MATCHES YOUR SCREENSHOT) --- */
   .header {
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-light) 100%);
     padding: 22px 24px 18px; display: flex; align-items: center; gap: 14px;
@@ -40,7 +39,7 @@
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   }
-  .sia-logo-img { width: 30px; height: 30px; object-fit: contain; }
+  .sia-logo-img { width: 32px; height: 32px; object-fit: contain; }
   .header-text h1 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--white); }
   .header-text p { font-size: 11px; color: var(--gold-light); font-weight: 300; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 2px; }
   
@@ -102,7 +101,6 @@
   .btn-submit:hover { transform: translateY(-2px); }
   .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   
-  /* --- FOOTER LOGO STYLES --- */
   .footer { background: var(--navy-dark); padding: 14px 22px; display: flex; justify-content: center; gap: 28px; align-items: center; }
   .footer-logo { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.85; }
   .footer-logo img { width: 34px; height: 34px; object-fit: contain; }
@@ -135,7 +133,7 @@
 <div class="card">
   <div class="header">
     <div class="sia-logo-container">
-      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Singapore_Airlines_Logo.svg/512px-Singapore_Airlines_Logo.svg.png" class="sia-logo-img" alt="SIA Logo">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFmklEQVR4nO2ba2hcVRSFv3MnM5m0pY1pbZrWJpWmqS2pSps0TX1XatM2Nml80fii9fEPfPCD1R8WRAX9Y8EPBBX8Z/EPBBH8Z/EHBBEU9I8V66e0TdrSNC3NTE2TzKTP/XGHO9OZdCbd5F4mF04G5tx7zr7nnrX3XmufhYKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCHscQ0Fj6uW9W+X1XvQeMArXAHGAb0O6/q7S7Y8S8/q3K+6589xhGvI9V3u8R96hS+Z7S/wA8AnQD64Bf/A67978BPAF8BkwA9/o6RvyO67H6vV7p8x0t59O63/G63yPu0Uql/X+5fFvOf7Yf7wBeBX4H/gWmAonXpP/h4w6vW0v5X0Y9W6X/O+IeX6n/Z6T/7Y64/7XyP6R6mP9v/z9S6f8N6X+d666v5f0S7un09R6p9P+l9L+9nP/uMt97pP89rvu+7vL39R7T9xH3mH783f/39N7P9Pz3/9/m+v/p6+Oux3S953re4xrv6fR7pD78P9F7L6XvS9/jSuX997v8fT2vV+p/h+u9V9f3Pud6L9T1mP6P1T03S6X9v6fS339v73+G9z7N/z6l5/+vK999pP+Nrv++rn9vz7U97+v69pS+T6jv45rvk5rv89r/R9f997uun+S6X7m+73G99yv5N/Y5O/R6VfN/T9/Xp++n9XpL831P836/8n+3mndv7vVeq+s5rfGv5r9U859X+t9Uzv+U8z/X9T/S5+zV/O/R83qN67WOf2Ovs7p/r9Xv07q+Xun/C93XUuX7D9f1f0jP6db8+zX+bVbf1/V9VvN/S89/X99vXv/fVp/zM67fCdfvO+79t13/UuX767reTdf7XN9Xuf4/19/Ym/6NfS7Nf4Xm36O8f07X/0fP+4jP36fn7df9u9V8vM7/Sdf/uOr/B67PMeU75/O3W3p60u/Y5H8Z9vmuY9Pnc005f77PfcLnHvS5p3R7pP/VjvY7Xf+XOnu/19V7rvP83UfXv+x8O0u9mS6Yp7P3+6Dnf8D1O6b/VfVpvu/q+m50/Z7W/L/X9Y8pXW/p53TNP+mXp/S7Vf19j+73Ete999+G/9v7+89V9l6s8l7W8u9T9v9D+9lP/D9f99y083+v65rU8/fr/08953qNf5Pz/E09P6L7f0m/U87/f877f8p917mHlPr7T9f1M9zP6v17rD7P57rv6v/NfK7T/N/QvP9W+u7X7z9RrvtXz/f4V/3/Xff8L93zF8q78/W5p1z/mPq6rv8x9f9v3fP9/iXf8zf7F6j5P+E7f/U5T/v8+S7P6fV7pI98NfS8Xv92v67ntK73Nff+XGv9H9K6HtXj96u8f0/X9Vv9f6XvK+V/UuP/j/5/pOf3qPf7dffvcf6f6P8H9f9XNP9p1++Y7mNX6v+Vvme67/f6P670P6F0vUf0/r0v76U62uO67vsa73U+1vO6z6G5/l7/99S/O66/x/S8mubf6Pr6NP9erXmPa/57vN99/S86P+v0eY+p8Xep/3ep+f9U899n+Xer7v8LXe9/V7/7fUfnf6X0vEnp/5Se94uO95X0vVfS/5v88l6o6zml/o3UuP90vP5/oO976H+D6/99Xv9H9X9G879f979Hz3vUv97veq7ndL8v/Rvp5936PK7pU87/uP63u/p6T3v8y668X+3/A5f9L17673U/9Hq/0vV3u8779/6/U9f7Xef/gKv7O07fU7q+z2v+L9T/C/V9Q+u9UP/fUu9e0v9qXf8zXf/P9bzO6/xU/39Uv79P3/8U77W6p07p86im90XN/3U9p67rU/3fX96h+b/r8m+6vn+77re90v1Nrv+K7t+t+39K1/+7nv+nmu8p3X9V799Vzf/G73B7u/8BeB7W+o665S8AAAAASUVORK5CYII=" class="sia-logo-img" alt="SIA Logo">
     </div>
     <div class="header-text">
       <h1>Spare Parts Request</h1>
@@ -146,7 +144,6 @@
   <div id="formPanel">
     <div class="form-body">
       <form id="requestForm" novalidate>
-
         <p class="section-divider">Job Details</p>
         <div class="field-group">
           <div class="field">
@@ -235,15 +232,15 @@
 
     <div class="footer">
       <div class="footer-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Singapore_Airlines_Logo.svg/512px-Singapore_Airlines_Logo.svg.png" alt="SIA Logo">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFmklEQVR4nO2ba2hcVRSFv3MnM5m0pY1pbZrWJpWmqS2pSps0TX1XatM2Nml80fii9fEPfPCD1R8WRAX9Y8EPBBX8Z/EPBBH8Z/EHBBEU9I8V66e0TdrSNC3NTE2TzKTP/XGHO9OZdCbd5F4mF04G5tx7zr7nnrX3XmufhYKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCHscQ0Fj6uW9W+X1XvQeMArXAHGAb0O6/q7S7Y8S8/q3K+6589xhGvI9V3u8R96hS+Z7S/wA8AnQD64Bf/A67978BPAF8BkwA9/o6RvyO67H6vV7p8x0t59O63/G63yPu0Uql/X+5fFvOf7Yf7wBeBX4H/gWmAonXpP/h4w6vW0v5X0Y9W6X/O+IeX6n/Z6T/7Y64/7XyP6R6mP9v/z9S6f8N6X+d666v5f0S7un09R6p9P+l9L+9nP/uMt97pP89rvu+7vL39R7T9xH3mH783f/39N7P9Pz3/9/m+v/p6+Oux3S953re4xrv6fR7pD78P9F7L6XvS9/jSuX997v8fT2vV+p/h+u9V9f3Pud6L9T1mP6P1T03S6X9v6fS339v73+G9z7N/z6l5/+vK999pP+Nrv++rn9vz7U97+v69pS+T6jv45rvk5rv89r/R9f997uun+S6X7m+73G99yv5N/Y5O/R6VfN/T9/Xp++n9XpL831P836/8n+3mndv7vVeq+s5rfGv5r9U859X+t9Uzv+U8z/X9T/S5+zV/O/R83qN67WOf2Ovs7p/r9Xv07q+Xun/C93XUuX7D9f1f0jP6db8+zX+bVbf1/V9VvN/S89/X99vXv/fVp/zM67fCdfvO+79t13/UuX767reTdf7XN9Xuf4/19/Ym/6NfS7Nf4Xm36O8f07X/0fP+4jP36fn7df9u9V8vM7/Sdf/uOr/B67PMeU75/O3W3p60u/Y5H8Z9vmuY9Pnc005f77PfcLnHvS5p3R7pP/VjvY7Xf+XOnu/19V7rvP83UfXv+x8O0u9mS6Yp7P3+6Dnf8D1O6b/VfVpvu/q+m50/Z7W/L/X9Y8pXW/p53TNP+mXp/S7Vf19j+73Ete999+G/9v7+89V9l6s8l7W8u9T9v9D+9lP/D9f99y083+v65rU8/fr/08953qNf5Pz/E09P6L7f0m/U87/f877f8p917mHlPr7T9f1M9zP6v17rD7P57rv6v/NfK7T/N/QvP9W+u7X7z9RrvtXz/f4V/3/Xff8L93zF8q78/W5p1z/mPq6rv8x9f9v3fP9/iXf8zf7F6j5P+E7f/U5T/v8+S7P6fV7pI98NfS8Xv92v67ntK73Nff+XGv9H9K6HtXj96u8f0/X9Vv9f6XvK+V/UuP/j/5/pOf3qPf7dffvcf6f6P8H9f9XNP9p1++Y7mNX6v+Vvme67/f6P670P6F0vUf0/r0v76U62uO67vsa73U+1vO6z6G5/l7/99S/O66/x/S8mubf6Pr6NP9erXmPa/57vN99/S86P+v0eY+p8Xep/3ep+f9U899n+Xer7v8LXe9/V7/7fUfnf6X0vEnp/5Se94uO95X0vVfS/5v88l6o6zml/o3UuP90vP5/oO976H+D6/99Xv9H9X9G879f979Hz3vUv97veq7ndL8v/Rvp5936PK7pU87/uP63u/p6T3v8y668X+3/A5f9L17673U/9Hq/0vV3u8779/6/U9f7Xef/gKv7O07fU7q+z2v+L9T/C/V9Q+u9UP/fUu9e0v9qXf8zXf/P9bzO6/xU/39Uv79P3/8U77W6p07p86im90XN/3U9p67rU/3fX96h+b/r8m+6vn+77re90v1Nrv+K7t+t+39K1/+7nv+nmu8p3X9V799Vzf/G73B7u/8BeB7W+o665S8AAAAASUVORK5CYII=" alt="SIA Logo">
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
       <div class="footer-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Singapore_Airlines_Logo.svg/512px-Singapore_Airlines_Logo.svg.png" alt="SIA Logo">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFmklEQVR4nO2ba2hcVRSFv3MnM5m0pY1pbZrWJpWmqS2pSps0TX1XatM2Nml80fii9fEPfPCD1R8WRAX9Y8EPBBX8Z/EPBBH8Z/EHBBEU9I8V66e0TdrSNC3NTE2TzKTP/XGHO9OZdCbd5F4mF04G5tx7zr7nnrX3XmufhYKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCHscQ0Fj6uW9W+X1XvQeMArXAHGAb0O6/q7S7Y8S8/q3K+6589xhGvI9V3u8R96hS+Z7S/wA8AnQD64Bf/A67978BPAF8BkwA9/o6RvyO67H6vV7p8x0t59O63/G63yPu0Uql/X+5fFvOf7Yf7wBeBX4H/gWmAonXpP/h4w6vW0v5X0Y9W6X/O+IeX6n/Z6T/7Y64/7XyP6R6mP9v/z9S6f8N6X+d666v5f0S7un09R6p9P+l9L+9nP/uMt97pP89rvu+7vL39R7T9xH3mH783f/39N7P9Pz3/9/m+v/p6+Oux3S953re4xrv6fR7pD78P9F7L6XvS9/jSuX997v8fT2vV+p/h+u9V9f3Pud6L9T1mP6P1T03S6X9v6fS339v73+G9z7N/z6l5/+vK999pP+Nrv++rn9vz7U97+v69pS+T6jv45rvk5rv89r/R9f997uun+S6X7m+73G99yv5N/Y5O/R6VfN/T9/Xp++n9XpL831P836/8n+3mndv7vVeq+s5rfGv5r9U859X+t9Uzv+U8z/X9T/S5+zV/O/R83qN67WOf2Ovs7p/r9Xv07q+Xun/C93XUuX7D9f1f0jP6db8+zX+bVbf1/V9VvN/S89/X99vXv/fVp/zM67fCdf+O+79t13/UuX767reTdf7XN9Xuf4/19/Ym/6NfS7Nf4Xm36O8f07X/0fP+4jP36fn7df9u9V8vM7/Sdf/uOr/B67PMeU75/O3W3p60u/Y5H8Z9vmuY9Pnc005f77PfcLnHvS5p3R7pP/VjvY7Xf+XOnu/19V7rvP83UfXv+x8O0u9mS6Yp7P3+6Dnf8D1O6b/VfVpvu/q+m50/Z7W/L/X9Y8pXW/p53TNP+mXp/S7Vf19j+73Ete999+G/9v7+89V9l6s8l7W8u9T9v9D+9lP/D9f99y083+v65rU8/fr/08953qNf5Pz/E09P6L7f0m/U87/f877f8p917mHlPr7T9f1M9zP6v17rD7P57rv6v/NfK7T/N/QvP9W+u7X7z9RrvtXz/f4V/3/Xff8L93zF8q78/W5p1z/mPq6rv8x9f9v3fP9/iXf8zf7F6j5P+E7f/U5T/v8+S7P6fV7pI98NfS8Xv92v67ntK73Nff+XGv9H9K6HtXj96u8f0/X9Vv9f6XvK+V/UuP/j/5/pOf3qPf7dffvcf6f6P8H9f9XNP9p1++Y7mNX6v+Vvme67/f6P670P6F0vUf0/r0v76U62uO67vsa73U+1vO6z6G5/l7/99S/O66/x/S8mubf6Pr6NP9erXmPa/57vN99/S86P+v0eY+p8Xep/3ep+f9U899n+Xer7v8LXe9/V7/7fUfnf6X0vEnp/5Se94uO95X0vVfS/5v88l6o6zml/o3UuP90vP5/oO976H+D6/99Xv9H9X9G879f979Hz3vUv97veq7ndL8v/Rvp5936PK7pU87/uP63u/p6T3v8y668X+3/A5f9L17673U/9Hq/0vV3u8779/6/U9f7Xef/gKv7O07fU7q+z2v+L9T/C/V9Q+u9UP/fUu9e0v9qXf8zXf/P9bzO6/xU/39Uv79P3/8U77W6p07p86im90XN/3U9p67rU/3fX96h+b/r8m+6vn+77re90v1Nrv+K7t+t+39K1/+7nv+nmu8p3X9V799Vzf/G73B7u/8BeB7W+o665S8AAAAASUVORK5CYII=" alt="SIA Logo">
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
       <div class="footer-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Singapore_Airlines_Logo.svg/512px-Singapore_Airlines_Logo.svg.png" alt="SIA Logo">
+        <img src="data:image/png;base64,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" alt="SIA Logo">
         <span>SINGAPORE<br>AIRLINES</span>
       </div>
     </div>
@@ -263,9 +260,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
-// ============================================================
 
 let appData = { employees: [], equipment: [], parts: [] };
 let lastRequestId = null;
@@ -385,7 +380,7 @@ function loadData() {
   s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
   s.onerror = () => {
     document.getElementById('loadingOverlay').style.display = 'none';
-    toast('Could not load data. Check Apps Script URL.');
+    toast('Could not load data.');
     delete window[cb];
   };
   document.head.appendChild(s);
@@ -408,13 +403,13 @@ document.getElementById('requestForm').addEventListener('submit', async function
   };
 
   if (!data.staffNumber || !data.vehicleType) {
-    toast('⚠ Please select a valid Employee and Equipment from the dropdown list.');
+    toast('⚠ Please select a valid Employee and Equipment.');
     return;
   }
 
   for (const [key, val] of Object.entries(data)) {
     if (key === 'status') continue;
-    if (!val) { toast('⚠ Please fill in all fields'); return; }
+    if (!val) { toast('⚠ All fields are required.'); return; }
   }
 
   const btn = document.getElementById('submitBtn');
@@ -428,7 +423,7 @@ document.getElementById('requestForm').addEventListener('submit', async function
     document.getElementById('formPanel').style.display = 'none';
     document.getElementById('successPanel').style.display = 'flex';
   } catch(err) {
-    toast('Submission failed. Check connection.');
+    toast('Submission failed.');
     btn.disabled = false;
     btn.innerHTML = 'Submit Request';
   }
