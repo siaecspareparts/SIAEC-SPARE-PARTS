@@ -325,17 +325,27 @@
     return `SPR-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${Date.now().toString().slice(-6)}`;
   }
 
-  async function loadData() {
-    try {
-      const res = await fetch(APPS_SCRIPT_URL + '?action=getData');
-      appData = await res.json();
+  function loadData() {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'handleSheetData_' + Date.now();
+    window[callbackName] = function(data) {
+      appData = data;
       document.getElementById('loadingOverlay').style.display = 'none';
       initCombos();
-    } catch (err) {
+      delete window[callbackName];
+      resolve();
+    };
+    
+    const script = document.createElement('script');
+    script.src = APPS_SCRIPT_URL + '?action=getData&callback=' + callbackName;
+    script.onerror = function() {
       document.getElementById('loadingOverlay').style.display = 'none';
       showToast('⚠ Could not load form data.');
-    }
-  }
+      reject();
+    };
+    document.head.appendChild(script);
+  });
+}
 
   function buildDropdown(dropdown, items, onSelect) {
     dropdown.innerHTML = '';
@@ -503,7 +513,7 @@
     }, 1500);
   }
 
-  loadData();
+  loadData().catch(() => {});
 </script>
 </body>
 </html>
