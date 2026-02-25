@@ -41,8 +41,6 @@
   .user-avatar-placeholder { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark); flex-shrink: 0; }
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
-
-  /* ── Warning banner — always visible, no JS needed ── */
   #inAppBanner {
     display: flex; align-items: flex-start; gap: 10px;
     background: #fff8e6; border-left: 4px solid var(--gold);
@@ -51,14 +49,12 @@
   }
   #inAppBanner .banner-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
   #inAppBanner strong { display: block; font-size: 12.5px; color: #5a3e00; margin-bottom: 3px; }
-
   #loginPanel { padding: 48px 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--off-white); }
   .login-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(13,43,94,0.25); }
   .login-icon svg { width: 30px; height: 30px; fill: var(--gold-light); }
   .login-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); text-align: center; }
   .login-sub { font-size: 13px; color: var(--text-mid); text-align: center; max-width: 280px; line-height: 1.5; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
-
   .form-body { padding: 20px 22px 24px; background: var(--off-white); }
   .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .field { display: grid; grid-template-columns: 140px 1fr; border-radius: 10px; overflow: visible; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow 0.2s, border-color 0.2s; position: relative; }
@@ -129,7 +125,7 @@
     </div>
   </div>
 
-  <!-- WARNING BANNER — always visible, no JS required -->
+  <!-- WARNING BANNER — always visible -->
   <div id="inAppBanner">
     <span class="banner-icon">⚠️</span>
     <div>
@@ -264,7 +260,10 @@
 
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
+// ▼▼▼ PASTE YOUR NEW APPS SCRIPT URL HERE AFTER REDEPLOYING ▼▼▼
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGEMLnLUageSCdrSbSE_ozdtMXo3IbP5Y0WL-yYhO6x-3OYapq9x4nnXpXij_RiZmboA/exec";
+// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 let appData = { employees: [], equipment: [], parts: [] };
@@ -276,7 +275,6 @@ let dataLoaded = false;
 let pendingSignIn = false;
 let selectedVehicleType = '';
 
-// Show login panel on load — banner is always visible via CSS, no JS needed
 document.getElementById('loginPanel').style.display = 'flex';
 
 function showOverlay(msg) {
@@ -304,8 +302,7 @@ function onSignedIn() {
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
   document.getElementById('submitterEmail').value    = currentUserEmail;
-  document.getElementById('loginPanel').style.display = 'none';
-  // Hide the banner once signed in — no longer needed
+  document.getElementById('loginPanel').style.display  = 'none';
   document.getElementById('inAppBanner').style.display = 'none';
 
   if (dataLoaded) {
@@ -329,7 +326,6 @@ function signOut() {
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
   document.getElementById('loginPanel').style.display   = 'flex';
-  // Show banner again when returning to login
   document.getElementById('inAppBanner').style.display  = 'flex';
   document.getElementById('requestForm').reset();
   document.getElementById('staffNumber').value    = '';
@@ -495,38 +491,49 @@ document.getElementById('requestForm').addEventListener('submit', async function
     return;
   }
 
-  const data = {
-    requestId:       genId(),
-    jobCardNumber:   document.getElementById('jobCardNumber').value.trim(),
-    employeeName:    document.getElementById('employeeName').value.trim(),
-    staffNumber:     document.getElementById('staffNumber').value.trim(),
-    submitterEmail:  currentUserEmail,
-    equipmentNumber: document.getElementById('equipmentNumber').value.trim(),
-    vehicleType:     document.getElementById('vehicleType').value.trim(),
-    partNumber:      document.getElementById('partNumber').value.trim(),
-    partName:        document.getElementById('partName').value.trim(),
-    quantityNumber:  document.getElementById('quantityNumber').value.trim(),
-    timestamp:       new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
-    status:          'Pending'
-  };
+  // Capture all values first
+  const requestId       = genId();
+  const jobCardNumber   = document.getElementById('jobCardNumber').value.trim();
+  const employeeName    = document.getElementById('employeeName').value.trim();
+  const staffNumber     = document.getElementById('staffNumber').value.trim();
+  const submitterEmail  = currentUserEmail; // always from variable
+  const equipmentNumber = document.getElementById('equipmentNumber').value.trim();
+  const vehicleType     = document.getElementById('vehicleType').value.trim();
+  const partNumber      = document.getElementById('partNumber').value.trim();
+  const partName        = document.getElementById('partName').value.trim();
+  const quantityNumber  = document.getElementById('quantityNumber').value.trim();
+  const timestamp       = new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
 
-  if (!data.staffNumber || !data.vehicleType) {
+  if (!staffNumber || !vehicleType) {
     toast('⚠ Please select a valid Employee and Equipment.');
     return;
   }
-  for (const [key, val] of Object.entries(data)) {
-    if (key === 'status') continue;
-    if (!val) { toast('⚠ All fields are required.'); return; }
+  if (!jobCardNumber || !employeeName || !equipmentNumber || !partNumber || !partName || !quantityNumber) {
+    toast('⚠ All fields are required.');
+    return;
   }
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
-  lastRequestId = data.requestId;
+  lastRequestId = requestId;
+
+  // Build params explicitly one by one
+  const params = new URLSearchParams();
+  params.append('requestId',       requestId);
+  params.append('jobCardNumber',   jobCardNumber);
+  params.append('employeeName',    employeeName);
+  params.append('staffNumber',     staffNumber);
+  params.append('submitterEmail',  submitterEmail);
+  params.append('equipmentNumber', equipmentNumber);
+  params.append('vehicleType',     vehicleType);
+  params.append('partNumber',      partNumber);
+  params.append('partName',        partName);
+  params.append('quantityNumber',  quantityNumber);
+  params.append('timestamp',       timestamp);
+  params.append('status',          'Pending');
 
   try {
-    const params = new URLSearchParams();
-    Object.entries(data).forEach(([k, v]) => params.append(k, v));
     await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
     document.getElementById('formPanel').style.display    = 'none';
