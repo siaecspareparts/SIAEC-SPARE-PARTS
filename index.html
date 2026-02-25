@@ -42,7 +42,7 @@
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
 
-  /* In-app browser warning banner */
+  /* ── In-app browser warning banner ── */
   #inAppBanner {
     display: none; align-items: flex-start; gap: 10px;
     background: #fff8e6; border-left: 4px solid var(--gold);
@@ -129,12 +129,12 @@
     </div>
   </div>
 
-  <!-- IN-APP BROWSER WARNING BANNER -->
+  <!-- MOBILE WARNING BANNER — always shown on mobile devices -->
   <div id="inAppBanner">
     <span class="banner-icon">⚠️</span>
     <div>
-      <strong>Open in Safari or Chrome for best results</strong>
-      This link was opened inside WhatsApp or Telegram. Google Sign-In may not work and could show a blank screen. Tap the menu (⋯ or ⋮) and choose "Open in Safari" or "Open in Chrome".
+      <strong>Did you open this from WhatsApp or Telegram?</strong>
+      Google Sign-In may show a blank screen inside messaging apps. For best results, open this link in Safari (iPhone) or Chrome (Android) — tap ⋯ or ⋮ and choose "Open in browser".
     </div>
   </div>
 
@@ -264,7 +264,7 @@
 
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGEMLnLUageSCdrSbSE_ozdtMXo3IbP5Y0WL-yYhO6x-3OYapq9x4nnXpXij_RiZmboA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 let appData = { employees: [], equipment: [], parts: [] };
@@ -276,14 +276,14 @@ let dataLoaded = false;
 let pendingSignIn = false;
 let selectedVehicleType = '';
 
-// ── FIX 1: In-app browser detection — banner only, never blocks login ─────────
+// ── Show warning banner on all mobile devices + known in-app browsers ─────────
 (function checkBrowser() {
   const ua = navigator.userAgent || '';
-  const isInApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp|\bwv\b/i.test(ua);
-  if (isInApp) {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+  const isInApp  = /FBAN|FBAV|Instagram|Telegram|WhatsApp|\bwv\b/i.test(ua);
+  if (isMobile || isInApp) {
     document.getElementById('inAppBanner').style.display = 'flex';
   }
-  // Always show login panel regardless — banner is a warning not a blocker
   document.getElementById('loginPanel').style.display = 'flex';
 })();
 // ─────────────────────────────────────────────────────────────────────────────
@@ -297,24 +297,21 @@ function hideOverlay() {
   document.getElementById('loadingOverlay').classList.remove('active');
 }
 
-// ── FIX 2: Credential response — stores email in variable immediately ─────────
 function handleCredentialResponse(response) {
   try {
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    currentUserEmail = payload.email;   // stored in module-level variable
+    currentUserEmail = payload.email;
     currentUserName  = payload.name || payload.email;
     onSignedIn();
   } catch(err) {
     toast('Sign-in error. Please try again.');
   }
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
 function onSignedIn() {
   document.getElementById('userName').textContent    = currentUserName;
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
-  // FIX 2: Set email display field from variable — not read back later
   document.getElementById('submitterEmail').value    = currentUserEmail;
   document.getElementById('loginPanel').style.display = 'none';
 
@@ -495,7 +492,6 @@ function waitForGoogleThenInit() {
   }
 }
 
-// ── FIX 2: Submit — email taken from currentUserEmail variable, not input field
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
@@ -509,7 +505,7 @@ document.getElementById('requestForm').addEventListener('submit', async function
     jobCardNumber:   document.getElementById('jobCardNumber').value.trim(),
     employeeName:    document.getElementById('employeeName').value.trim(),
     staffNumber:     document.getElementById('staffNumber').value.trim(),
-    submitterEmail:  currentUserEmail,   // always from variable, never from DOM
+    submitterEmail:  currentUserEmail,
     equipmentNumber: document.getElementById('equipmentNumber').value.trim(),
     vehicleType:     document.getElementById('vehicleType').value.trim(),
     partNumber:      document.getElementById('partNumber').value.trim(),
@@ -534,7 +530,6 @@ document.getElementById('requestForm').addEventListener('submit', async function
   lastRequestId = data.requestId;
 
   try {
-    // Build params one-by-one to ensure email @ symbol is properly encoded
     const params = new URLSearchParams();
     Object.entries(data).forEach(([k, v]) => params.append(k, v));
     await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
@@ -547,7 +542,6 @@ document.getElementById('requestForm').addEventListener('submit', async function
     btn.innerHTML = 'Submit Request';
   }
 });
-// ─────────────────────────────────────────────────────────────────────────────
 
 async function cancelRequest() {
   try {
