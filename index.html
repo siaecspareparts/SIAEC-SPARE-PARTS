@@ -41,11 +41,24 @@
   .user-avatar-placeholder { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark); flex-shrink: 0; }
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
+
+  /* In-app browser warning banner */
+  #inAppBanner {
+    display: none; align-items: flex-start; gap: 10px;
+    background: #fff8e6; border-left: 4px solid var(--gold);
+    border-bottom: 1px solid #f0e0b0; padding: 12px 16px;
+    font-size: 12px; color: #7a5c00; line-height: 1.5;
+  }
+  #inAppBanner .banner-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  #inAppBanner strong { display: block; font-size: 12.5px; color: #5a3e00; margin-bottom: 3px; }
+
   #loginPanel { padding: 48px 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--off-white); }
   .login-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(13,43,94,0.25); }
   .login-icon svg { width: 30px; height: 30px; fill: var(--gold-light); }
   .login-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); text-align: center; }
   .login-sub { font-size: 13px; color: var(--text-mid); text-align: center; max-width: 280px; line-height: 1.5; }
+  #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
+
   .form-body { padding: 20px 22px 24px; background: var(--off-white); }
   .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .field { display: grid; grid-template-columns: 140px 1fr; border-radius: 10px; overflow: visible; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow 0.2s, border-color 0.2s; position: relative; }
@@ -86,32 +99,15 @@
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--danger); color: white; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 99999; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .section-divider { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--navy); opacity: 0.45; margin: 4px 0 2px; padding-left: 2px; }
-  .loading-overlay { position: fixed; inset: 0; background: rgba(7,26,62,0.88); display: flex; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
+  .loading-overlay { position: fixed; inset: 0; background: rgba(7,26,62,0.88); display: none; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
+  .loading-overlay.active { display: flex; }
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
-  #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
-
-  /* ── In-app browser full-screen block ── */
-  #inAppBlock {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 28px;
-    background: var(--off-white);
-    text-align: center;
-    gap: 16px;
-  }
-  .inapp-icon { font-size: 48px; line-height: 1; }
-  .inapp-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--navy); }
-  .inapp-msg { font-size: 13px; color: var(--text-mid); line-height: 1.6; max-width: 300px; }
-  .inapp-steps { background: var(--gold); color: var(--navy-dark); border-radius: 12px; padding: 14px 18px; font-size: 12px; font-weight: 600; line-height: 2; width: 100%; max-width: 300px; }
-  .inapp-steps span { font-weight: 400; display: block; line-height: 1.5; margin-top: 2px; font-size: 11px; color: var(--navy); }
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+<div class="loading-overlay" id="loadingOverlay">
   <div class="load-spinner"></div>
   <div class="loading-text" id="loadingText">Loading dropdown data…</div>
 </div>
@@ -133,19 +129,16 @@
     </div>
   </div>
 
-  <!-- FIX 1: Full screen in-app browser block shown INSTEAD of login -->
-  <div id="inAppBlock">
-    <div class="inapp-icon">🚫</div>
-    <div class="inapp-title">Cannot open in this browser</div>
-    <p class="inapp-msg">Google Sign-In does not work inside Telegram or WhatsApp. Please open this link in Safari or Chrome.</p>
-    <div class="inapp-steps">
-      📋 How to open in a real browser:
-      <span>iOS: Tap the <strong>⋯</strong> or share icon → "Open in Safari"</span>
-      <span>Android: Tap the <strong>⋮</strong> menu → "Open in Chrome"</span>
-      <span>Or copy the link and paste it into Safari / Chrome.</span>
+  <!-- IN-APP BROWSER WARNING BANNER -->
+  <div id="inAppBanner">
+    <span class="banner-icon">⚠️</span>
+    <div>
+      <strong>Open in Safari or Chrome for best results</strong>
+      This link was opened inside WhatsApp or Telegram. Google Sign-In may not work and could show a blank screen. Tap the menu (⋯ or ⋮) and choose "Open in Safari" or "Open in Chrome".
     </div>
   </div>
 
+  <!-- LOGIN PANEL -->
   <div id="loginPanel" style="display:none;">
     <div class="login-icon">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -155,6 +148,7 @@
     <div id="googleSignInButtonTarget"></div>
   </div>
 
+  <!-- FORM PANEL -->
   <div id="formPanel" style="display:none;">
     <div class="form-body">
       <form id="requestForm" novalidate>
@@ -254,6 +248,7 @@
     </div>
   </div>
 
+  <!-- SUCCESS PANEL -->
   <div id="successPanel" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;background:var(--white);">
     <div class="success-icon">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -263,7 +258,6 @@
     <div class="request-id" id="requestIdDisplay">Request ID: —</div>
     <button class="btn-cancel" onclick="cancelRequest()">Cancel Request</button>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
@@ -279,58 +273,57 @@ let syncLock = false;
 let currentUserEmail = '';
 let currentUserName = '';
 let dataLoaded = false;
+let pendingSignIn = false;
+let selectedVehicleType = '';
 
-// ── FIX 1: In-app browser detection — show block screen, hide login ───────────
+// ── FIX 1: In-app browser detection — banner only, never blocks login ─────────
 (function checkBrowser() {
   const ua = navigator.userAgent || '';
-  const isRealSafari  = /Safari\//i.test(ua) && !/CriOS|FxiOS|FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
-  const isRealChrome  = /Chrome\//i.test(ua) && !/\bwv\b|; wv|FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
-  const isRealFirefox = /Firefox\/|FxiOS\//i.test(ua);
-  const isDesktop     = !/Android|iPhone|iPad|iPod/i.test(ua);
-  const isSafeBrowser = isRealSafari || isRealChrome || isRealFirefox || isDesktop;
-
-  if (isSafeBrowser) {
-    // Real browser — hide the block screen, show login normally
-    document.getElementById('inAppBlock').style.display  = 'none';
-    document.getElementById('loginPanel').style.display  = 'flex';
-  } else {
-    // In-app browser — show block screen only, hide everything else
-    document.getElementById('inAppBlock').style.display  = 'flex';
-    document.getElementById('loginPanel').style.display  = 'none';
+  const isInApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp|\bwv\b/i.test(ua);
+  if (isInApp) {
+    document.getElementById('inAppBanner').style.display = 'flex';
   }
+  // Always show login panel regardless — banner is a warning not a blocker
+  document.getElementById('loginPanel').style.display = 'flex';
 })();
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── FIX 2: Track selected vehicle type for parts filtering ────────────────────
-let selectedVehicleType = '';
-// ─────────────────────────────────────────────────────────────────────────────
-
-function setLoadingText(msg) {
-  document.getElementById('loadingText').textContent = msg;
+function showOverlay(msg) {
+  document.getElementById('loadingText').textContent = msg || 'Loading…';
+  document.getElementById('loadingOverlay').classList.add('active');
 }
 
+function hideOverlay() {
+  document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+// ── FIX 2: Credential response — stores email in variable immediately ─────────
 function handleCredentialResponse(response) {
   try {
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    currentUserEmail = payload.email;
+    currentUserEmail = payload.email;   // stored in module-level variable
     currentUserName  = payload.name || payload.email;
     onSignedIn();
   } catch(err) {
     toast('Sign-in error. Please try again.');
   }
 }
+// ─────────────────────────────────────────────────────────────────────────────
 
 function onSignedIn() {
   document.getElementById('userName').textContent    = currentUserName;
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
+  // FIX 2: Set email display field from variable — not read back later
   document.getElementById('submitterEmail').value    = currentUserEmail;
   document.getElementById('loginPanel').style.display = 'none';
+
   if (dataLoaded) {
+    hideOverlay();
     document.getElementById('formPanel').style.display = 'block';
   } else {
-    document.getElementById('loadingOverlay').style.display = 'flex';
-    setLoadingText('Almost there, loading dropdowns…');
+    pendingSignIn = true;
+    showOverlay('Signed in! Loading dropdown data…');
   }
 }
 
@@ -338,8 +331,9 @@ function signOut() {
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.disableAutoSelect();
   }
-  currentUserEmail = '';
-  currentUserName  = '';
+  currentUserEmail    = '';
+  currentUserName     = '';
+  pendingSignIn       = false;
   selectedVehicleType = '';
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
@@ -389,12 +383,9 @@ function combo(inputId, listId, getItems, onPick) {
   inp.addEventListener('blur',  () => setTimeout(() => lst.classList.remove('open'), 200));
 }
 
-// ── FIX 2: Helper — filter parts by selected vehicle type ─────────────────────
 function getFilteredParts(q, matchField) {
   const nq = norm(q);
   return appData.parts.filter(p => {
-    // Only show parts matching the selected vehicle type (case-insensitive)
-    // If no vehicle type selected yet, show all parts
     const typeMatch = !selectedVehicleType ||
       p.vehicleType.toLowerCase() === selectedVehicleType.toLowerCase();
     if (!typeMatch) return false;
@@ -409,7 +400,6 @@ function getFilteredParts(q, matchField) {
     }
   }).slice(0, 30);
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
 function initCombos() {
   combo('employeeName', 'dl-employee',
@@ -422,7 +412,6 @@ function initCombos() {
       document.getElementById('staffNumber').value  = item.data.staffNumber;
     }
   );
-
   combo('equipmentNumber', 'dl-equipment',
     q => appData.equipment
       .filter(e => norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase()))
@@ -431,13 +420,11 @@ function initCombos() {
     item => {
       document.getElementById('equipmentNumber').value = item.data.equipmentNumber;
       document.getElementById('vehicleType').value     = item.data.vehicleType;
-      // FIX 2: Update selected vehicle type and clear parts fields when equipment changes
       selectedVehicleType = item.data.vehicleType;
       document.getElementById('partNumber').value = '';
       document.getElementById('partName').value   = '';
     }
   );
-
   combo('partNumber', 'dl-partNumber',
     q => getFilteredParts(q, 'number').map(p => ({ main: p.partNumber, sub: p.partName, data: p })),
     item => {
@@ -445,7 +432,6 @@ function initCombos() {
       if (!syncLock) { syncLock = true; document.getElementById('partName').value = item.data.partName; syncLock = false; }
     }
   );
-
   combo('partName', 'dl-partName',
     q => getFilteredParts(q, 'name').map(p => ({ main: p.partName, sub: p.partNumber, data: p })),
     item => {
@@ -453,7 +439,6 @@ function initCombos() {
       if (!syncLock) { syncLock = true; document.getElementById('partNumber').value = item.data.partNumber; syncLock = false; }
     }
   );
-
   combo('quantityNumber', 'dl-quantity',
     q => { const r = []; for (let i = 1; i <= 999; i++) { if (!q || String(i).startsWith(q)) r.push({ main: String(i), sub: '' }); if (r.length >= 30) break; } return r; },
     item => { document.getElementById('quantityNumber').value = item.main; }
@@ -463,6 +448,7 @@ function initCombos() {
 function loadData() {
   const cb = 'cb_' + Date.now();
   let settled = false;
+
   function finish(data, errorMsg) {
     if (settled) return;
     settled = true;
@@ -470,14 +456,17 @@ function loadData() {
     dataLoaded = true;
     delete window[cb];
     initCombos();
-    if (currentUserEmail) {
-      document.getElementById('loadingOverlay').style.display = 'none';
+    hideOverlay();
+    if (pendingSignIn) {
+      pendingSignIn = false;
       document.getElementById('formPanel').style.display = 'block';
     }
     if (errorMsg) toast(errorMsg);
   }
+
   window[cb] = (data) => finish(data, null);
   setTimeout(() => finish(null, '⚠ Dropdowns could not load. Please refresh.'), 15000);
+
   const s = document.createElement('script');
   s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
   s.onerror = () => finish(null, '⚠ Could not reach server. Dropdowns may be empty.');
@@ -506,14 +495,21 @@ function waitForGoogleThenInit() {
   }
 }
 
+// ── FIX 2: Submit — email taken from currentUserEmail variable, not input field
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
+
+  if (!currentUserEmail) {
+    toast('⚠ Session error. Please sign out and sign in again.');
+    return;
+  }
+
   const data = {
     requestId:       genId(),
     jobCardNumber:   document.getElementById('jobCardNumber').value.trim(),
     employeeName:    document.getElementById('employeeName').value.trim(),
     staffNumber:     document.getElementById('staffNumber').value.trim(),
-    submitterEmail:  currentUserEmail,
+    submitterEmail:  currentUserEmail,   // always from variable, never from DOM
     equipmentNumber: document.getElementById('equipmentNumber').value.trim(),
     vehicleType:     document.getElementById('vehicleType').value.trim(),
     partNumber:      document.getElementById('partNumber').value.trim(),
@@ -522,19 +518,28 @@ document.getElementById('requestForm').addEventListener('submit', async function
     timestamp:       new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
     status:          'Pending'
   };
-  if (!data.staffNumber || !data.vehicleType) { toast('⚠ Please select a valid Employee and Equipment.'); return; }
+
+  if (!data.staffNumber || !data.vehicleType) {
+    toast('⚠ Please select a valid Employee and Equipment.');
+    return;
+  }
   for (const [key, val] of Object.entries(data)) {
     if (key === 'status') continue;
     if (!val) { toast('⚠ All fields are required.'); return; }
   }
+
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
   lastRequestId = data.requestId;
+
   try {
-    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method: 'GET', mode: 'no-cors' });
+    // Build params one-by-one to ensure email @ symbol is properly encoded
+    const params = new URLSearchParams();
+    Object.entries(data).forEach(([k, v]) => params.append(k, v));
+    await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
-    document.getElementById('formPanel').style.display  = 'none';
+    document.getElementById('formPanel').style.display    = 'none';
     document.getElementById('successPanel').style.display = 'flex';
   } catch(err) {
     toast('Submission failed. Check connection.');
@@ -542,10 +547,12 @@ document.getElementById('requestForm').addEventListener('submit', async function
     btn.innerHTML = 'Submit Request';
   }
 });
+// ─────────────────────────────────────────────────────────────────────────────
 
 async function cancelRequest() {
   try {
-    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams({ action: 'cancel', requestId: lastRequestId }).toString(), { method: 'GET', mode: 'no-cors' });
+    const params = new URLSearchParams({ action: 'cancel', requestId: lastRequestId });
+    await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
     toast('Request cancelled.', '#0d2b5e');
   } catch(_) {}
   setTimeout(() => {
