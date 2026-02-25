@@ -90,17 +90,45 @@
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
+
+  /* ── In-app browser banner ── */
+  #inAppBanner {
+    display: none;
+    background: var(--gold);
+    color: var(--navy-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 14px 18px;
+    text-align: center;
+    line-height: 1.6;
+    border-bottom: 2px solid var(--gold-dark);
+  }
+  #inAppBanner span { font-weight: 400; display: block; margin-top: 2px; font-size: 12px; }
+  .inapp-blocked {
+    font-size: 12px;
+    color: var(--danger);
+    text-align: center;
+    line-height: 1.5;
+    padding: 4px 0;
+  }
 </style>
 </head>
 <body>
 
-<!-- ✅ KEY FIX: overlay starts HIDDEN so login shows immediately on mobile -->
 <div class="loading-overlay" id="loadingOverlay" style="display:none;">
   <div class="load-spinner"></div>
   <div class="loading-text" id="loadingText">Loading dropdown data…</div>
 </div>
 
 <div class="card">
+
+  <!-- In-app browser warning banner (hidden by default, shown only in Telegram/WhatsApp etc.) -->
+  <div id="inAppBanner">
+    ⚠️ Google Sign-In won't work in Telegram / WhatsApp.
+    <span>Please open this link in <strong>Safari</strong> or <strong>Chrome</strong> to continue.</span>
+  </div>
+
   <div class="header">
     <svg class="sia-logo-header" xmlns="http://www.w3.org/2000/svg" viewBox="-38.869875 -11.723425 336.87225 70.34055">
       <path d="M.1038 44.8612v2.0325h218.2125l1.4312-2.0325M231.9 42.8725s6.2713-9.3688 6.8375-10.2925c.6888-1.1338.72-2.935.0988-3.9013-.3163-.5075-9.6663-15.295-9.6663-15.295-.84-1.5975-.6312-2.69-.07-3.4687a3120.386 3120.386 0 002.5463-3.7725S243 23.9537 243.4725 24.7462c1.2188 2.0313.88 4.0238-.1237 5.7275-.8413 1.4375-8.1963 12.3988-8.1963 12.3988" fill="#f79210"/><path d="M229.8813 43.885s7.2575-10.6263 7.7962-11.5063c.635-1.0737.5638-2.5875 0-3.5037-.3012-.4838-10.38-16.345-10.38-16.345s-1.7887 2.6975-2.3525 3.53c-.5637.83-.8975 1.8625.07 3.5262 0 0 7.2163 11.3925 7.5213 11.875.5887.9288.5612 2.6363-.0963 3.71-.5387.8688-7.9812 11.7213-7.9812 11.7213h21.4787c2.1825 0 3.38-.8463 4.435-2.3638.9138-1.2912 4.4475-6.4262 4.9875-7.2312.5363-.805 1.6125-1.3438 2.0925-1.3438h1.68l-3.275-4.9825h-5.225c-.9987 0-2.2062.8875-2.8387 1.8263-.495.7412-4.0688 6.0937-4.7125 6.9537-.365.4863-.6788.5938-.9688.5963-.16 0-.6212-.0013-.68-.0013.2138-.4287 6.215-9.1612 7.3963-11.0837 1.4237-2.3663 1.7487-5.4938.0525-8.4913C248.26 19.6825 235.7863 0 235.7863 0s-1.6613 2.3925-2.3525 3.4162c-.56.835-.7338 1.9275.0737 3.5275 0 0 10.4713 16.6538 10.9713 17.4188 1.2162 1.8975 1.0637 4.435 0 6.1637-.8713 1.4238-8.1038 12.3463-8.1038 12.3463h5.7313c2.0762 0 2.5862-.77 3.1587-1.4088.5725-.6387 3.69-5.3662 4.0438-5.8662.3587-.4913 1.2687-1.8875 2.4637-1.8875h3.765v.1075c-.8025.1625-1.5925.6462-2.1662 1.4337-.5725.7763-4.3563 6.3775-4.8113 7.0313-.5725.8225-1.2287 1.6025-2.8737 1.6025" fill="#f79210"/>
@@ -234,6 +262,7 @@
     <div class="request-id" id="requestIdDisplay">Request ID: —</div>
     <button class="btn-cancel" onclick="cancelRequest()">Cancel Request</button>
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -249,6 +278,22 @@ let syncLock = false;
 let currentUserEmail = '';
 let currentUserName = '';
 let dataLoaded = false;
+
+// ── In-app browser detection ──────────────────────────────────────────────────
+(function detectInAppBrowser() {
+  const ua = navigator.userAgent || '';
+  const isInApp =
+    /FBAN|FBAV|Instagram|Twitter|Snapchat|TikTok|Line\/|MicroMessenger|Telegram|WhatsApp/i.test(ua) ||
+    (/iPhone|iPad|iPod/i.test(ua) && !/Safari/i.test(ua) && !/CriOS/i.test(ua) && !/FxiOS/i.test(ua)) ||
+    (/Android/i.test(ua) && /wv/i.test(ua));
+
+  if (isInApp) {
+    document.getElementById('inAppBanner').style.display = 'block';
+    document.getElementById('googleSignInButtonTarget').innerHTML =
+      '<p class="inapp-blocked">⚠️ Sign-in is not available in this browser.<br>Please open this link in <strong>Safari</strong> or <strong>Chrome</strong>.</p>';
+  }
+})();
+// ─────────────────────────────────────────────────────────────────────────────
 
 function setLoadingText(msg) {
   document.getElementById('loadingText').textContent = msg;
@@ -273,10 +318,8 @@ function onSignedIn() {
   document.getElementById('loginPanel').style.display = 'none';
 
   if (dataLoaded) {
-    // Data already ready — show form immediately
     document.getElementById('formPanel').style.display = 'block';
   } else {
-    // Still loading — show spinner briefly
     document.getElementById('loadingOverlay').style.display = 'flex';
     setLoadingText('Almost there, loading dropdowns…');
   }
@@ -370,7 +413,6 @@ function loadData() {
     dataLoaded = true;
     delete window[cb];
     initCombos();
-    // If user already signed in and waiting, hide overlay and show form
     if (currentUserEmail) {
       document.getElementById('loadingOverlay').style.display = 'none';
       document.getElementById('formPanel').style.display = 'block';
