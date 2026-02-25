@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Spare Parts Request — SIAEC</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root {
     --navy: #0d2b5e; --navy-light: #1a3d7c; --navy-dark: #071a3e;
@@ -99,20 +98,10 @@
   .loading-overlay { position: fixed; inset: 0; background: rgba(7,26,62,0.75); display: flex; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
   .loading-text { color: var(--gold-light); font-size: 14px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
-  /* Google button wrapper styling */
-  #googleSignInButtonTarget { display: flex; justify-content: center; }
-  #googleSignInButtonTarget > div { border-radius: 50px !important; overflow: hidden; }
+  #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
 </style>
 </head>
 <body>
-
-<!-- One Tap initializer div -->
-<div id="g_id_onload"
-     data-client_id="961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com"
-     data-callback="handleCredentialResponse"
-     data-auto_select="false"
-     data-cancel_on_tap_outside="false">
-</div>
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="load-spinner"></div>
@@ -143,7 +132,6 @@
     </div>
     <div class="login-title">Welcome to SIAEC<br>Spare Parts Request</div>
     <p class="login-sub">Please sign in with your Google account to submit a spare parts request.</p>
-    <!-- Google renders its own button here — works properly on mobile Safari -->
     <div id="googleSignInButtonTarget"></div>
   </div>
 
@@ -264,6 +252,8 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- KEY FIX: Load Google GSI script WITHOUT async/defer so it's ready before our code runs -->
+<script src="https://accounts.google.com/gsi/client"></script>
 <script>
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGEMLnLUageSCdrSbSE_ozdtMXo3IbP5Y0WL-yYhO6x-3OYapq9x4nnXpXij_RiZmboA/exec";
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
@@ -276,12 +266,16 @@ let currentUserName = '';
 let dataLoaded = false;
 let pendingSignIn = false;
 
-// Decodes JWT credential from Google and signs user in — works on all mobile browsers
+// Called by Google GSI after user picks an account — works on all mobile browsers, no popup
 function handleCredentialResponse(response) {
-  const payload = JSON.parse(atob(response.credential.split('.')[1]));
-  currentUserEmail = payload.email;
-  currentUserName  = payload.name || payload.email;
-  onSignedIn();
+  try {
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    currentUserEmail = payload.email;
+    currentUserName  = payload.name || payload.email;
+    onSignedIn();
+  } catch(err) {
+    toast('Sign-in failed. Please try again.');
+  }
 }
 
 function onSignedIn() {
@@ -294,13 +288,16 @@ function onSignedIn() {
   if (dataLoaded) {
     document.getElementById('formPanel').style.display = 'block';
   } else {
+    // Data still loading — keep overlay up, flag to show form when done
     pendingSignIn = true;
     document.getElementById('loadingOverlay').style.display = 'flex';
   }
 }
 
 function signOut() {
-  google.accounts.id.disableAutoSelect();
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
   currentUserEmail = '';
   currentUserName  = '';
   pendingSignIn    = false;
@@ -412,6 +409,20 @@ function initCombos() {
   );
 }
 
+function initGoogleSignIn() {
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleCredentialResponse,
+    auto_select: false,
+    cancel_on_tap_outside: false,
+    ux_mode: 'popup'
+  });
+  google.accounts.id.renderButton(
+    document.getElementById('googleSignInButtonTarget'),
+    { theme: 'outline', size: 'large', width: 280, shape: 'pill' }
+  );
+}
+
 function loadData() {
   const cb = 'cb_' + Date.now();
   let settled = false;
@@ -424,6 +435,7 @@ function loadData() {
     delete window[cb];
     initCombos();
     document.getElementById('loadingOverlay').style.display = 'none';
+    // If user already signed in while data was loading, reveal form now
     if (pendingSignIn) {
       pendingSignIn = false;
       document.getElementById('formPanel').style.display = 'block';
@@ -433,30 +445,14 @@ function loadData() {
 
   window[cb] = (data) => finish(data, null);
 
-  setTimeout(() => {
-    finish(null, '⚠ Data load timed out. Dropdowns may be empty.');
-  }, 12000);
+  // 12 second timeout — overlay can never get permanently stuck
+  setTimeout(() => finish(null, '⚠ Data load timed out. Dropdowns may be empty.'), 12000);
 
   const s = document.createElement('script');
   s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
   s.onerror = () => finish(null, '⚠ Could not load data. Check Apps Script URL & deployment.');
   document.head.appendChild(s);
 }
-
-// Initialise Google Sign In With Google (works on mobile Safari — no popups)
-window.onload = function() {
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleCredentialResponse,
-    auto_select: false,
-    cancel_on_tap_outside: false
-  });
-  // Renders Google's own button into our target div
-  google.accounts.id.renderButton(
-    document.getElementById('googleSignInButtonTarget'),
-    { theme: 'outline', size: 'large', width: 280, shape: 'pill' }
-  );
-};
 
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -519,6 +515,18 @@ async function cancelRequest() {
   }, 1500);
 }
 
+// KEY FIX: Poll until google.accounts.id is available, then initialize
+// This handles the case where the GSI script loads after our code runs
+function waitForGoogleThenInit() {
+  if (window.google && google.accounts && google.accounts.id) {
+    initGoogleSignIn();
+  } else {
+    setTimeout(waitForGoogleThenInit, 100);
+  }
+}
+
+// Start both in parallel
+waitForGoogleThenInit();
 loadData();
 </script>
 </body>
