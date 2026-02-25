@@ -22,124 +22,257 @@
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
     padding: 24px 12px;
   }
-  .card { width: 100%; max-width: 480px; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 24px 80px rgba(7,26,62,0.5); animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+  .card {
+    width: 100%; max-width: 480px; background: var(--white);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 24px 80px rgba(7,26,62,0.5), 0 0 0 1px rgba(201,168,76,0.15);
+    animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
   @keyframes cardIn { from{opacity:0;transform:translateY(28px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-  .header { background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-light) 100%); padding: 22px 24px 18px; display: flex; align-items: center; gap: 14px; border-bottom: 3px solid var(--gold); }
+  .header {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-light) 100%);
+    padding: 22px 24px 18px; display: flex; align-items: center; gap: 14px;
+    border-bottom: 3px solid var(--gold);
+  }
+  .sia-logo-header { width: 130px; height: 40px; flex-shrink: 0; }
   .header-text h1 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--white); }
-  .header-text p { font-size: 11px; color: var(--gold-light); letter-spacing: 1.4px; text-transform: uppercase; }
-  .user-badge { display: none; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); border-radius: 50px; padding: 5px 12px; margin-left: auto; }
+  .header-text p { font-size: 11px; color: var(--gold-light); font-weight: 300; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 2px; }
+  .user-badge {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.1); border-radius: 50px;
+    padding: 5px 12px 5px 5px; margin-left: auto; flex-shrink: 0;
+  }
   .user-badge.visible { display: flex; }
-  .user-avatar-placeholder { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark); }
-  .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; text-decoration: underline; }
+  .user-avatar-placeholder {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--gold); display: flex; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark);
+    flex-shrink: 0;
+  }
+  .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
   #loginPanel { padding: 48px 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--off-white); }
-  .login-icon { width: 64px; height: 64px; background: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-size: 30px; }
-  .google-btn { display: flex; align-items: center; gap: 10px; background: white; border: 1.5px solid var(--border); border-radius: 50px; padding: 12px 24px; cursor: pointer; font-family: inherit; font-weight: 500; }
+  .login-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(13,43,94,0.25); }
+  .login-icon svg { width: 30px; height: 30px; fill: var(--gold-light); }
+  .login-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); text-align: center; }
+  .login-sub { font-size: 13px; color: var(--text-mid); text-align: center; max-width: 280px; line-height: 1.5; }
+  .google-btn { display: flex; align-items: center; gap: 10px; background: white; border: 1.5px solid var(--border); border-radius: 50px; padding: 12px 24px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: var(--text-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: box-shadow 0.2s, transform 0.2s; }
+  .google-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
+  .google-btn svg { width: 20px; height: 20px; }
   .form-body { padding: 20px 22px 24px; background: var(--off-white); }
   .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-  .field { display: grid; grid-template-columns: 140px 1fr; border-radius: 10px; border: 1px solid var(--border); background: white; overflow: visible; }
-  .field-label { background: var(--navy); color: var(--white); font-size: 11px; padding: 10px; border-radius: 10px 0 0 10px; display: flex; align-items: center; }
-  .field-input input { width: 100%; border: none; outline: none; padding: 10px; font-size: 13px; }
-  .field-input input[readonly] { background: #eee; cursor: not-allowed; }
-  .combo-wrap { position: relative; }
-  .combo-list { position: absolute; top: 100%; left: -140px; width: calc(100% + 140px); background: white; border: 1px solid var(--gold); border-radius: 8px; z-index: 99; max-height: 200px; overflow-y: auto; display: none; box-shadow: var(--shadow-sm); }
+  .field { display: grid; grid-template-columns: 140px 1fr; border-radius: 10px; overflow: visible; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow 0.2s, border-color 0.2s; position: relative; }
+  .field:focus-within { box-shadow: 0 0 0 2px var(--gold-light); border-color: var(--gold); }
+  .field-label { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: var(--white); font-size: 12px; font-weight: 500; display: flex; align-items: center; padding: 10px 12px; line-height: 1.3; border-radius: 10px 0 0 10px; }
+  .field-input { background: var(--white); position: relative; border-radius: 0 10px 10px 0; overflow: visible; }
+  .field-input input { width: 100%; min-height: 42px; padding: 8px 12px; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: transparent; border-radius: 0 10px 10px 0; }
+  .field-input input::placeholder { color: #a0aec0; font-style: italic; font-size: 12px; }
+  .field-input input[readonly] { background: #f0f4fa; color: var(--text-mid); cursor: not-allowed; }
+  .field-input.accent { background: var(--light-blue); }
+  .combo-wrap { position: relative; width: 100%; }
+  .combo-input { width: 100%; min-height: 42px; padding: 8px 30px 8px 12px; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: transparent; border-radius: 0 10px 10px 0; }
+  .combo-input.accent-bg { background: var(--light-blue); }
+  .combo-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--navy); font-size: 10px; }
+  .combo-list { position: absolute; top: calc(100% + 4px); left: -140px; width: calc(100% + 140px); background: white; border: 1.5px solid var(--gold); border-radius: 10px; box-shadow: 0 8px 24px rgba(13,43,94,0.18); max-height: 220px; overflow-y: auto; z-index: 9999; display: none; }
   .combo-list.open { display: block; }
-  .combo-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+  .combo-item { padding: 10px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f0f4fa; color: var(--text-dark); }
+  .combo-item:last-child { border-bottom: none; }
   .combo-item:hover { background: var(--light-blue); }
-  .btn-submit { background: var(--gold); color: var(--navy-dark); width: 100%; padding: 14px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; margin-top: 10px; }
-  #successPanel { display: none; flex-direction: column; align-items: center; padding: 40px; text-align: center; }
-  .request-id { background: var(--light-blue); padding: 8px 20px; border-radius: 8px; font-weight: 600; margin: 20px 0; }
-  .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; color: white; flex-direction: column; gap: 10px; }
-  .spinner { width: 30px; height: 30px; border: 3px solid #fff3; border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--danger); color: white; padding: 10px 20px; border-radius: 20px; display: none; }
+  .combo-item .ci-main { font-weight: 600; color: var(--navy); }
+  .combo-item .ci-sub { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
+  .combo-empty { padding: 10px 14px; font-size: 12px; color: var(--text-mid); font-style: italic; }
+  .submit-area { display: flex; justify-content: center; margin-top: 18px; }
+  .btn-submit { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%); color: var(--navy-dark); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: none; padding: 14px 48px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.35); transition: transform 0.18s, box-shadow 0.18s; }
+  .btn-submit:hover { transform: translateY(-2px); }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .footer { background: var(--navy-dark); padding: 16px 22px; display: flex; justify-content: center; align-items: center; }
+  .footer svg { width: 160px; height: 42px; }
+  #successPanel { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 32px; background: var(--white); }
+  .success-icon { width: 72px; height: 72px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(34,197,94,0.35); }
+  .success-icon svg { width: 36px; height: 36px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .success-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); text-align: center; margin-bottom: 6px; }
+  .success-sub { font-size: 13px; color: var(--text-mid); text-align: center; margin-bottom: 8px; }
+  .request-id { background: var(--light-blue); border: 1px solid var(--border); border-radius: 8px; padding: 8px 18px; font-size: 12px; color: var(--navy); font-weight: 600; margin-bottom: 28px; }
+  .btn-cancel { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; border: none; padding: 12px 40px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 16px rgba(13,43,94,0.3); transition: transform 0.18s; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(13,43,94,0.3); border-top-color: var(--navy-dark); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--danger); color: white; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 99999; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .section-divider { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--navy); opacity: 0.45; margin: 4px 0 2px; padding-left: 2px; }
+  .loading-overlay { position: fixed; inset: 0; background: rgba(7,26,62,0.75); display: flex; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
+  .loading-text { color: var(--gold-light); font-size: 14px; }
+  .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
 </style>
 </head>
 <body>
 
 <div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div id="loadingText">Loading Data...</div>
+  <div class="load-spinner"></div>
+  <div class="loading-text">Loading form data…</div>
 </div>
 
 <div class="card">
   <div class="header">
+    <svg class="sia-logo-header" xmlns="http://www.w3.org/2000/svg" viewBox="-38.869875 -11.723425 336.87225 70.34055">
+      <path d="M.1038 44.8612v2.0325h218.2125l1.4312-2.0325M231.9 42.8725s6.2713-9.3688 6.8375-10.2925c.6888-1.1338.72-2.935.0988-3.9013-.3163-.5075-9.6663-15.295-9.6663-15.295-.84-1.5975-.6312-2.69-.07-3.4687a3120.386 3120.386 0 002.5463-3.7725S243 23.9537 243.4725 24.7462c1.2188 2.0313.88 4.0238-.1237 5.7275-.8413 1.4375-8.1963 12.3988-8.1963 12.3988" fill="#f79210"/><path d="M229.8813 43.885s7.2575-10.6263 7.7962-11.5063c.635-1.0737.5638-2.5875 0-3.5037-.3012-.4838-10.38-16.345-10.38-16.345s-1.7887 2.6975-2.3525 3.53c-.5637.83-.8975 1.8625.07 3.5262 0 0 7.2163 11.3925 7.5213 11.875.5887.9288.5612 2.6363-.0963 3.71-.5387.8688-7.9812 11.7213-7.9812 11.7213h21.4787c2.1825 0 3.38-.8463 4.435-2.3638.9138-1.2912 4.4475-6.4262 4.9875-7.2312.5363-.805 1.6125-1.3438 2.0925-1.3438h1.68l-3.275-4.9825h-5.225c-.9987 0-2.2062.8875-2.8387 1.8263-.495.7412-4.0688 6.0937-4.7125 6.9537-.365.4863-.6788.5938-.9688.5963-.16 0-.6212-.0013-.68-.0013.2138-.4287 6.215-9.1612 7.3963-11.0837 1.4237-2.3663 1.7487-5.4938.0525-8.4913C248.26 19.6825 235.7863 0 235.7863 0s-1.6613 2.3925-2.3525 3.4162c-.56.835-.7338 1.9275.0737 3.5275 0 0 10.4713 16.6538 10.9713 17.4188 1.2162 1.8975 1.0637 4.435 0 6.1637-.8713 1.4238-8.1038 12.3463-8.1038 12.3463h5.7313c2.0762 0 2.5862-.77 3.1587-1.4088.5725-.6387 3.69-5.3662 4.0438-5.8662.3587-.4913 1.2687-1.8875 2.4637-1.8875h3.765v.1075c-.8025.1625-1.5925.6462-2.1662 1.4337-.5725.7763-4.3563 6.3775-4.8113 7.0313-.5725.8225-1.2287 1.6025-2.8737 1.6025" fill="#f79210"/>
+      <path d="M3.0963 37.25h2.6c.5975 0 1 .3437 1 1.0075 0 .6625-.4025 1.0075-1 1.0075H.1013v1.7375H5.5c2.095 0 3.1275-1.3825 3.1275-2.7863 0-1.4037-1.0325-2.7725-3.1275-2.7725-.9 0-2.615.0038-2.615.0038-.5812 0-.9725-.335-.9725-.9788 0-.6462.3913-.9812.9725-.9812H8.49V31.75H3.0963C1.0213 31.75 0 32.9737 0 34.5062 0 36.0375 1.0213 37.25 3.0963 37.25M56.2288 41h4.13v-6.0363h-2.03v4.25H55.95c-1.7175 0-2.8675-.9912-2.8675-2.8875 0-1.9075 1.15-2.8875 2.8675-2.8875h4.4088v-1.69h-4.13c-3.4838 0-5.2013 2.4988-5.2013 4.6363 0 2.135 1.7175 4.615 5.2013 4.615M10.705 41h2.0313v-9.2513H10.705zm31.7138-7.56h3.3637c.825 0 1.3513.7525 1.3513 1.45v6.1112h2.0275v-6.37c0-1.575-1.1213-2.8825-2.92-2.8825h-2.6625l-1.16 1.5425v-1.5425h-2.03v9.2525h2.03m57.9487-7.56h3.1888c.7462 0 1.2187.7175 1.2187 1.3638 0 .6437-.4725 1.3412-1.2187 1.3412h-2.495l4.0425 4.855h2.405l-2.8663-3.45h.0038c1.2337-.3987 2.025-1.5287 2.025-2.805 0-1.5937-1.23-2.9975-3.0275-2.9975h-5.275v9.2525h1.9987M38.2025 41v-1.6925l-5.4175.0012V36.94h4.7188v-1.6825H32.785v-1.8188l5.4175.0025v-1.6925h-7.4587V41h2.0412m-15.4575-2.6838l4.3125.0025L22.8375 41h2.2188l-4.53-9.2513H18.43L13.9013 41h2.2325zm2.1513-4.9712l1.4675 3.3425-2.9263.0075m159.6963-.1863v-.005l1.1587 1.5413h2.075c1.7438 0 2.975-1.455 2.975-3.1288 0-1.685-1.2312-3.1687-2.975-3.1687h-5.275V41h2.0413zm0-3.07h3.1475c.7437 0 1.22.7775 1.22 1.4775 0 .695-.4763 1.45-1.22 1.45h-3.1475m-22.3588 5.0213c2.77 0 5.0238-2.255 5.0238-5.025 0-2.7813-2.2538-5.0338-5.0238-5.0338-2.78 0-5.0225 2.2525-5.0225 5.0338 0 2.77 2.2425 5.025 5.0225 5.025m0-8.1913c1.7388 0 3.155 1.4175 3.155 3.1663 0 1.7387-1.4162 3.1537-3.155 3.1537-1.7487 0-3.1662-1.415-3.1662-3.1537 0-1.7488 1.4175-3.1663 3.1662-3.1663m31.55 5.1175l4.3125.0038 1.1975 2.6812h2.2188l-4.53-9.2512H188.01l-4.5287 9.2512h2.2325zm2.1513-4.9712l1.4675 3.3437-2.9263.0063M62.8688 41h2.03v-9.2513h-2.03zm134.96-7.5613h3.3637c.825 0 1.3513.7513 1.3513 1.4488V41h2.0275v-6.37c0-1.5763-1.1225-2.8825-2.9213-2.8825h-2.6625l-1.1587 1.5412v-1.5412h-2.03V41h2.03m11.7762-.0013l1.9988-.0012-.0013-4.04 3.6863-5.2h-2.3638l-2.295 3.2537-2.5987-3.2512-2.3513.0012 3.9225 5.125M69.3688 33.44h3.365c.825 0 1.35.7525 1.35 1.45v6.1112h2.0275v-6.37c0-1.575-1.1213-2.8825-2.92-2.8825h-2.6625l-1.16 1.5425v-1.5425H67.34v9.2525h2.0288M86.0563 41v-1.6925l-5.4188.0012V36.94h4.72v-1.6825h-4.72v-1.8188l5.4188.0025v-1.6925h-7.4588V41h2.04m15.3213 0v-1.6925l-5.4188.0012V36.94h4.72v-1.6825h-4.72v-1.8188l5.4188.0025v-1.6925H88.5V41h2.04m18.445 0h2.0313v-9.2513h-2.0313zm6.5125-7.56h3.3638c.825 0 1.3512.7525 1.3512 1.45v6.1112h2.0275v-6.37c0-1.575-1.1212-2.8825-2.92-2.8825h-2.6637l-1.1588 1.5425v-1.5425h-2.03v9.2525h2.03M129.0425 41h4.13v-6.0363h-2.03v4.25h-2.3775c-1.7187 0-2.8687-.9912-2.8687-2.8875 0-1.9075 1.15-2.8875 2.8687-2.8875h4.4075v-1.69h-4.13c-3.4825 0-5.2012 2.4988-5.2012 4.6363 0 2.135 1.7187 4.615 5.2012 4.615m19.2388-9.2375V33.57h-4.4163c-.4675 0-2.2062.6862-2.2062 2.8162 0 2.46 1.685 2.8738 2.0725 2.8738h4.5425V41h-4.6763c-.965 0-3.9325-.6963-3.9325-4.6138 0-3.87 3.305-4.6237 3.9325-4.6237m26.825-.0113h-4.6712l-1.16 1.5413v-1.5413h-2.03v9.2475h2.03v-7.5562h2.33v7.5562h2.04v-7.5562h1.0037c.825 0 1.3513.7512 1.3513 1.45v6.1062h2.0262V34.635c0-1.5763-1.1212-2.8838-2.92-2.8838" fill="#ffffff"/>
+    </svg>
     <div class="header-text">
       <h1>Spare Parts Request</h1>
-      <p>SIA Engineering Company</p>
+      <p>Singapore Airlines Engineering</p>
     </div>
     <div class="user-badge" id="userBadge">
       <div class="user-avatar-placeholder" id="userInitial">?</div>
+      <span class="user-name" id="userName"></span>
       <button class="sign-out-btn" onclick="signOut()">Sign out</button>
     </div>
   </div>
 
+  <!-- LOGIN PANEL -->
   <div id="loginPanel">
-    <div class="login-icon">👤</div>
-    <div class="login-title">Staff Portal</div>
-    <button class="google-btn" onclick="handleGoogleSignIn()">Sign in with Google</button>
+    <div class="login-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+    </div>
+    <div class="login-title">Welcome to SIAEC<br>Spare Parts Request</div>
+    <p class="login-sub">Please sign in with your Google account to submit a spare parts request.</p>
+    <button class="google-btn" onclick="handleGoogleSignIn()">
+      <svg viewBox="0 0 24 24">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Sign in with Google
+    </button>
   </div>
 
+  <!-- FORM PANEL -->
   <div id="formPanel" style="display:none;">
     <div class="form-body">
-      <form id="requestForm">
+      <form id="requestForm" novalidate>
+        <p class="section-divider">Job Details</p>
         <div class="field-group">
-          <div class="field"><div class="field-label">Job Card #</div><div class="field-input"><input type="text" id="jobCardNumber" required></div></div>
-          
           <div class="field">
-            <div class="field-label">Employee</div>
-            <div class="field-input combo-wrap">
-              <input type="text" id="employeeName" placeholder="Search name..." autocomplete="off">
-              <div class="combo-list" id="list-emp"></div>
+            <div class="field-label">Job Card Number</div>
+            <div class="field-input">
+              <input type="text" id="jobCardNumber" placeholder="Enter Job Card No." />
             </div>
           </div>
-          
-          <div class="field"><div class="field-label">Staff No.</div><div class="field-input"><input type="text" id="staffNumber" readonly></div></div>
-          <div class="field"><div class="field-label">Email</div><div class="field-input"><input type="text" id="submitterEmail" readonly></div></div>
-          
           <div class="field">
-            <div class="field-label">Equipment</div>
-            <div class="field-input combo-wrap">
-              <input type="text" id="equipmentNumber" placeholder="Search equipment..." autocomplete="off">
-              <div class="combo-list" id="list-equ"></div>
+            <div class="field-label">Employee Name</div>
+            <div class="field-input">
+              <div class="combo-wrap">
+                <input class="combo-input" id="employeeName" placeholder="Type or select…" autocomplete="off" />
+                <span class="combo-arrow">▼</span>
+                <div class="combo-list" id="dl-employee"></div>
+              </div>
             </div>
           </div>
-
-          <div class="field"><div class="field-label">Vehicle Type</div><div class="field-input"><input type="text" id="vehicleType" readonly></div></div>
-
           <div class="field">
-            <div class="field-label">Part No.</div>
-            <div class="field-input combo-wrap">
-              <input type="text" id="partNumber" placeholder="Search part..." autocomplete="off">
-              <div class="combo-list" id="list-part"></div>
+            <div class="field-label">Staff Number</div>
+            <div class="field-input">
+              <input type="text" id="staffNumber" placeholder="Auto-filled" readonly />
             </div>
           </div>
-
-          <div class="field"><div class="field-label">Part Name</div><div class="field-input"><input type="text" id="partName" readonly></div></div>
-          <div class="field"><div class="field-label">Quantity</div><div class="field-input"><input type="number" id="quantityNumber" value="1" min="1"></div></div>
+          <div class="field">
+            <div class="field-label">Your Email</div>
+            <div class="field-input">
+              <input type="email" id="submitterEmail" placeholder="Auto-filled from Google" readonly />
+            </div>
+          </div>
         </div>
-        <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
+
+        <p class="section-divider">Equipment Details</p>
+        <div class="field-group">
+          <div class="field">
+            <div class="field-label">Equipment Number</div>
+            <div class="field-input">
+              <div class="combo-wrap">
+                <input class="combo-input" id="equipmentNumber" placeholder="Type or select…" autocomplete="off" />
+                <span class="combo-arrow">▼</span>
+                <div class="combo-list" id="dl-equipment"></div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Vehicle Type</div>
+            <div class="field-input">
+              <input type="text" id="vehicleType" placeholder="Auto-filled" readonly />
+            </div>
+          </div>
+        </div>
+
+        <p class="section-divider">Parts Request</p>
+        <div class="field-group">
+          <div class="field">
+            <div class="field-label">Part Number</div>
+            <div class="field-input">
+              <div class="combo-wrap">
+                <input class="combo-input" id="partNumber" placeholder="Type part number…" autocomplete="off" />
+                <span class="combo-arrow">▼</span>
+                <div class="combo-list" id="dl-partNumber"></div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Part Name</div>
+            <div class="field-input accent">
+              <div class="combo-wrap">
+                <input class="combo-input accent-bg" id="partName" placeholder="Type part name…" autocomplete="off" />
+                <span class="combo-arrow">▼</span>
+                <div class="combo-list" id="dl-partName"></div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Quantity</div>
+            <div class="field-input">
+              <div class="combo-wrap">
+                <input class="combo-input" id="quantityNumber" placeholder="Select quantity…" autocomplete="off" />
+                <span class="combo-arrow">▼</span>
+                <div class="combo-list" id="dl-quantity"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="submit-area">
+          <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
+        </div>
       </form>
+    </div>
+
+    <div class="footer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-38.869875 -11.723425 336.87225 70.34055">
+        <path d="M.1038 44.8612v2.0325h218.2125l1.4312-2.0325M231.9 42.8725s6.2713-9.3688 6.8375-10.2925c.6888-1.1338.72-2.935.0988-3.9013-.3163-.5075-9.6663-15.295-9.6663-15.295-.84-1.5975-.6312-2.69-.07-3.4687a3120.386 3120.386 0 002.5463-3.7725S243 23.9537 243.4725 24.7462c1.2188 2.0313.88 4.0238-.1237 5.7275-.8413 1.4375-8.1963 12.3988-8.1963 12.3988" fill="#f79210"/><path d="M229.8813 43.885s7.2575-10.6263 7.7962-11.5063c.635-1.0737.5638-2.5875 0-3.5037-.3012-.4838-10.38-16.345-10.38-16.345s-1.7887 2.6975-2.3525 3.53c-.5637.83-.8975 1.8625.07 3.5262 0 0 7.2163 11.3925 7.5213 11.875.5887.9288.5612 2.6363-.0963 3.71-.5387.8688-7.9812 11.7213-7.9812 11.7213h21.4787c2.1825 0 3.38-.8463 4.435-2.3638.9138-1.2912 4.4475-6.4262 4.9875-7.2312.5363-.805 1.6125-1.3438 2.0925-1.3438h1.68l-3.275-4.9825h-5.225c-.9987 0-2.2062.8875-2.8387 1.8263-.495.7412-4.0688 6.0937-4.7125 6.9537-.365.4863-.6788.5938-.9688.5963-.16 0-.6212-.0013-.68-.0013.2138-.4287 6.215-9.1612 7.3963-11.0837 1.4237-2.3663 1.7487-5.4938.0525-8.4913C248.26 19.6825 235.7863 0 235.7863 0s-1.6613 2.3925-2.3525 3.4162c-.56.835-.7338 1.9275.0737 3.5275 0 0 10.4713 16.6538 10.9713 17.4188 1.2162 1.8975 1.0637 4.435 0 6.1637-.8713 1.4238-8.1038 12.3463-8.1038 12.3463h5.7313c2.0762 0 2.5862-.77 3.1587-1.4088.5725-.6387 3.69-5.3662 4.0438-5.8662.3587-.4913 1.2687-1.8875 2.4637-1.8875h3.765v.1075c-.8025.1625-1.5925.6462-2.1662 1.4337-.5725.7763-4.3563 6.3775-4.8113 7.0313-.5725.8225-1.2287 1.6025-2.8737 1.6025" fill="#f79210"/>
+        <path d="M3.0963 37.25h2.6c.5975 0 1 .3437 1 1.0075 0 .6625-.4025 1.0075-1 1.0075H.1013v1.7375H5.5c2.095 0 3.1275-1.3825 3.1275-2.7863 0-1.4037-1.0325-2.7725-3.1275-2.7725-.9 0-2.615.0038-2.615.0038-.5812 0-.9725-.335-.9725-.9788 0-.6462.3913-.9812.9725-.9812H8.49V31.75H3.0963C1.0213 31.75 0 32.9737 0 34.5062 0 36.0375 1.0213 37.25 3.0963 37.25M56.2288 41h4.13v-6.0363h-2.03v4.25H55.95c-1.7175 0-2.8675-.9912-2.8675-2.8875 0-1.9075 1.15-2.8875 2.8675-2.8875h4.4088v-1.69h-4.13c-3.4838 0-5.2013 2.4988-5.2013 4.6363 0 2.135 1.7175 4.615 5.2013 4.615M10.705 41h2.0313v-9.2513H10.705zm31.7138-7.56h3.3637c.825 0 1.3513.7525 1.3513 1.45v6.1112h2.0275v-6.37c0-1.575-1.1213-2.8825-2.92-2.8825h-2.6625l-1.16 1.5425v-1.5425h-2.03v9.2525h2.03m57.9487-7.56h3.1888c.7462 0 1.2187.7175 1.2187 1.3638 0 .6437-.4725 1.3412-1.2187 1.3412h-2.495l4.0425 4.855h2.405l-2.8663-3.45h.0038c1.2337-.3987 2.025-1.5287 2.025-2.805 0-1.5937-1.23-2.9975-3.0275-2.9975h-5.275v9.2525h1.9987M38.2025 41v-1.6925l-5.4175.0012V36.94h4.7188v-1.6825H32.785v-1.8188l5.4175.0025v-1.6925h-7.4587V41h2.0412m-15.4575-2.6838l4.3125.0025L22.8375 41h2.2188l-4.53-9.2513H18.43L13.9013 41h2.2325zm2.1513-4.9712l1.4675 3.3425-2.9263.0075m159.6963-.1863v-.005l1.1587 1.5413h2.075c1.7438 0 2.975-1.455 2.975-3.1288 0-1.685-1.2312-3.1687-2.975-3.1687h-5.275V41h2.0413zm0-3.07h3.1475c.7437 0 1.22.7775 1.22 1.4775 0 .695-.4763 1.45-1.22 1.45h-3.1475m-22.3588 5.0213c2.77 0 5.0238-2.255 5.0238-5.025 0-2.7813-2.2538-5.0338-5.0238-5.0338-2.78 0-5.0225 2.2525-5.0225 5.0338 0 2.77 2.2425 5.025 5.0225 5.025m0-8.1913c1.7388 0 3.155 1.4175 3.155 3.1663 0 1.7387-1.4162 3.1537-3.155 3.1537-1.7487 0-3.1662-1.415-3.1662-3.1537 0-1.7488 1.4175-3.1663 3.1662-3.1663m31.55 5.1175l4.3125.0038 1.1975 2.6812h2.2188l-4.53-9.2512H188.01l-4.5287 9.2512h2.2325zm2.1513-4.9712l1.4675 3.3437-2.9263.0063M62.8688 41h2.03v-9.2513h-2.03zm134.96-7.5613h3.3637c.825 0 1.3513.7513 1.3513 1.4488V41h2.0275v-6.37c0-1.5763-1.1225-2.8825-2.9213-2.8825h-2.6625l-1.1587 1.5412v-1.5412h-2.03V41h2.03m11.7762-.0013l1.9988-.0012-.0013-4.04 3.6863-5.2h-2.3638l-2.295 3.2537-2.5987-3.2512-2.3513.0012 3.9225 5.125M69.3688 33.44h3.365c.825 0 1.35.7525 1.35 1.45v6.1112h2.0275v-6.37c0-1.575-1.1213-2.8825-2.92-2.8825h-2.6625l-1.16 1.5425v-1.5425H67.34v9.2525h2.0288M86.0563 41v-1.6925l-5.4188.0012V36.94h4.72v-1.6825h-4.72v-1.8188l5.4188.0025v-1.6925h-7.4588V41h2.04m15.3213 0v-1.6925l-5.4188.0012V36.94h4.72v-1.6825h-4.72v-1.8188l5.4188.0025v-1.6925H88.5V41h2.04m18.445 0h2.0313v-9.2513h-2.0313zm6.5125-7.56h3.3638c.825 0 1.3512.7525 1.3512 1.45v6.1112h2.0275v-6.37c0-1.575-1.1212-2.8825-2.92-2.8825h-2.6637l-1.1588 1.5425v-1.5425h-2.03v9.2525h2.03M129.0425 41h4.13v-6.0363h-2.03v4.25h-2.3775c-1.7187 0-2.8687-.9912-2.8687-2.8875 0-1.9075 1.15-2.8875 2.8687-2.8875h4.4075v-1.69h-4.13c-3.4825 0-5.2012 2.4988-5.2012 4.6363 0 2.135 1.7187 4.615 5.2012 4.615m19.2388-9.2375V33.57h-4.4163c-.4675 0-2.2062.6862-2.2062 2.8162 0 2.46 1.685 2.8738 2.0725 2.8738h4.5425V41h-4.6763c-.965 0-3.9325-.6963-3.9325-4.6138 0-3.87 3.305-4.6237 3.9325-4.6237m26.825-.0113h-4.6712l-1.16 1.5413v-1.5413h-2.03v9.2475h2.03v-7.5562h2.33v7.5562h2.04v-7.5562h1.0037c.825 0 1.3513.7512 1.3513 1.45v6.1062h2.0262V34.635c0-1.5763-1.1212-2.8838-2.92-2.8838" fill="#ffffff"/>
+      </svg>
     </div>
   </div>
 
   <div id="successPanel">
-    <div style="font-size: 50px; color: var(--success);">✓</div>
-    <h2>Submitted Successfully</h2>
-    <div class="request-id" id="requestIdDisplay">SPR-000000</div>
-    <button class="btn-submit" onclick="location.reload()">New Request</button>
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="success-title">Request Submitted</div>
+    <p class="success-sub">Your spare parts request has been sent for approval.</p>
+    <div class="request-id" id="requestIdDisplay">Request ID: —</div>
+    <button class="btn-cancel" onclick="cancelRequest()">Cancel Request</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec"; 
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGEMLnLUageSCdrSbSE_ozdtMXo3IbP5Y0WL-yYhO6x-3OYapq9x4nnXpXij_RiZmboA/exec";
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 let appData = { employees: [], equipment: [], parts: [] };
-let currentUser = { email: '', name: '' };
+let lastRequestId = null;
+let syncLock = false;
+let currentUserEmail = '';
+let currentUserName = '';
 
-// 1. SIGN IN LOGIC
 function handleGoogleSignIn() {
   const client = google.accounts.oauth2.initTokenClient({
     client_id: GOOGLE_CLIENT_ID,
@@ -150,9 +283,9 @@ function handleGoogleSignIn() {
           headers: { Authorization: 'Bearer ' + response.access_token }
         })
         .then(r => r.json())
-        .then(user => {
-          currentUser.email = user.email;
-          currentUser.name = user.name || user.email;
+        .then(userInfo => {
+          currentUserEmail = userInfo.email;
+          currentUserName = userInfo.name || userInfo.email;
           onSignedIn();
         });
       }
@@ -162,113 +295,205 @@ function handleGoogleSignIn() {
 }
 
 function onSignedIn() {
-  document.getElementById('userInitial').textContent = currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('userName').textContent = currentUserName;
+  document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
-  document.getElementById('submitterEmail').value = currentUser.email;
+  document.getElementById('submitterEmail').value = currentUserEmail;
   document.getElementById('loginPanel').style.display = 'none';
-  fetchData(); // THIS IS THE KEY MISSING STEP
+  document.getElementById('formPanel').style.display = 'block';
 }
 
-// 2. FETCH DATA FROM GOOGLE SHEETS
-function fetchData() {
-  const overlay = document.getElementById('loadingOverlay');
-  overlay.style.display = 'flex';
+function signOut() {
+  currentUserEmail = '';
+  currentUserName = '';
+  document.getElementById('userBadge').classList.remove('visible');
+  document.getElementById('formPanel').style.display = 'none';
+  document.getElementById('successPanel').style.display = 'none';
+  document.getElementById('loginPanel').style.display = 'flex';
+  document.getElementById('requestForm').reset();
+  document.getElementById('staffNumber').value = '';
+  document.getElementById('vehicleType').value = '';
+  document.getElementById('submitterEmail').value = '';
+}
 
-  fetch(`${APPS_SCRIPT_URL}?action=getData`)
-    .then(r => r.json())
-    .then(data => {
-      appData = data;
-      initCombos();
-      overlay.style.display = 'none';
-      document.getElementById('formPanel').style.display = 'block';
-    })
-    .catch(err => {
-      console.error(err);
-      overlay.style.display = 'none';
-      alert("Error loading sheet data. Ensure the URL is correct and shared.");
+function norm(s) { return String(s).replace(/[-\s]/g,'').toUpperCase(); }
+
+function toast(msg, color='#ef4444') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.background = color;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function genId() {
+  const n = new Date(), p = x => String(x).padStart(2,'0');
+  return `SPR-${n.getFullYear()}${p(n.getMonth()+1)}${p(n.getDate())}-${Date.now().toString().slice(-6)}`;
+}
+
+function renderList(listEl, items, onPick) {
+  listEl.innerHTML = '';
+  if (!items.length) {
+    listEl.innerHTML = '<div class="combo-empty">No results found</div>';
+  } else {
+    items.forEach(item => {
+      const d = document.createElement('div');
+      d.className = 'combo-item';
+      d.innerHTML = `<div class="ci-main">${item.main}</div>${item.sub ? `<div class="ci-sub">${item.sub}</div>` : ''}`;
+      d.addEventListener('mousedown', e => { e.preventDefault(); onPick(item); listEl.classList.remove('open'); });
+      listEl.appendChild(d);
     });
+  }
+  listEl.classList.add('open');
 }
 
-// 3. COMBO DROPDOWN LOGIC
-function setupCombo(inputId, listId, filterFn, onSelect) {
+function combo(inputId, listId, getItems, onPick) {
   const inp = document.getElementById(inputId);
   const lst = document.getElementById(listId);
-
-  inp.addEventListener('input', () => {
-    const q = inp.value.toLowerCase();
-    const matches = filterFn(q);
-    lst.innerHTML = matches.map(m => `<div class="combo-item" data-id="${m.id}">${m.text}</div>`).join('');
-    lst.classList.toggle('open', matches.length > 0);
-  });
-
-  lst.addEventListener('mousedown', (e) => {
-    if (e.target.classList.contains('combo-item')) {
-      const selected = filterFn('').find(x => x.id === e.target.dataset.id);
-      inp.value = e.target.innerText;
-      lst.classList.remove('open');
-      onSelect(selected);
-    }
-  });
-
-  inp.addEventListener('blur', () => setTimeout(() => lst.classList.remove('open'), 200));
+  inp.addEventListener('focus', () => renderList(lst, getItems(inp.value), onPick));
+  inp.addEventListener('input', () => renderList(lst, getItems(inp.value), onPick));
+  inp.addEventListener('blur',  () => setTimeout(() => lst.classList.remove('open'), 200));
 }
 
 function initCombos() {
-  // Employee Combo
-  setupCombo('employeeName', 'list-emp', 
-    (q) => appData.employees.filter(e => e.name.toLowerCase().includes(q)).map(e => ({id: e.staffNumber, text: e.name, raw: e})),
-    (item) => document.getElementById('staffNumber').value = item.raw.staffNumber
+  combo('employeeName', 'dl-employee',
+    q => appData.employees
+      .filter(e => e.name.toLowerCase().includes(q.toLowerCase()))
+      .slice(0,20)
+      .map(e => ({ main: e.name, sub: 'Staff No: ' + e.staffNumber, data: e })),
+    item => {
+      document.getElementById('employeeName').value = item.data.name;
+      document.getElementById('staffNumber').value  = item.data.staffNumber;
+    }
   );
-
-  // Equipment Combo
-  setupCombo('equipmentNumber', 'list-equ', 
-    (q) => appData.equipment.filter(e => e.equipmentNumber.toLowerCase().includes(q)).map(e => ({id: e.equipmentNumber, text: e.equipmentNumber, raw: e})),
-    (item) => document.getElementById('vehicleType').value = item.raw.vehicleType
+  combo('equipmentNumber', 'dl-equipment',
+    q => appData.equipment
+      .filter(e => norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase()))
+      .slice(0,20)
+      .map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
+    item => {
+      document.getElementById('equipmentNumber').value = item.data.equipmentNumber;
+      document.getElementById('vehicleType').value     = item.data.vehicleType;
+    }
   );
-
-  // Parts Combo
-  setupCombo('partNumber', 'list-part', 
-    (q) => appData.parts.filter(p => p.partNumber.toLowerCase().includes(q)).map(p => ({id: p.partNumber, text: p.partNumber, raw: p})),
-    (item) => document.getElementById('partName').value = item.raw.partName
+  combo('partNumber', 'dl-partNumber',
+    q => {
+      const nq = norm(q);
+      return appData.parts
+        .filter(p => !q || norm(p.partNumber).includes(nq) || (p.altPartNumber && norm(p.altPartNumber).includes(nq)) || p.partName.toLowerCase().includes(q.toLowerCase()))
+        .slice(0,30)
+        .map(p => ({ main: p.partNumber, sub: p.partName, data: p }));
+    },
+    item => {
+      document.getElementById('partNumber').value = item.data.partNumber;
+      if (!syncLock) { syncLock=true; document.getElementById('partName').value = item.data.partName; syncLock=false; }
+    }
+  );
+  combo('partName', 'dl-partName',
+    q => {
+      const nq = norm(q);
+      return appData.parts
+        .filter(p => !q || p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq))
+        .slice(0,30)
+        .map(p => ({ main: p.partName, sub: p.partNumber, data: p }));
+    },
+    item => {
+      document.getElementById('partName').value   = item.data.partName;
+      if (!syncLock) { syncLock=true; document.getElementById('partNumber').value = item.data.partNumber; syncLock=false; }
+    }
+  );
+  combo('quantityNumber', 'dl-quantity',
+    q => {
+      const results = [];
+      for (let i = 1; i <= 999; i++) {
+        if (!q || String(i).startsWith(q)) results.push({ main: String(i), sub: '' });
+        if (results.length >= 30) break;
+      }
+      return results;
+    },
+    item => { document.getElementById('quantityNumber').value = item.main; }
   );
 }
 
-// 4. SUBMIT FORM
-document.getElementById('requestForm').onsubmit = function(e) {
+function loadData() {
+  const cb = 'cb_' + Date.now();
+  window[cb] = function(data) {
+    appData = data;
+    delete window[cb];
+    document.getElementById('loadingOverlay').style.display = 'none';
+    initCombos();
+  };
+  const s = document.createElement('script');
+  s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
+  s.onerror = () => {
+    document.getElementById('loadingOverlay').style.display = 'none';
+    toast('Could not load data. Check Apps Script URL.');
+    delete window[cb];
+  };
+  document.head.appendChild(s);
+}
+
+document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
+  const data = {
+    requestId:       genId(),
+    jobCardNumber:   document.getElementById('jobCardNumber').value.trim(),
+    employeeName:    document.getElementById('employeeName').value.trim(),
+    staffNumber:     document.getElementById('staffNumber').value.trim(),
+    submitterEmail:  currentUserEmail,
+    equipmentNumber: document.getElementById('equipmentNumber').value.trim(),
+    vehicleType:     document.getElementById('vehicleType').value.trim(),
+    partNumber:      document.getElementById('partNumber').value.trim(),
+    partName:        document.getElementById('partName').value.trim(),
+    quantityNumber:  document.getElementById('quantityNumber').value.trim(),
+    timestamp:       new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
+    status:          'Pending'
+  };
+
+  if (!data.staffNumber || !data.vehicleType) {
+    toast('⚠ Please select a valid Employee and Equipment.');
+    return;
+  }
+  for (const [key, val] of Object.entries(data)) {
+    if (key === 'status') continue;
+    if (!val) { toast('⚠ All fields are required.'); return; }
+  }
+
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.innerText = "Submitting...";
+  btn.innerHTML = '<span class="spinner"></span> Submitting…';
+  lastRequestId = data.requestId;
 
-  const requestId = "SPR-" + Date.now().toString().slice(-6);
-  const params = new URLSearchParams({
-    requestId: requestId,
-    jobCardNumber: document.getElementById('jobCardNumber').value,
-    employeeName: document.getElementById('employeeName').value,
-    staffNumber: document.getElementById('staffNumber').value,
-    submitterEmail: currentUser.email,
-    equipmentNumber: document.getElementById('equipmentNumber').value,
-    vehicleType: document.getElementById('vehicleType').value,
-    partNumber: document.getElementById('partNumber').value,
-    partName: document.getElementById('partName').value,
-    quantityNumber: document.getElementById('quantityNumber').value
-  });
+  try {
+    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method:'GET', mode:'no-cors' });
+    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
+    document.getElementById('formPanel').style.display = 'none';
+    document.getElementById('successPanel').style.display = 'flex';
+  } catch(err) {
+    toast('Submission failed. Check connection.');
+    btn.disabled = false;
+    btn.innerHTML = 'Submit Request';
+  }
+});
 
-  fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, { method: 'POST' })
-    .then(r => r.json())
-    .then(res => {
-      document.getElementById('formPanel').style.display = 'none';
-      document.getElementById('successPanel').style.display = 'flex';
-      document.getElementById('requestIdDisplay').innerText = requestId;
-    })
-    .catch(err => {
-      alert("Submit failed. Check console.");
-      btn.disabled = false;
-      btn.innerText = "Submit Request";
-    });
-};
+async function cancelRequest() {
+  try {
+    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams({ action:'cancel', requestId: lastRequestId }).toString(), { method:'GET', mode:'no-cors' });
+    toast('Request cancelled.', '#0d2b5e');
+  } catch(_) {}
+  setTimeout(() => {
+    document.getElementById('successPanel').style.display = 'none';
+    document.getElementById('formPanel').style.display = 'block';
+    document.getElementById('requestForm').reset();
+    document.getElementById('staffNumber').value = '';
+    document.getElementById('vehicleType').value = '';
+    document.getElementById('submitterEmail').value = currentUserEmail;
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = false; btn.innerHTML = 'Submit Request';
+    lastRequestId = null;
+  }, 1500);
+}
 
-function signOut() { location.reload(); }
+loadData();
 </script>
 </body>
 </html>
