@@ -91,26 +91,22 @@
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
 
-  /* ── In-app browser banner ── */
-  #inAppBanner {
-    background: var(--gold);
-    color: var(--navy-dark);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 14px 18px;
+  /* ── In-app browser full-screen block ── */
+  #inAppBlock {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 28px;
+    background: var(--off-white);
     text-align: center;
-    line-height: 1.6;
-    border-bottom: 2px solid var(--gold-dark);
+    gap: 16px;
   }
-  #inAppBanner span { font-weight: 400; display: block; margin-top: 2px; font-size: 12px; }
-  .inapp-blocked {
-    font-size: 12px;
-    color: var(--danger);
-    text-align: center;
-    line-height: 1.5;
-    padding: 4px 0;
-  }
+  .inapp-icon { font-size: 48px; line-height: 1; }
+  .inapp-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--navy); }
+  .inapp-msg { font-size: 13px; color: var(--text-mid); line-height: 1.6; max-width: 300px; }
+  .inapp-steps { background: var(--gold); color: var(--navy-dark); border-radius: 12px; padding: 14px 18px; font-size: 12px; font-weight: 600; line-height: 2; width: 100%; max-width: 300px; }
+  .inapp-steps span { font-weight: 400; display: block; line-height: 1.5; margin-top: 2px; font-size: 11px; color: var(--navy); }
 </style>
 </head>
 <body>
@@ -121,13 +117,6 @@
 </div>
 
 <div class="card">
-
-  <!-- Banner is VISIBLE by default, hidden only when a real browser is confirmed -->
-  <div id="inAppBanner">
-    ⚠️ Google Sign-In won't work in Telegram / WhatsApp.
-    <span>Please open this link in <strong>Safari</strong> or <strong>Chrome</strong> to continue.</span>
-  </div>
-
   <div class="header">
     <svg class="sia-logo-header" xmlns="http://www.w3.org/2000/svg" viewBox="-38.869875 -11.723425 336.87225 70.34055">
       <path d="M.1038 44.8612v2.0325h218.2125l1.4312-2.0325M231.9 42.8725s6.2713-9.3688 6.8375-10.2925c.6888-1.1338.72-2.935.0988-3.9013-.3163-.5075-9.6663-15.295-9.6663-15.295-.84-1.5975-.6312-2.69-.07-3.4687a3120.386 3120.386 0 002.5463-3.7725S243 23.9537 243.4725 24.7462c1.2188 2.0313.88 4.0238-.1237 5.7275-.8413 1.4375-8.1963 12.3988-8.1963 12.3988" fill="#f79210"/><path d="M229.8813 43.885s7.2575-10.6263 7.7962-11.5063c.635-1.0737.5638-2.5875 0-3.5037-.3012-.4838-10.38-16.345-10.38-16.345s-1.7887 2.6975-2.3525 3.53c-.5637.83-.8975 1.8625.07 3.5262 0 0 7.2163 11.3925 7.5213 11.875.5887.9288.5612 2.6363-.0963 3.71-.5387.8688-7.9812 11.7213-7.9812 11.7213h21.4787c2.1825 0 3.38-.8463 4.435-2.3638.9138-1.2912 4.4475-6.4262 4.9875-7.2312.5363-.805 1.6125-1.3438 2.0925-1.3438h1.68l-3.275-4.9825h-5.225c-.9987 0-2.2062.8875-2.8387 1.8263-.495.7412-4.0688 6.0937-4.7125 6.9537-.365.4863-.6788.5938-.9688.5963-.16 0-.6212-.0013-.68-.0013.2138-.4287 6.215-9.1612 7.3963-11.0837 1.4237-2.3663 1.7487-5.4938.0525-8.4913C248.26 19.6825 235.7863 0 235.7863 0s-1.6613 2.3925-2.3525 3.4162c-.56.835-.7338 1.9275.0737 3.5275 0 0 10.4713 16.6538 10.9713 17.4188 1.2162 1.8975 1.0637 4.435 0 6.1637-.8713 1.4238-8.1038 12.3463-8.1038 12.3463h5.7313c2.0762 0 2.5862-.77 3.1587-1.4088.5725-.6387 3.69-5.3662 4.0438-5.8662.3587-.4913 1.2687-1.8875 2.4637-1.8875h3.765v.1075c-.8025.1625-1.5925.6462-2.1662 1.4337-.5725.7763-4.3563 6.3775-4.8113 7.0313-.5725.8225-1.2287 1.6025-2.8737 1.6025" fill="#f79210"/>
@@ -144,7 +133,20 @@
     </div>
   </div>
 
-  <div id="loginPanel">
+  <!-- FIX 1: Full screen in-app browser block shown INSTEAD of login -->
+  <div id="inAppBlock">
+    <div class="inapp-icon">🚫</div>
+    <div class="inapp-title">Cannot open in this browser</div>
+    <p class="inapp-msg">Google Sign-In does not work inside Telegram or WhatsApp. Please open this link in Safari or Chrome.</p>
+    <div class="inapp-steps">
+      📋 How to open in a real browser:
+      <span>iOS: Tap the <strong>⋯</strong> or share icon → "Open in Safari"</span>
+      <span>Android: Tap the <strong>⋮</strong> menu → "Open in Chrome"</span>
+      <span>Or copy the link and paste it into Safari / Chrome.</span>
+    </div>
+  </div>
+
+  <div id="loginPanel" style="display:none;">
     <div class="login-icon">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
     </div>
@@ -278,34 +280,30 @@ let currentUserEmail = '';
 let currentUserName = '';
 let dataLoaded = false;
 
-// ── Browser check: banner is ON by default, hidden only if confirmed real browser ──
+// ── FIX 1: In-app browser detection — show block screen, hide login ───────────
 (function checkBrowser() {
   const ua = navigator.userAgent || '';
-
-  // A real Safari on iOS always has "Safari/" in the UA
-  const isRealSafari = /Safari\//i.test(ua) && !/CriOS/i.test(ua) && !/FxiOS/i.test(ua) && !/FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
-
-  // A real Chrome on Android has "Chrome/" but NOT "wv" (WebView flag)
-  const isRealChrome = /Chrome\//i.test(ua) && !/\bwv\b/i.test(ua) && !/; wv/i.test(ua) && !/FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
-
-  // A real Firefox
-  const isRealFirefox = /Firefox\//i.test(ua) || /FxiOS\//i.test(ua);
-
-  // Desktop browsers are always fine
-  const isDesktop = !/Android|iPhone|iPad|iPod/i.test(ua);
-
+  const isRealSafari  = /Safari\//i.test(ua) && !/CriOS|FxiOS|FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
+  const isRealChrome  = /Chrome\//i.test(ua) && !/\bwv\b|; wv|FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
+  const isRealFirefox = /Firefox\/|FxiOS\//i.test(ua);
+  const isDesktop     = !/Android|iPhone|iPad|iPod/i.test(ua);
   const isSafeBrowser = isRealSafari || isRealChrome || isRealFirefox || isDesktop;
 
   if (isSafeBrowser) {
-    // Real browser confirmed — hide the banner
-    document.getElementById('inAppBanner').style.display = 'none';
+    // Real browser — hide the block screen, show login normally
+    document.getElementById('inAppBlock').style.display  = 'none';
+    document.getElementById('loginPanel').style.display  = 'flex';
   } else {
-    // In-app or unknown browser — keep banner visible, replace sign-in button
-    document.getElementById('googleSignInButtonTarget').innerHTML =
-      '<p class="inapp-blocked">⚠️ Sign-in is not available in this browser.<br>Please open this link in <strong>Safari</strong> or <strong>Chrome</strong>.</p>';
+    // In-app browser — show block screen only, hide everything else
+    document.getElementById('inAppBlock').style.display  = 'flex';
+    document.getElementById('loginPanel').style.display  = 'none';
   }
 })();
-// ────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── FIX 2: Track selected vehicle type for parts filtering ────────────────────
+let selectedVehicleType = '';
+// ─────────────────────────────────────────────────────────────────────────────
 
 function setLoadingText(msg) {
   document.getElementById('loadingText').textContent = msg;
@@ -328,7 +326,6 @@ function onSignedIn() {
   document.getElementById('userBadge').classList.add('visible');
   document.getElementById('submitterEmail').value    = currentUserEmail;
   document.getElementById('loginPanel').style.display = 'none';
-
   if (dataLoaded) {
     document.getElementById('formPanel').style.display = 'block';
   } else {
@@ -343,6 +340,7 @@ function signOut() {
   }
   currentUserEmail = '';
   currentUserName  = '';
+  selectedVehicleType = '';
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
@@ -391,25 +389,73 @@ function combo(inputId, listId, getItems, onPick) {
   inp.addEventListener('blur',  () => setTimeout(() => lst.classList.remove('open'), 200));
 }
 
+// ── FIX 2: Helper — filter parts by selected vehicle type ─────────────────────
+function getFilteredParts(q, matchField) {
+  const nq = norm(q);
+  return appData.parts.filter(p => {
+    // Only show parts matching the selected vehicle type (case-insensitive)
+    // If no vehicle type selected yet, show all parts
+    const typeMatch = !selectedVehicleType ||
+      p.vehicleType.toLowerCase() === selectedVehicleType.toLowerCase();
+    if (!typeMatch) return false;
+    if (!q) return true;
+    if (matchField === 'number') {
+      return norm(p.partNumber).includes(nq) ||
+             (p.altPartNumber && norm(p.altPartNumber).includes(nq)) ||
+             p.partName.toLowerCase().includes(q.toLowerCase());
+    } else {
+      return p.partName.toLowerCase().includes(q.toLowerCase()) ||
+             norm(p.partNumber).includes(nq);
+    }
+  }).slice(0, 30);
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function initCombos() {
   combo('employeeName', 'dl-employee',
-    q => appData.employees.filter(e => e.name.toLowerCase().includes(q.toLowerCase())).slice(0,20).map(e => ({ main: e.name, sub: 'Staff No: ' + e.staffNumber, data: e })),
-    item => { document.getElementById('employeeName').value = item.data.name; document.getElementById('staffNumber').value = item.data.staffNumber; }
+    q => appData.employees
+      .filter(e => e.name.toLowerCase().includes(q.toLowerCase()))
+      .slice(0, 20)
+      .map(e => ({ main: e.name, sub: 'Staff No: ' + e.staffNumber, data: e })),
+    item => {
+      document.getElementById('employeeName').value = item.data.name;
+      document.getElementById('staffNumber').value  = item.data.staffNumber;
+    }
   );
+
   combo('equipmentNumber', 'dl-equipment',
-    q => appData.equipment.filter(e => norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase())).slice(0,20).map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
-    item => { document.getElementById('equipmentNumber').value = item.data.equipmentNumber; document.getElementById('vehicleType').value = item.data.vehicleType; }
+    q => appData.equipment
+      .filter(e => norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase()))
+      .slice(0, 20)
+      .map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
+    item => {
+      document.getElementById('equipmentNumber').value = item.data.equipmentNumber;
+      document.getElementById('vehicleType').value     = item.data.vehicleType;
+      // FIX 2: Update selected vehicle type and clear parts fields when equipment changes
+      selectedVehicleType = item.data.vehicleType;
+      document.getElementById('partNumber').value = '';
+      document.getElementById('partName').value   = '';
+    }
   );
+
   combo('partNumber', 'dl-partNumber',
-    q => { const nq = norm(q); return appData.parts.filter(p => !q || norm(p.partNumber).includes(nq) || (p.altPartNumber && norm(p.altPartNumber).includes(nq)) || p.partName.toLowerCase().includes(q.toLowerCase())).slice(0,30).map(p => ({ main: p.partNumber, sub: p.partName, data: p })); },
-    item => { document.getElementById('partNumber').value = item.data.partNumber; if (!syncLock) { syncLock=true; document.getElementById('partName').value = item.data.partName; syncLock=false; } }
+    q => getFilteredParts(q, 'number').map(p => ({ main: p.partNumber, sub: p.partName, data: p })),
+    item => {
+      document.getElementById('partNumber').value = item.data.partNumber;
+      if (!syncLock) { syncLock = true; document.getElementById('partName').value = item.data.partName; syncLock = false; }
+    }
   );
+
   combo('partName', 'dl-partName',
-    q => { const nq = norm(q); return appData.parts.filter(p => !q || p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq)).slice(0,30).map(p => ({ main: p.partName, sub: p.partNumber, data: p })); },
-    item => { document.getElementById('partName').value = item.data.partName; if (!syncLock) { syncLock=true; document.getElementById('partNumber').value = item.data.partNumber; syncLock=false; } }
+    q => getFilteredParts(q, 'name').map(p => ({ main: p.partName, sub: p.partNumber, data: p })),
+    item => {
+      document.getElementById('partName').value = item.data.partName;
+      if (!syncLock) { syncLock = true; document.getElementById('partNumber').value = item.data.partNumber; syncLock = false; }
+    }
   );
+
   combo('quantityNumber', 'dl-quantity',
-    q => { const r = []; for (let i=1;i<=999;i++) { if (!q||String(i).startsWith(q)) r.push({main:String(i),sub:''}); if(r.length>=30) break; } return r; },
+    q => { const r = []; for (let i = 1; i <= 999; i++) { if (!q || String(i).startsWith(q)) r.push({ main: String(i), sub: '' }); if (r.length >= 30) break; } return r; },
     item => { document.getElementById('quantityNumber').value = item.main; }
   );
 }
@@ -417,7 +463,6 @@ function initCombos() {
 function loadData() {
   const cb = 'cb_' + Date.now();
   let settled = false;
-
   function finish(data, errorMsg) {
     if (settled) return;
     settled = true;
@@ -431,10 +476,8 @@ function loadData() {
     }
     if (errorMsg) toast(errorMsg);
   }
-
   window[cb] = (data) => finish(data, null);
   setTimeout(() => finish(null, '⚠ Dropdowns could not load. Please refresh.'), 15000);
-
   const s = document.createElement('script');
   s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
   s.onerror = () => finish(null, '⚠ Could not reach server. Dropdowns may be empty.');
@@ -489,9 +532,9 @@ document.getElementById('requestForm').addEventListener('submit', async function
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
   lastRequestId = data.requestId;
   try {
-    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method:'GET', mode:'no-cors' });
+    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method: 'GET', mode: 'no-cors' });
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
-    document.getElementById('formPanel').style.display = 'none';
+    document.getElementById('formPanel').style.display  = 'none';
     document.getElementById('successPanel').style.display = 'flex';
   } catch(err) {
     toast('Submission failed. Check connection.');
@@ -502,16 +545,17 @@ document.getElementById('requestForm').addEventListener('submit', async function
 
 async function cancelRequest() {
   try {
-    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams({ action:'cancel', requestId: lastRequestId }).toString(), { method:'GET', mode:'no-cors' });
+    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams({ action: 'cancel', requestId: lastRequestId }).toString(), { method: 'GET', mode: 'no-cors' });
     toast('Request cancelled.', '#0d2b5e');
   } catch(_) {}
   setTimeout(() => {
     document.getElementById('successPanel').style.display = 'none';
-    document.getElementById('formPanel').style.display = 'block';
+    document.getElementById('formPanel').style.display    = 'block';
     document.getElementById('requestForm').reset();
     document.getElementById('staffNumber').value    = '';
     document.getElementById('vehicleType').value    = '';
     document.getElementById('submitterEmail').value = currentUserEmail;
+    selectedVehicleType = '';
     const btn = document.getElementById('submitBtn');
     btn.disabled = false;
     btn.innerHTML = 'Submit Request';
