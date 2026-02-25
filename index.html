@@ -93,7 +93,6 @@
 
   /* ── In-app browser banner ── */
   #inAppBanner {
-    display: none;
     background: var(--gold);
     color: var(--navy-dark);
     font-family: 'DM Sans', sans-serif;
@@ -123,7 +122,7 @@
 
 <div class="card">
 
-  <!-- In-app browser warning banner (hidden by default, shown only in Telegram/WhatsApp etc.) -->
+  <!-- Banner is VISIBLE by default, hidden only when a real browser is confirmed -->
   <div id="inAppBanner">
     ⚠️ Google Sign-In won't work in Telegram / WhatsApp.
     <span>Please open this link in <strong>Safari</strong> or <strong>Chrome</strong> to continue.</span>
@@ -279,21 +278,34 @@ let currentUserEmail = '';
 let currentUserName = '';
 let dataLoaded = false;
 
-// ── In-app browser detection ──────────────────────────────────────────────────
-(function detectInAppBrowser() {
+// ── Browser check: banner is ON by default, hidden only if confirmed real browser ──
+(function checkBrowser() {
   const ua = navigator.userAgent || '';
-  const isInApp =
-    /FBAN|FBAV|Instagram|Twitter|Snapchat|TikTok|Line\/|MicroMessenger|Telegram|WhatsApp/i.test(ua) ||
-    (/iPhone|iPad|iPod/i.test(ua) && !/Safari/i.test(ua) && !/CriOS/i.test(ua) && !/FxiOS/i.test(ua)) ||
-    (/Android/i.test(ua) && /wv/i.test(ua));
 
-  if (isInApp) {
-    document.getElementById('inAppBanner').style.display = 'block';
+  // A real Safari on iOS always has "Safari/" in the UA
+  const isRealSafari = /Safari\//i.test(ua) && !/CriOS/i.test(ua) && !/FxiOS/i.test(ua) && !/FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
+
+  // A real Chrome on Android has "Chrome/" but NOT "wv" (WebView flag)
+  const isRealChrome = /Chrome\//i.test(ua) && !/\bwv\b/i.test(ua) && !/; wv/i.test(ua) && !/FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
+
+  // A real Firefox
+  const isRealFirefox = /Firefox\//i.test(ua) || /FxiOS\//i.test(ua);
+
+  // Desktop browsers are always fine
+  const isDesktop = !/Android|iPhone|iPad|iPod/i.test(ua);
+
+  const isSafeBrowser = isRealSafari || isRealChrome || isRealFirefox || isDesktop;
+
+  if (isSafeBrowser) {
+    // Real browser confirmed — hide the banner
+    document.getElementById('inAppBanner').style.display = 'none';
+  } else {
+    // In-app or unknown browser — keep banner visible, replace sign-in button
     document.getElementById('googleSignInButtonTarget').innerHTML =
       '<p class="inapp-blocked">⚠️ Sign-in is not available in this browser.<br>Please open this link in <strong>Safari</strong> or <strong>Chrome</strong>.</p>';
   }
 })();
-// ─────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
 
 function setLoadingText(msg) {
   document.getElementById('loadingText').textContent = msg;
