@@ -95,9 +95,11 @@
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--danger); color: white; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 99999; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .section-divider { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--navy); opacity: 0.45; margin: 4px 0 2px; padding-left: 2px; }
-  .loading-overlay { position: fixed; inset: 0; background: rgba(7,26,62,0.75); display: flex; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
-  .loading-text { color: var(--gold-light); font-size: 14px; }
+  .loading-overlay { position: fixed; inset: 0; background: rgba(7,26,62,0.88); display: flex; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
+  .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  /* Skip button shown after 5s if stuck */
+  #skipBtn { display: none; margin-top: 8px; background: var(--gold); color: var(--navy-dark); border: none; border-radius: 50px; padding: 10px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
 </style>
 </head>
@@ -105,7 +107,9 @@
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="load-spinner"></div>
-  <div class="loading-text">Loading form data…</div>
+  <div class="loading-text" id="loadingText">Loading form data…</div>
+  <!-- Skip button appears after 5s so user is never permanently stuck -->
+  <button id="skipBtn" onclick="skipToForm()">Continue anyway →</button>
 </div>
 
 <div class="card">
@@ -170,7 +174,6 @@
             </div>
           </div>
         </div>
-
         <p class="section-divider">Equipment Details</p>
         <div class="field-group">
           <div class="field">
@@ -190,7 +193,6 @@
             </div>
           </div>
         </div>
-
         <p class="section-divider">Parts Request</p>
         <div class="field-group">
           <div class="field">
@@ -224,13 +226,11 @@
             </div>
           </div>
         </div>
-
         <div class="submit-area">
           <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
         </div>
       </form>
     </div>
-
     <div class="footer">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="-38.869875 -11.723425 336.87225 70.34055">
         <path d="M.1038 44.8612v2.0325h218.2125l1.4312-2.0325M231.9 42.8725s6.2713-9.3688 6.8375-10.2925c.6888-1.1338.72-2.935.0988-3.9013-.3163-.5075-9.6663-15.295-9.6663-15.295-.84-1.5975-.6312-2.69-.07-3.4687a3120.386 3120.386 0 002.5463-3.7725S243 23.9537 243.4725 24.7462c1.2188 2.0313.88 4.0238-.1237 5.7275-.8413 1.4375-8.1963 12.3988-8.1963 12.3988" fill="#f79210"/><path d="M229.8813 43.885s7.2575-10.6263 7.7962-11.5063c.635-1.0737.5638-2.5875 0-3.5037-.3012-.4838-10.38-16.345-10.38-16.345s-1.7887 2.6975-2.3525 3.53c-.5637.83-.8975 1.8625.07 3.5262 0 0 7.2163 11.3925 7.5213 11.875.5887.9288.5612 2.6363-.0963 3.71-.5387.8688-7.9812 11.7213-7.9812 11.7213h21.4787c2.1825 0 3.38-.8463 4.435-2.3638.9138-1.2912 4.4475-6.4262 4.9875-7.2312.5363-.805 1.6125-1.3438 2.0925-1.3438h1.68l-3.275-4.9825h-5.225c-.9987 0-2.2062.8875-2.8387 1.8263-.495.7412-4.0688 6.0937-4.7125 6.9537-.365.4863-.6788.5938-.9688.5963-.16 0-.6212-.0013-.68-.0013.2138-.4287 6.215-9.1612 7.3963-11.0837 1.4237-2.3663 1.7487-5.4938.0525-8.4913C248.26 19.6825 235.7863 0 235.7863 0s-1.6613 2.3925-2.3525 3.4162c-.56.835-.7338 1.9275.0737 3.5275 0 0 10.4713 16.6538 10.9713 17.4188 1.2162 1.8975 1.0637 4.435 0 6.1637-.8713 1.4238-8.1038 12.3463-8.1038 12.3463h5.7313c2.0762 0 2.5862-.77 3.1587-1.4088.5725-.6387 3.69-5.3662 4.0438-5.8662.3587-.4913 1.2687-1.8875 2.4637-1.8875h3.765v.1075c-.8025.1625-1.5925.6462-2.1662 1.4337-.5725.7763-4.3563 6.3775-4.8113 7.0313-.5725.8225-1.2287 1.6025-2.8737 1.6025" fill="#f79210"/>
@@ -252,7 +252,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- KEY FIX: Load Google GSI script WITHOUT async/defer so it's ready before our code runs -->
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGEMLnLUageSCdrSbSE_ozdtMXo3IbP5Y0WL-yYhO6x-3OYapq9x4nnXpXij_RiZmboA/exec";
@@ -266,7 +265,26 @@ let currentUserName = '';
 let dataLoaded = false;
 let pendingSignIn = false;
 
-// Called by Google GSI after user picks an account — works on all mobile browsers, no popup
+function setLoadingText(msg) {
+  document.getElementById('loadingText').textContent = msg;
+}
+
+// Called after 5s if still loading — shows a "Continue anyway" button
+function showSkipButton() {
+  document.getElementById('skipBtn').style.display = 'block';
+  setLoadingText('Taking longer than expected…');
+}
+
+function skipToForm() {
+  dataLoaded = true;
+  document.getElementById('loadingOverlay').style.display = 'none';
+  if (pendingSignIn) {
+    pendingSignIn = false;
+    document.getElementById('formPanel').style.display = 'block';
+  }
+  // If not signed in yet, just hide overlay — login panel is behind it
+}
+
 function handleCredentialResponse(response) {
   try {
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -274,7 +292,7 @@ function handleCredentialResponse(response) {
     currentUserName  = payload.name || payload.email;
     onSignedIn();
   } catch(err) {
-    toast('Sign-in failed. Please try again.');
+    toast('Sign-in error. Please try again.');
   }
 }
 
@@ -286,10 +304,13 @@ function onSignedIn() {
   document.getElementById('loginPanel').style.display = 'none';
 
   if (dataLoaded) {
+    // Data ready — show form immediately
+    document.getElementById('loadingOverlay').style.display = 'none';
     document.getElementById('formPanel').style.display = 'block';
   } else {
-    // Data still loading — keep overlay up, flag to show form when done
+    // Still loading — show overlay with status, flag to reveal form when done
     pendingSignIn = true;
+    setLoadingText('Signed in! Loading dropdown data…');
     document.getElementById('loadingOverlay').style.display = 'flex';
   }
 }
@@ -351,62 +372,61 @@ function combo(inputId, listId, getItems, onPick) {
 
 function initCombos() {
   combo('employeeName', 'dl-employee',
-    q => appData.employees
-      .filter(e => e.name.toLowerCase().includes(q.toLowerCase()))
-      .slice(0,20)
-      .map(e => ({ main: e.name, sub: 'Staff No: ' + e.staffNumber, data: e })),
-    item => {
-      document.getElementById('employeeName').value = item.data.name;
-      document.getElementById('staffNumber').value  = item.data.staffNumber;
-    }
+    q => appData.employees.filter(e => e.name.toLowerCase().includes(q.toLowerCase())).slice(0,20).map(e => ({ main: e.name, sub: 'Staff No: ' + e.staffNumber, data: e })),
+    item => { document.getElementById('employeeName').value = item.data.name; document.getElementById('staffNumber').value = item.data.staffNumber; }
   );
   combo('equipmentNumber', 'dl-equipment',
-    q => appData.equipment
-      .filter(e => norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase()))
-      .slice(0,20)
-      .map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
-    item => {
-      document.getElementById('equipmentNumber').value = item.data.equipmentNumber;
-      document.getElementById('vehicleType').value     = item.data.vehicleType;
-    }
+    q => appData.equipment.filter(e => norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase())).slice(0,20).map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
+    item => { document.getElementById('equipmentNumber').value = item.data.equipmentNumber; document.getElementById('vehicleType').value = item.data.vehicleType; }
   );
   combo('partNumber', 'dl-partNumber',
-    q => {
-      const nq = norm(q);
-      return appData.parts
-        .filter(p => !q || norm(p.partNumber).includes(nq) || (p.altPartNumber && norm(p.altPartNumber).includes(nq)) || p.partName.toLowerCase().includes(q.toLowerCase()))
-        .slice(0,30)
-        .map(p => ({ main: p.partNumber, sub: p.partName, data: p }));
-    },
-    item => {
-      document.getElementById('partNumber').value = item.data.partNumber;
-      if (!syncLock) { syncLock=true; document.getElementById('partName').value = item.data.partName; syncLock=false; }
-    }
+    q => { const nq = norm(q); return appData.parts.filter(p => !q || norm(p.partNumber).includes(nq) || (p.altPartNumber && norm(p.altPartNumber).includes(nq)) || p.partName.toLowerCase().includes(q.toLowerCase())).slice(0,30).map(p => ({ main: p.partNumber, sub: p.partName, data: p })); },
+    item => { document.getElementById('partNumber').value = item.data.partNumber; if (!syncLock) { syncLock=true; document.getElementById('partName').value = item.data.partName; syncLock=false; } }
   );
   combo('partName', 'dl-partName',
-    q => {
-      const nq = norm(q);
-      return appData.parts
-        .filter(p => !q || p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq))
-        .slice(0,30)
-        .map(p => ({ main: p.partName, sub: p.partNumber, data: p }));
-    },
-    item => {
-      document.getElementById('partName').value   = item.data.partName;
-      if (!syncLock) { syncLock=true; document.getElementById('partNumber').value = item.data.partNumber; syncLock=false; }
-    }
+    q => { const nq = norm(q); return appData.parts.filter(p => !q || p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq)).slice(0,30).map(p => ({ main: p.partName, sub: p.partNumber, data: p })); },
+    item => { document.getElementById('partName').value = item.data.partName; if (!syncLock) { syncLock=true; document.getElementById('partNumber').value = item.data.partNumber; syncLock=false; } }
   );
   combo('quantityNumber', 'dl-quantity',
-    q => {
-      const results = [];
-      for (let i = 1; i <= 999; i++) {
-        if (!q || String(i).startsWith(q)) results.push({ main: String(i), sub: '' });
-        if (results.length >= 30) break;
-      }
-      return results;
-    },
+    q => { const r = []; for (let i=1;i<=999;i++) { if (!q||String(i).startsWith(q)) r.push({main:String(i),sub:''}); if(r.length>=30) break; } return r; },
     item => { document.getElementById('quantityNumber').value = item.main; }
   );
+}
+
+function loadData() {
+  setLoadingText('Loading form data…');
+
+  // Show skip button after 5 seconds
+  setTimeout(showSkipButton, 5000);
+
+  const cb = 'cb_' + Date.now();
+  let settled = false;
+
+  function finish(data, errorMsg) {
+    if (settled) return;
+    settled = true;
+    if (data) {
+      appData = data;
+      setLoadingText('Data loaded ✓');
+    }
+    dataLoaded = true;
+    delete window[cb];
+    initCombos();
+    document.getElementById('loadingOverlay').style.display = 'none';
+    if (pendingSignIn) {
+      pendingSignIn = false;
+      document.getElementById('formPanel').style.display = 'block';
+    }
+    if (errorMsg) toast(errorMsg);
+  }
+
+  window[cb] = (data) => finish(data, null);
+  setTimeout(() => finish(null, '⚠ Data timed out — dropdowns may be empty.'), 15000);
+
+  const s = document.createElement('script');
+  s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
+  s.onerror = () => finish(null, '⚠ Could not reach Apps Script. Check deployment URL.');
+  document.head.appendChild(s);
 }
 
 function initGoogleSignIn() {
@@ -423,77 +443,43 @@ function initGoogleSignIn() {
   );
 }
 
-function loadData() {
-  const cb = 'cb_' + Date.now();
-  let settled = false;
-
-  function finish(data, errorMsg) {
-    if (settled) return;
-    settled = true;
-    if (data) appData = data;
-    dataLoaded = true;
-    delete window[cb];
-    initCombos();
-    document.getElementById('loadingOverlay').style.display = 'none';
-    // If user already signed in while data was loading, reveal form now
-    if (pendingSignIn) {
-      pendingSignIn = false;
-      document.getElementById('formPanel').style.display = 'block';
-    }
-    if (errorMsg) toast(errorMsg);
+function waitForGoogleThenInit() {
+  if (window.google && google.accounts && google.accounts.id) {
+    initGoogleSignIn();
+  } else {
+    setTimeout(waitForGoogleThenInit, 100);
   }
-
-  window[cb] = (data) => finish(data, null);
-
-  // 12 second timeout — overlay can never get permanently stuck
-  setTimeout(() => finish(null, '⚠ Data load timed out. Dropdowns may be empty.'), 12000);
-
-  const s = document.createElement('script');
-  s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
-  s.onerror = () => finish(null, '⚠ Could not load data. Check Apps Script URL & deployment.');
-  document.head.appendChild(s);
 }
 
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const data = {
-    requestId:       genId(),
-    jobCardNumber:   document.getElementById('jobCardNumber').value.trim(),
-    employeeName:    document.getElementById('employeeName').value.trim(),
-    staffNumber:     document.getElementById('staffNumber').value.trim(),
-    submitterEmail:  currentUserEmail,
+    requestId: genId(),
+    jobCardNumber: document.getElementById('jobCardNumber').value.trim(),
+    employeeName: document.getElementById('employeeName').value.trim(),
+    staffNumber: document.getElementById('staffNumber').value.trim(),
+    submitterEmail: currentUserEmail,
     equipmentNumber: document.getElementById('equipmentNumber').value.trim(),
-    vehicleType:     document.getElementById('vehicleType').value.trim(),
-    partNumber:      document.getElementById('partNumber').value.trim(),
-    partName:        document.getElementById('partName').value.trim(),
-    quantityNumber:  document.getElementById('quantityNumber').value.trim(),
-    timestamp:       new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
-    status:          'Pending'
+    vehicleType: document.getElementById('vehicleType').value.trim(),
+    partNumber: document.getElementById('partNumber').value.trim(),
+    partName: document.getElementById('partName').value.trim(),
+    quantityNumber: document.getElementById('quantityNumber').value.trim(),
+    timestamp: new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
+    status: 'Pending'
   };
-
-  if (!data.staffNumber || !data.vehicleType) {
-    toast('⚠ Please select a valid Employee and Equipment.');
-    return;
-  }
-  for (const [key, val] of Object.entries(data)) {
-    if (key === 'status') continue;
-    if (!val) { toast('⚠ All fields are required.'); return; }
-  }
-
+  if (!data.staffNumber || !data.vehicleType) { toast('⚠ Please select a valid Employee and Equipment.'); return; }
+  for (const [key, val] of Object.entries(data)) { if (key === 'status') continue; if (!val) { toast('⚠ All fields are required.'); return; } }
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Submitting…';
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
   lastRequestId = data.requestId;
-
   try {
     await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method:'GET', mode:'no-cors' });
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
-    document.getElementById('formPanel').style.display    = 'none';
+    document.getElementById('formPanel').style.display = 'none';
     document.getElementById('successPanel').style.display = 'flex';
   } catch(err) {
     toast('Submission failed. Check connection.');
-    btn.disabled = false;
-    btn.innerHTML = 'Submit Request';
+    btn.disabled = false; btn.innerHTML = 'Submit Request';
   }
 });
 
@@ -504,10 +490,10 @@ async function cancelRequest() {
   } catch(_) {}
   setTimeout(() => {
     document.getElementById('successPanel').style.display = 'none';
-    document.getElementById('formPanel').style.display    = 'block';
+    document.getElementById('formPanel').style.display = 'block';
     document.getElementById('requestForm').reset();
-    document.getElementById('staffNumber').value    = '';
-    document.getElementById('vehicleType').value    = '';
+    document.getElementById('staffNumber').value = '';
+    document.getElementById('vehicleType').value = '';
     document.getElementById('submitterEmail').value = currentUserEmail;
     const btn = document.getElementById('submitBtn');
     btn.disabled = false; btn.innerHTML = 'Submit Request';
@@ -515,17 +501,6 @@ async function cancelRequest() {
   }, 1500);
 }
 
-// KEY FIX: Poll until google.accounts.id is available, then initialize
-// This handles the case where the GSI script loads after our code runs
-function waitForGoogleThenInit() {
-  if (window.google && google.accounts && google.accounts.id) {
-    initGoogleSignIn();
-  } else {
-    setTimeout(waitForGoogleThenInit, 100);
-  }
-}
-
-// Start both in parallel
 waitForGoogleThenInit();
 loadData();
 </script>
