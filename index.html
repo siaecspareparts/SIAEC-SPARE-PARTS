@@ -36,18 +36,9 @@
   .sia-logo-header { width: 130px; height: 40px; flex-shrink: 0; }
   .header-text h1 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--white); }
   .header-text p { font-size: 11px; color: var(--gold-light); font-weight: 300; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 2px; }
-  .user-badge {
-    display: none; align-items: center; gap: 8px;
-    background: rgba(255,255,255,0.1); border-radius: 50px;
-    padding: 5px 12px 5px 5px; margin-left: auto; flex-shrink: 0;
-  }
+  .user-badge { display: none; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); border-radius: 50px; padding: 5px 12px 5px 5px; margin-left: auto; flex-shrink: 0; }
   .user-badge.visible { display: flex; }
-  .user-avatar-placeholder {
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--gold); display: flex; align-items: center;
-    justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark);
-    flex-shrink: 0;
-  }
+  .user-avatar-placeholder { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark); flex-shrink: 0; }
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
   #loginPanel { padding: 48px 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--off-white); }
@@ -98,7 +89,6 @@
   .loading-overlay { position: fixed; inset: 0; background: rgba(7,26,62,0.88); display: flex; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
-  /* Skip button shown after 5s if stuck */
   #skipBtn { display: none; margin-top: 8px; background: var(--gold); color: var(--navy-dark); border: none; border-radius: 50px; padding: 10px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
 </style>
@@ -108,7 +98,6 @@
 <div class="loading-overlay" id="loadingOverlay">
   <div class="load-spinner"></div>
   <div class="loading-text" id="loadingText">Loading form data…</div>
-  <!-- Skip button appears after 5s so user is never permanently stuck -->
   <button id="skipBtn" onclick="skipToForm()">Continue anyway →</button>
 </div>
 
@@ -129,7 +118,6 @@
     </div>
   </div>
 
-  <!-- LOGIN PANEL -->
   <div id="loginPanel">
     <div class="login-icon">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -139,7 +127,6 @@
     <div id="googleSignInButtonTarget"></div>
   </div>
 
-  <!-- FORM PANEL -->
   <div id="formPanel" style="display:none;">
     <div class="form-body">
       <form id="requestForm" novalidate>
@@ -269,7 +256,6 @@ function setLoadingText(msg) {
   document.getElementById('loadingText').textContent = msg;
 }
 
-// Called after 5s if still loading — shows a "Continue anyway" button
 function showSkipButton() {
   document.getElementById('skipBtn').style.display = 'block';
   setLoadingText('Taking longer than expected…');
@@ -278,11 +264,10 @@ function showSkipButton() {
 function skipToForm() {
   dataLoaded = true;
   document.getElementById('loadingOverlay').style.display = 'none';
-  if (pendingSignIn) {
-    pendingSignIn = false;
+  if (currentUserEmail) {
+    document.getElementById('loginPanel').style.display = 'none';
     document.getElementById('formPanel').style.display = 'block';
   }
-  // If not signed in yet, just hide overlay — login panel is behind it
 }
 
 function handleCredentialResponse(response) {
@@ -297,21 +282,23 @@ function handleCredentialResponse(response) {
 }
 
 function onSignedIn() {
+  // Update header badge
   document.getElementById('userName').textContent    = currentUserName;
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
   document.getElementById('submitterEmail').value    = currentUserEmail;
+
+  // Always hide login panel immediately
   document.getElementById('loginPanel').style.display = 'none';
 
-  if (dataLoaded) {
-    // Data ready — show form immediately
-    document.getElementById('loadingOverlay').style.display = 'none';
-    document.getElementById('formPanel').style.display = 'block';
-  } else {
-    // Still loading — show overlay with status, flag to reveal form when done
+  // ── FIX: Always show form immediately on mobile ──
+  document.getElementById('loadingOverlay').style.display = 'none';
+  document.getElementById('formPanel').style.display = 'block';
+
+  // If data not loaded yet, show a non-blocking toast
+  if (!dataLoaded) {
     pendingSignIn = true;
-    setLoadingText('Signed in! Loading dropdown data…');
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    toast('⏳ Dropdown data still loading…', '#0d2b5e');
   }
 }
 
@@ -395,8 +382,6 @@ function initCombos() {
 
 function loadData() {
   setLoadingText('Loading form data…');
-
-  // Show skip button after 5 seconds
   setTimeout(showSkipButton, 5000);
 
   const cb = 'cb_' + Date.now();
@@ -405,18 +390,16 @@ function loadData() {
   function finish(data, errorMsg) {
     if (settled) return;
     settled = true;
-    if (data) {
-      appData = data;
-      setLoadingText('Data loaded ✓');
-    }
+    if (data) appData = data;
     dataLoaded = true;
     delete window[cb];
     initCombos();
-    document.getElementById('loadingOverlay').style.display = 'none';
-    if (pendingSignIn) {
-      pendingSignIn = false;
-      document.getElementById('formPanel').style.display = 'block';
+    // Only hide overlay if user hasn't signed in yet
+    // (if signed in, overlay already hidden by onSignedIn)
+    if (!currentUserEmail) {
+      document.getElementById('loadingOverlay').style.display = 'none';
     }
+    pendingSignIn = false;
     if (errorMsg) toast(errorMsg);
   }
 
@@ -425,7 +408,7 @@ function loadData() {
 
   const s = document.createElement('script');
   s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
-  s.onerror = () => finish(null, '⚠ Could not reach Apps Script. Check deployment URL.');
+  s.onerror = () => finish(null, '⚠ Could not reach Apps Script.');
   document.head.appendChild(s);
 }
 
@@ -435,7 +418,7 @@ function initGoogleSignIn() {
     callback: handleCredentialResponse,
     auto_select: false,
     cancel_on_tap_outside: false,
-    ux_mode: 'popup'
+    itp_support: true
   });
   google.accounts.id.renderButton(
     document.getElementById('googleSignInButtonTarget'),
@@ -454,23 +437,27 @@ function waitForGoogleThenInit() {
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const data = {
-    requestId: genId(),
-    jobCardNumber: document.getElementById('jobCardNumber').value.trim(),
-    employeeName: document.getElementById('employeeName').value.trim(),
-    staffNumber: document.getElementById('staffNumber').value.trim(),
-    submitterEmail: currentUserEmail,
+    requestId:       genId(),
+    jobCardNumber:   document.getElementById('jobCardNumber').value.trim(),
+    employeeName:    document.getElementById('employeeName').value.trim(),
+    staffNumber:     document.getElementById('staffNumber').value.trim(),
+    submitterEmail:  currentUserEmail,
     equipmentNumber: document.getElementById('equipmentNumber').value.trim(),
-    vehicleType: document.getElementById('vehicleType').value.trim(),
-    partNumber: document.getElementById('partNumber').value.trim(),
-    partName: document.getElementById('partName').value.trim(),
-    quantityNumber: document.getElementById('quantityNumber').value.trim(),
-    timestamp: new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
-    status: 'Pending'
+    vehicleType:     document.getElementById('vehicleType').value.trim(),
+    partNumber:      document.getElementById('partNumber').value.trim(),
+    partName:        document.getElementById('partName').value.trim(),
+    quantityNumber:  document.getElementById('quantityNumber').value.trim(),
+    timestamp:       new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' }),
+    status:          'Pending'
   };
   if (!data.staffNumber || !data.vehicleType) { toast('⚠ Please select a valid Employee and Equipment.'); return; }
-  for (const [key, val] of Object.entries(data)) { if (key === 'status') continue; if (!val) { toast('⚠ All fields are required.'); return; } }
+  for (const [key, val] of Object.entries(data)) {
+    if (key === 'status') continue;
+    if (!val) { toast('⚠ All fields are required.'); return; }
+  }
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting…';
   lastRequestId = data.requestId;
   try {
     await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method:'GET', mode:'no-cors' });
@@ -479,7 +466,8 @@ document.getElementById('requestForm').addEventListener('submit', async function
     document.getElementById('successPanel').style.display = 'flex';
   } catch(err) {
     toast('Submission failed. Check connection.');
-    btn.disabled = false; btn.innerHTML = 'Submit Request';
+    btn.disabled = false;
+    btn.innerHTML = 'Submit Request';
   }
 });
 
@@ -492,11 +480,12 @@ async function cancelRequest() {
     document.getElementById('successPanel').style.display = 'none';
     document.getElementById('formPanel').style.display = 'block';
     document.getElementById('requestForm').reset();
-    document.getElementById('staffNumber').value = '';
-    document.getElementById('vehicleType').value = '';
+    document.getElementById('staffNumber').value    = '';
+    document.getElementById('vehicleType').value    = '';
     document.getElementById('submitterEmail').value = currentUserEmail;
     const btn = document.getElementById('submitBtn');
-    btn.disabled = false; btn.innerHTML = 'Submit Request';
+    btn.disabled = false;
+    btn.innerHTML = 'Submit Request';
     lastRequestId = null;
   }, 1500);
 }
