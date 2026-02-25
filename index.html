@@ -129,7 +129,7 @@
   </div>
 
   <!-- LOGIN PANEL -->
-  <div id="loginPanel">
+  <div id="loginPanel" style="padding:48px 32px;display:flex;flex-direction:column;align-items:center;gap:20px;background:var(--off-white);">
     <div class="login-icon">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
     </div>
@@ -250,7 +250,7 @@
     </div>
   </div>
 
-  <div id="successPanel">
+  <div id="successPanel" style="display:none;">
     <div class="success-icon">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
@@ -273,6 +273,10 @@ let syncLock = false;
 let currentUserEmail = '';
 let currentUserName = '';
 
+// NEW: two flags to coordinate sign-in timing with data loading
+let dataLoaded = false;
+let pendingSignIn = false;
+
 function handleGoogleSignIn() {
   const client = google.accounts.oauth2.initTokenClient({
     client_id: GOOGLE_CLIENT_ID,
@@ -285,7 +289,7 @@ function handleGoogleSignIn() {
         .then(r => r.json())
         .then(userInfo => {
           currentUserEmail = userInfo.email;
-          currentUserName = userInfo.name || userInfo.email;
+          currentUserName  = userInfo.name || userInfo.email;
           onSignedIn();
         });
       }
@@ -294,25 +298,35 @@ function handleGoogleSignIn() {
   client.requestAccessToken();
 }
 
+// UPDATED: only shows form if data is ready, otherwise waits
 function onSignedIn() {
-  document.getElementById('userName').textContent = currentUserName;
+  document.getElementById('userName').textContent    = currentUserName;
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
-  document.getElementById('submitterEmail').value = currentUserEmail;
+  document.getElementById('submitterEmail').value    = currentUserEmail;
   document.getElementById('loginPanel').style.display = 'none';
-  document.getElementById('formPanel').style.display = 'block';
+
+  if (dataLoaded) {
+    // Data already finished loading — show form immediately
+    document.getElementById('formPanel').style.display = 'block';
+  } else {
+    // Still loading — keep overlay up and flag so loadData reveals form when done
+    pendingSignIn = true;
+    document.getElementById('loadingOverlay').style.display = 'flex';
+  }
 }
 
 function signOut() {
   currentUserEmail = '';
-  currentUserName = '';
+  currentUserName  = '';
+  pendingSignIn    = false;
   document.getElementById('userBadge').classList.remove('visible');
-  document.getElementById('formPanel').style.display = 'none';
+  document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
-  document.getElementById('loginPanel').style.display = 'flex';
+  document.getElementById('loginPanel').style.display   = 'flex';
   document.getElementById('requestForm').reset();
-  document.getElementById('staffNumber').value = '';
-  document.getElementById('vehicleType').value = '';
+  document.getElementById('staffNumber').value    = '';
+  document.getElementById('vehicleType').value    = '';
   document.getElementById('submitterEmail').value = '';
 }
 
@@ -414,20 +428,39 @@ function initCombos() {
   );
 }
 
+// UPDATED: loadData now handles the pendingSignIn flag and has a timeout fallback
 function loadData() {
   const cb = 'cb_' + Date.now();
-  window[cb] = function(data) {
-    appData = data;
+  let settled = false;
+
+  function finish(data, errorMsg) {
+    if (settled) return;
+    settled = true;
+    if (data) appData = data;
+    dataLoaded = true;
     delete window[cb];
-    document.getElementById('loadingOverlay').style.display = 'none';
     initCombos();
-  };
+    document.getElementById('loadingOverlay').style.display = 'none';
+    // If user already signed in while we were loading, show the form now
+    if (pendingSignIn) {
+      pendingSignIn = false;
+      document.getElementById('formPanel').style.display = 'block';
+    }
+    if (errorMsg) toast(errorMsg);
+  }
+
+  window[cb] = (data) => finish(data, null);
+
+  // 12-second timeout so the overlay can never get permanently stuck
+  const timeoutId = setTimeout(() => {
+    finish(null, '⚠ Data load timed out. Dropdowns may be empty — check your Apps Script URL.');
+  }, 12000);
+
   const s = document.createElement('script');
   s.src = APPS_SCRIPT_URL + '?action=getData&callback=' + cb;
   s.onerror = () => {
-    document.getElementById('loadingOverlay').style.display = 'none';
-    toast('Could not load data. Check Apps Script URL.');
-    delete window[cb];
+    clearTimeout(timeoutId);
+    finish(null, '⚠ Could not load data. Check your Apps Script URL & deployment settings.');
   };
   document.head.appendChild(s);
 }
@@ -466,7 +499,7 @@ document.getElementById('requestForm').addEventListener('submit', async function
   try {
     await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method:'GET', mode:'no-cors' });
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
-    document.getElementById('formPanel').style.display = 'none';
+    document.getElementById('formPanel').style.display    = 'none';
     document.getElementById('successPanel').style.display = 'flex';
   } catch(err) {
     toast('Submission failed. Check connection.');
@@ -482,10 +515,10 @@ async function cancelRequest() {
   } catch(_) {}
   setTimeout(() => {
     document.getElementById('successPanel').style.display = 'none';
-    document.getElementById('formPanel').style.display = 'block';
+    document.getElementById('formPanel').style.display    = 'block';
     document.getElementById('requestForm').reset();
-    document.getElementById('staffNumber').value = '';
-    document.getElementById('vehicleType').value = '';
+    document.getElementById('staffNumber').value    = '';
+    document.getElementById('vehicleType').value    = '';
     document.getElementById('submitterEmail').value = currentUserEmail;
     const btn = document.getElementById('submitBtn');
     btn.disabled = false; btn.innerHTML = 'Submit Request';
