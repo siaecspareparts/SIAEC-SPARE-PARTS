@@ -42,9 +42,9 @@
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
 
-  /* ── In-app browser warning banner ── */
+  /* ── Warning banner — always visible, no JS needed ── */
   #inAppBanner {
-    display: none; align-items: flex-start; gap: 10px;
+    display: flex; align-items: flex-start; gap: 10px;
     background: #fff8e6; border-left: 4px solid var(--gold);
     border-bottom: 1px solid #f0e0b0; padding: 12px 16px;
     font-size: 12px; color: #7a5c00; line-height: 1.5;
@@ -129,7 +129,7 @@
     </div>
   </div>
 
-  <!-- MOBILE WARNING BANNER — always shown on mobile devices -->
+  <!-- WARNING BANNER — always visible, no JS required -->
   <div id="inAppBanner">
     <span class="banner-icon">⚠️</span>
     <div>
@@ -264,7 +264,7 @@
 
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGEMLnLUageSCdrSbSE_ozdtMXo3IbP5Y0WL-yYhO6x-3OYapq9x4nnXpXij_RiZmboA/exec";
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 let appData = { employees: [], equipment: [], parts: [] };
@@ -276,17 +276,8 @@ let dataLoaded = false;
 let pendingSignIn = false;
 let selectedVehicleType = '';
 
-// ── Show warning banner on all mobile devices + known in-app browsers ─────────
-(function checkBrowser() {
-  const ua = navigator.userAgent || '';
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-  const isInApp  = /FBAN|FBAV|Instagram|Telegram|WhatsApp|\bwv\b/i.test(ua);
-  if (isMobile || isInApp) {
-    document.getElementById('inAppBanner').style.display = 'flex';
-  }
-  document.getElementById('loginPanel').style.display = 'flex';
-})();
-// ─────────────────────────────────────────────────────────────────────────────
+// Show login panel on load — banner is always visible via CSS, no JS needed
+document.getElementById('loginPanel').style.display = 'flex';
 
 function showOverlay(msg) {
   document.getElementById('loadingText').textContent = msg || 'Loading…';
@@ -314,6 +305,8 @@ function onSignedIn() {
   document.getElementById('userBadge').classList.add('visible');
   document.getElementById('submitterEmail').value    = currentUserEmail;
   document.getElementById('loginPanel').style.display = 'none';
+  // Hide the banner once signed in — no longer needed
+  document.getElementById('inAppBanner').style.display = 'none';
 
   if (dataLoaded) {
     hideOverlay();
@@ -336,6 +329,8 @@ function signOut() {
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
   document.getElementById('loginPanel').style.display   = 'flex';
+  // Show banner again when returning to login
+  document.getElementById('inAppBanner').style.display  = 'flex';
   document.getElementById('requestForm').reset();
   document.getElementById('staffNumber').value    = '';
   document.getElementById('vehicleType').value    = '';
