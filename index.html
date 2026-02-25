@@ -41,25 +41,6 @@
   .user-avatar-placeholder { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark); flex-shrink: 0; }
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
-
-  /* In-app browser block panel */
-  #inAppBlock {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 28px 48px;
-    background: var(--off-white);
-    text-align: center;
-    gap: 14px;
-  }
-  .inapp-icon { font-size: 52px; line-height: 1; margin-bottom: 4px; }
-  .inapp-title { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--navy); }
-  .inapp-msg { font-size: 13px; color: var(--text-mid); line-height: 1.65; max-width: 300px; }
-  .inapp-box { background: var(--gold); color: var(--navy-dark); border-radius: 14px; padding: 16px 20px; width: 100%; max-width: 320px; text-align: left; }
-  .inapp-box-title { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
-  .inapp-step { font-size: 12px; font-weight: 500; margin-bottom: 6px; line-height: 1.5; }
-  .inapp-step span { font-weight: 400; color: #3a2800; }
-
   #loginPanel { padding: 48px 32px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--off-white); }
   .login-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(13,43,94,0.25); }
   .login-icon svg { width: 30px; height: 30px; fill: var(--gold-light); }
@@ -109,6 +90,23 @@
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
+
+  /* ── In-app browser full-screen block ── */
+  #inAppBlock {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 28px;
+    background: var(--off-white);
+    text-align: center;
+    gap: 16px;
+  }
+  .inapp-icon { font-size: 48px; line-height: 1; }
+  .inapp-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--navy); }
+  .inapp-msg { font-size: 13px; color: var(--text-mid); line-height: 1.6; max-width: 300px; }
+  .inapp-steps { background: var(--gold); color: var(--navy-dark); border-radius: 12px; padding: 14px 18px; font-size: 12px; font-weight: 600; line-height: 2; width: 100%; max-width: 300px; }
+  .inapp-steps span { font-weight: 400; display: block; line-height: 1.5; margin-top: 2px; font-size: 11px; color: var(--navy); }
 </style>
 </head>
 <body>
@@ -135,20 +133,19 @@
     </div>
   </div>
 
-  <!-- FIX 1: Full-screen block for Telegram/WhatsApp users -->
+  <!-- FIX 1: Full screen in-app browser block shown INSTEAD of login -->
   <div id="inAppBlock">
     <div class="inapp-icon">🚫</div>
-    <div class="inapp-title">Cannot open here</div>
-    <p class="inapp-msg">Google Sign-In does not work inside Telegram or WhatsApp. You must open this link in Safari or Chrome.</p>
-    <div class="inapp-box">
-      <div class="inapp-box-title">📋 How to open in a real browser</div>
-      <div class="inapp-step">📱 iPhone: <span>Tap <strong>···</strong> or the share icon → <strong>"Open in Safari"</strong></span></div>
-      <div class="inapp-step">🤖 Android: <span>Tap <strong>⋮</strong> menu → <strong>"Open in Chrome"</strong></span></div>
-      <div class="inapp-step">📋 Or: <span>Copy the link and paste it into Safari or Chrome manually.</span></div>
+    <div class="inapp-title">Cannot open in this browser</div>
+    <p class="inapp-msg">Google Sign-In does not work inside Telegram or WhatsApp. Please open this link in Safari or Chrome.</p>
+    <div class="inapp-steps">
+      📋 How to open in a real browser:
+      <span>iOS: Tap the <strong>⋯</strong> or share icon → "Open in Safari"</span>
+      <span>Android: Tap the <strong>⋮</strong> menu → "Open in Chrome"</span>
+      <span>Or copy the link and paste it into Safari / Chrome.</span>
     </div>
   </div>
 
-  <!-- Login panel: hidden by default, shown only when real browser confirmed -->
   <div id="loginPanel" style="display:none;">
     <div class="login-icon">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -165,7 +162,9 @@
         <div class="field-group">
           <div class="field">
             <div class="field-label">Job Card Number</div>
-            <div class="field-input"><input type="text" id="jobCardNumber" placeholder="Enter Job Card No." /></div>
+            <div class="field-input">
+              <input type="text" id="jobCardNumber" placeholder="Enter Job Card No." />
+            </div>
           </div>
           <div class="field">
             <div class="field-label">Employee Name</div>
@@ -179,11 +178,15 @@
           </div>
           <div class="field">
             <div class="field-label">Staff Number</div>
-            <div class="field-input"><input type="text" id="staffNumber" placeholder="Auto-filled" readonly /></div>
+            <div class="field-input">
+              <input type="text" id="staffNumber" placeholder="Auto-filled" readonly />
+            </div>
           </div>
           <div class="field">
             <div class="field-label">Your Email</div>
-            <div class="field-input"><input type="email" id="submitterEmail" placeholder="Auto-filled from Google" readonly /></div>
+            <div class="field-input">
+              <input type="email" id="submitterEmail" placeholder="Auto-filled from Google" readonly />
+            </div>
           </div>
         </div>
         <p class="section-divider">Equipment Details</p>
@@ -200,7 +203,9 @@
           </div>
           <div class="field">
             <div class="field-label">Vehicle Type</div>
-            <div class="field-input"><input type="text" id="vehicleType" placeholder="Auto-filled" readonly /></div>
+            <div class="field-input">
+              <input type="text" id="vehicleType" placeholder="Auto-filled" readonly />
+            </div>
           </div>
         </div>
         <p class="section-divider">Parts Request</p>
@@ -209,7 +214,7 @@
             <div class="field-label">Part Number</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="partNumber" placeholder="Select equipment first…" autocomplete="off" />
+                <input class="combo-input" id="partNumber" placeholder="Type part number…" autocomplete="off" />
                 <span class="combo-arrow">▼</span>
                 <div class="combo-list" id="dl-partNumber"></div>
               </div>
@@ -219,7 +224,7 @@
             <div class="field-label">Part Name</div>
             <div class="field-input accent">
               <div class="combo-wrap">
-                <input class="combo-input accent-bg" id="partName" placeholder="Select equipment first…" autocomplete="off" />
+                <input class="combo-input accent-bg" id="partName" placeholder="Type part name…" autocomplete="off" />
                 <span class="combo-arrow">▼</span>
                 <div class="combo-list" id="dl-partName"></div>
               </div>
@@ -258,6 +263,7 @@
     <div class="request-id" id="requestIdDisplay">Request ID: —</div>
     <button class="btn-cancel" onclick="cancelRequest()">Cancel Request</button>
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -273,31 +279,35 @@ let syncLock = false;
 let currentUserEmail = '';
 let currentUserName = '';
 let dataLoaded = false;
-let selectedVehicleType = '';
 
-// ═══════════════════════════════════════════════════════════════
-// FIX 1: BROWSER DETECTION
-// inAppBlock is shown by default via JS below.
-// loginPanel only shown when a real browser is confirmed.
-// ═══════════════════════════════════════════════════════════════
+// ── FIX 1: In-app browser detection — show block screen, hide login ───────────
 (function checkBrowser() {
   const ua = navigator.userAgent || '';
-  const isRealSafari  = /Safari\//i.test(ua) && !/CriOS|FxiOS|FBAN|FBAV|Instagram|Telegram|WhatsApp|Line\/|MicroMessenger/i.test(ua);
+  const isRealSafari  = /Safari\//i.test(ua) && !/CriOS|FxiOS|FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
   const isRealChrome  = /Chrome\//i.test(ua) && !/\bwv\b|; wv|FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
   const isRealFirefox = /Firefox\/|FxiOS\//i.test(ua);
   const isDesktop     = !/Android|iPhone|iPad|iPod/i.test(ua);
-  const isSafe        = isRealSafari || isRealChrome || isRealFirefox || isDesktop;
+  const isSafeBrowser = isRealSafari || isRealChrome || isRealFirefox || isDesktop;
 
-  if (isSafe) {
-    document.getElementById('inAppBlock').style.display = 'none';
-    document.getElementById('loginPanel').style.display = 'flex';
+  if (isSafeBrowser) {
+    // Real browser — hide the block screen, show login normally
+    document.getElementById('inAppBlock').style.display  = 'none';
+    document.getElementById('loginPanel').style.display  = 'flex';
   } else {
-    document.getElementById('inAppBlock').style.display = 'flex';
-    document.getElementById('loginPanel').style.display = 'none';
+    // In-app browser — show block screen only, hide everything else
+    document.getElementById('inAppBlock').style.display  = 'flex';
+    document.getElementById('loginPanel').style.display  = 'none';
   }
 })();
+// ─────────────────────────────────────────────────────────────────────────────
 
-function setLoadingText(msg) { document.getElementById('loadingText').textContent = msg; }
+// ── FIX 2: Track selected vehicle type for parts filtering ────────────────────
+let selectedVehicleType = '';
+// ─────────────────────────────────────────────────────────────────────────────
+
+function setLoadingText(msg) {
+  document.getElementById('loadingText').textContent = msg;
+}
 
 function handleCredentialResponse(response) {
   try {
@@ -305,7 +315,9 @@ function handleCredentialResponse(response) {
     currentUserEmail = payload.email;
     currentUserName  = payload.name || payload.email;
     onSignedIn();
-  } catch(err) { toast('Sign-in error. Please try again.'); }
+  } catch(err) {
+    toast('Sign-in error. Please try again.');
+  }
 }
 
 function onSignedIn() {
@@ -323,8 +335,12 @@ function onSignedIn() {
 }
 
 function signOut() {
-  if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
-  currentUserEmail = ''; currentUserName = ''; selectedVehicleType = '';
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  currentUserEmail = '';
+  currentUserName  = '';
+  selectedVehicleType = '';
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
@@ -373,29 +389,33 @@ function combo(inputId, listId, getItems, onPick) {
   inp.addEventListener('blur',  () => setTimeout(() => lst.classList.remove('open'), 200));
 }
 
-// ═══════════════════════════════════════════════════════════════
-// FIX 2: PARTS FILTERED STRICTLY BY VEHICLE TYPE
-// Returns empty array if no vehicle type selected.
-// Only returns parts whose vehicleType exactly matches.
-// ═══════════════════════════════════════════════════════════════
-function getFilteredParts(q, matchBy) {
-  if (!selectedVehicleType) return [];
+// ── FIX 2: Helper — filter parts by selected vehicle type ─────────────────────
+function getFilteredParts(q, matchField) {
+  const nq = norm(q);
   return appData.parts.filter(p => {
-    if (p.vehicleType.trim().toLowerCase() !== selectedVehicleType.trim().toLowerCase()) return false;
+    // Only show parts matching the selected vehicle type (case-insensitive)
+    // If no vehicle type selected yet, show all parts
+    const typeMatch = !selectedVehicleType ||
+      p.vehicleType.toLowerCase() === selectedVehicleType.toLowerCase();
+    if (!typeMatch) return false;
     if (!q) return true;
-    const nq = norm(q);
-    if (matchBy === 'number') {
+    if (matchField === 'number') {
       return norm(p.partNumber).includes(nq) ||
              (p.altPartNumber && norm(p.altPartNumber).includes(nq)) ||
              p.partName.toLowerCase().includes(q.toLowerCase());
+    } else {
+      return p.partName.toLowerCase().includes(q.toLowerCase()) ||
+             norm(p.partNumber).includes(nq);
     }
-    return p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq);
   }).slice(0, 30);
 }
+// ─────────────────────────────────────────────────────────────────────────────
 
 function initCombos() {
   combo('employeeName', 'dl-employee',
-    q => appData.employees.filter(e => e.name.toLowerCase().includes(q.toLowerCase())).slice(0,20)
+    q => appData.employees
+      .filter(e => e.name.toLowerCase().includes(q.toLowerCase()))
+      .slice(0, 20)
       .map(e => ({ main: e.name, sub: 'Staff No: ' + e.staffNumber, data: e })),
     item => {
       document.getElementById('employeeName').value = item.data.name;
@@ -406,46 +426,36 @@ function initCombos() {
   combo('equipmentNumber', 'dl-equipment',
     q => appData.equipment
       .filter(e => norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase()))
-      .slice(0,20).map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
+      .slice(0, 20)
+      .map(e => ({ main: e.equipmentNumber, sub: e.vehicleType, data: e })),
     item => {
       document.getElementById('equipmentNumber').value = item.data.equipmentNumber;
       document.getElementById('vehicleType').value     = item.data.vehicleType;
-      selectedVehicleType = item.data.vehicleType;  // ← update filter
+      // FIX 2: Update selected vehicle type and clear parts fields when equipment changes
+      selectedVehicleType = item.data.vehicleType;
       document.getElementById('partNumber').value = '';
       document.getElementById('partName').value   = '';
     }
   );
 
   combo('partNumber', 'dl-partNumber',
-    q => {
-      if (!selectedVehicleType) return [{ main: '⚠ Select an equipment number first', sub: '', data: null }];
-      const results = getFilteredParts(q, 'number');
-      if (!results.length) return [{ main: 'No parts found for ' + selectedVehicleType, sub: '', data: null }];
-      return results.map(p => ({ main: p.partNumber, sub: p.partName, data: p }));
-    },
+    q => getFilteredParts(q, 'number').map(p => ({ main: p.partNumber, sub: p.partName, data: p })),
     item => {
-      if (!item.data) return;
       document.getElementById('partNumber').value = item.data.partNumber;
       if (!syncLock) { syncLock = true; document.getElementById('partName').value = item.data.partName; syncLock = false; }
     }
   );
 
   combo('partName', 'dl-partName',
-    q => {
-      if (!selectedVehicleType) return [{ main: '⚠ Select an equipment number first', sub: '', data: null }];
-      const results = getFilteredParts(q, 'name');
-      if (!results.length) return [{ main: 'No parts found for ' + selectedVehicleType, sub: '', data: null }];
-      return results.map(p => ({ main: p.partName, sub: p.partNumber, data: p }));
-    },
+    q => getFilteredParts(q, 'name').map(p => ({ main: p.partName, sub: p.partNumber, data: p })),
     item => {
-      if (!item.data) return;
       document.getElementById('partName').value = item.data.partName;
       if (!syncLock) { syncLock = true; document.getElementById('partNumber').value = item.data.partNumber; syncLock = false; }
     }
   );
 
   combo('quantityNumber', 'dl-quantity',
-    q => { const r = []; for (let i=1;i<=999;i++) { if (!q||String(i).startsWith(q)) r.push({main:String(i),sub:''}); if(r.length>=30) break; } return r; },
+    q => { const r = []; for (let i = 1; i <= 999; i++) { if (!q || String(i).startsWith(q)) r.push({ main: String(i), sub: '' }); if (r.length >= 30) break; } return r; },
     item => { document.getElementById('quantityNumber').value = item.main; }
   );
 }
@@ -489,8 +499,11 @@ function initGoogleSignIn() {
 }
 
 function waitForGoogleThenInit() {
-  if (window.google && google.accounts && google.accounts.id) initGoogleSignIn();
-  else setTimeout(waitForGoogleThenInit, 100);
+  if (window.google && google.accounts && google.accounts.id) {
+    initGoogleSignIn();
+  } else {
+    setTimeout(waitForGoogleThenInit, 100);
+  }
 }
 
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
@@ -519,9 +532,9 @@ document.getElementById('requestForm').addEventListener('submit', async function
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
   lastRequestId = data.requestId;
   try {
-    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method:'GET', mode:'no-cors' });
+    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams(data).toString(), { method: 'GET', mode: 'no-cors' });
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + lastRequestId;
-    document.getElementById('formPanel').style.display   = 'none';
+    document.getElementById('formPanel').style.display  = 'none';
     document.getElementById('successPanel').style.display = 'flex';
   } catch(err) {
     toast('Submission failed. Check connection.');
@@ -532,7 +545,7 @@ document.getElementById('requestForm').addEventListener('submit', async function
 
 async function cancelRequest() {
   try {
-    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams({ action:'cancel', requestId: lastRequestId }).toString(), { method:'GET', mode:'no-cors' });
+    await fetch(APPS_SCRIPT_URL + '?' + new URLSearchParams({ action: 'cancel', requestId: lastRequestId }).toString(), { method: 'GET', mode: 'no-cors' });
     toast('Request cancelled.', '#0d2b5e');
   } catch(_) {}
   setTimeout(() => {
@@ -544,7 +557,8 @@ async function cancelRequest() {
     document.getElementById('submitterEmail').value = currentUserEmail;
     selectedVehicleType = '';
     const btn = document.getElementById('submitBtn');
-    btn.disabled = false; btn.innerHTML = 'Submit Request';
+    btn.disabled = false;
+    btn.innerHTML = 'Submit Request';
     lastRequestId = null;
   }, 1500);
 }
