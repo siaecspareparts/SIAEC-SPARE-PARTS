@@ -125,7 +125,6 @@
     </div>
   </div>
 
-  <!-- WARNING BANNER — always visible -->
   <div id="inAppBanner">
     <span class="banner-icon">⚠️</span>
     <div>
@@ -134,7 +133,6 @@
     </div>
   </div>
 
-  <!-- LOGIN PANEL -->
   <div id="loginPanel" style="display:none;">
     <div class="login-icon">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -144,7 +142,6 @@
     <div id="googleSignInButtonTarget"></div>
   </div>
 
-  <!-- FORM PANEL -->
   <div id="formPanel" style="display:none;">
     <div class="form-body">
       <form id="requestForm" novalidate>
@@ -172,6 +169,7 @@
               <input type="text" id="staffNumber" placeholder="Auto-filled" readonly />
             </div>
           </div>
+          <input type="hidden" id="submitterEmailHidden" />
           <div class="field">
             <div class="field-label">Your Email</div>
             <div class="field-input">
@@ -244,7 +242,6 @@
     </div>
   </div>
 
-  <!-- SUCCESS PANEL -->
   <div id="successPanel" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;background:var(--white);">
     <div class="success-icon">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -260,28 +257,31 @@
 
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
-// ▼▼▼ PASTE YOUR NEW APPS SCRIPT URL HERE AFTER REDEPLOYING ▼▼▼
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
-// ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 let appData = { employees: [], equipment: [], parts: [] };
 let lastRequestId = null;
 let syncLock = false;
 let currentUserEmail = '';
-let currentUserName = '';
+let currentUserName  = '';
 let dataLoaded = false;
 let pendingSignIn = false;
 let selectedVehicleType = '';
 
 document.getElementById('loginPanel').style.display = 'flex';
 
+// Always write email to BOTH the hidden field and the visible readonly display
+function setEmailFields(email) {
+  currentUserEmail = email;
+  document.getElementById('submitterEmailHidden').value = email;
+  document.getElementById('submitterEmail').value        = email;
+}
+
 function showOverlay(msg) {
   document.getElementById('loadingText').textContent = msg || 'Loading…';
   document.getElementById('loadingOverlay').classList.add('active');
 }
-
 function hideOverlay() {
   document.getElementById('loadingOverlay').classList.remove('active');
 }
@@ -289,8 +289,8 @@ function hideOverlay() {
 function handleCredentialResponse(response) {
   try {
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    currentUserEmail = payload.email;
-    currentUserName  = payload.name || payload.email;
+    currentUserName = payload.name || payload.email;
+    setEmailFields(payload.email);
     onSignedIn();
   } catch(err) {
     toast('Sign-in error. Please try again.');
@@ -301,9 +301,8 @@ function onSignedIn() {
   document.getElementById('userName').textContent    = currentUserName;
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
-  document.getElementById('submitterEmail').value    = currentUserEmail;
-  document.getElementById('loginPanel').style.display  = 'none';
-  document.getElementById('inAppBanner').style.display = 'none';
+  document.getElementById('loginPanel').style.display   = 'none';
+  document.getElementById('inAppBanner').style.display  = 'none';
 
   if (dataLoaded) {
     hideOverlay();
@@ -318,19 +317,18 @@ function signOut() {
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.disableAutoSelect();
   }
-  currentUserEmail    = '';
   currentUserName     = '';
-  pendingSignIn       = false;
   selectedVehicleType = '';
+  pendingSignIn       = false;
+  setEmailFields('');
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
   document.getElementById('loginPanel').style.display   = 'flex';
   document.getElementById('inAppBanner').style.display  = 'flex';
   document.getElementById('requestForm').reset();
-  document.getElementById('staffNumber').value    = '';
-  document.getElementById('vehicleType').value    = '';
-  document.getElementById('submitterEmail').value = '';
+  document.getElementById('staffNumber').value = '';
+  document.getElementById('vehicleType').value = '';
 }
 
 function norm(s) { return String(s).replace(/[-\s]/g,'').toUpperCase(); }
@@ -486,17 +484,18 @@ function waitForGoogleThenInit() {
 document.getElementById('requestForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
-  if (!currentUserEmail) {
+  // Always read from variable first, hidden field as fallback
+  const submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
+
+  if (!submitterEmail) {
     toast('⚠ Session error. Please sign out and sign in again.');
     return;
   }
 
-  // Capture all values first
   const requestId       = genId();
   const jobCardNumber   = document.getElementById('jobCardNumber').value.trim();
   const employeeName    = document.getElementById('employeeName').value.trim();
   const staffNumber     = document.getElementById('staffNumber').value.trim();
-  const submitterEmail  = currentUserEmail; // always from variable
   const equipmentNumber = document.getElementById('equipmentNumber').value.trim();
   const vehicleType     = document.getElementById('vehicleType').value.trim();
   const partNumber      = document.getElementById('partNumber').value.trim();
@@ -518,7 +517,6 @@ document.getElementById('requestForm').addEventListener('submit', async function
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
   lastRequestId = requestId;
 
-  // Build params explicitly one by one
   const params = new URLSearchParams();
   params.append('requestId',       requestId);
   params.append('jobCardNumber',   jobCardNumber);
@@ -555,9 +553,10 @@ async function cancelRequest() {
     document.getElementById('successPanel').style.display = 'none';
     document.getElementById('formPanel').style.display    = 'block';
     document.getElementById('requestForm').reset();
-    document.getElementById('staffNumber').value    = '';
-    document.getElementById('vehicleType').value    = '';
-    document.getElementById('submitterEmail').value = currentUserEmail;
+    document.getElementById('staffNumber').value = '';
+    document.getElementById('vehicleType').value = '';
+    // Re-apply email after reset — reset() can clear readonly inputs in some browsers
+    setEmailFields(currentUserEmail);
     selectedVehicleType = '';
     const btn = document.getElementById('submitBtn');
     btn.disabled = false;
