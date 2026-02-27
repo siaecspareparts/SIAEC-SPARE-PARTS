@@ -562,47 +562,19 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   params.append('timestamp',       timestamp);
   params.append('status',          'Pending');
 
-  var cbName    = 'submit_' + Date.now();
-  var submitted = false;
-
-  // Success handler
-  window[cbName] = function(result) {
-    submitted = true;
-    delete window[cbName];
-    if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
-
-    if (result && result.status === 'ok') {
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-    } else {
-      toast('Submission error: ' + (result && result.msg ? result.msg : 'Unknown error'));
-      btn.disabled  = false;
-      btn.innerHTML = 'Submit Request';
-    }
-  };
-
-  // Timeout fallback — show success after 12s if no callback (no-cors situation)
-  setTimeout(function() {
-    if (!submitted) {
-      submitted = true;
-      delete window[cbName];
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-    }
-  }, 12000);
-
-  var scriptTag   = document.createElement('script');
-  scriptTag.src   = APPS_SCRIPT_URL + '?' + params.toString() + '&callback=' + cbName;
-  scriptTag.onerror = function() {
-    if (!submitted) {
-      toast('Network error. Check your connection and try again.');
-      btn.disabled  = false;
-      btn.innerHTML = 'Submit Request';
-    }
-  };
-  document.head.appendChild(scriptTag);
+  // Use fetch no-cors — reliable, no JSONP redirect issues
+  fetch(APPS_SCRIPT_URL + '?' + params.toString(), {
+    method: 'GET',
+    mode:   'no-cors'
+  }).then(function() {
+    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+    document.getElementById('formPanel').style.display      = 'none';
+    document.getElementById('successPanel').style.display   = 'flex';
+  }).catch(function(err) {
+    toast('Network error. Check your connection and try again.');
+    btn.disabled  = false;
+    btn.innerHTML = 'Submit Request';
+  });
 });
 
 // ── CANCEL REQUEST ────────────────────────────────────────────────────────────
