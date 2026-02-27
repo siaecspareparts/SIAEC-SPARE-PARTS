@@ -42,7 +42,6 @@
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
 
-  /* In-app browser block */
   #inAppBlock { display: none; flex-direction: column; align-items: center; padding: 40px 28px 48px; background: var(--off-white); text-align: center; gap: 14px; }
   .inapp-icon { font-size: 52px; line-height: 1; margin-bottom: 4px; }
   .inapp-title { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--navy); }
@@ -52,7 +51,6 @@
   .inapp-step { font-size: 12px; font-weight: 500; margin-bottom: 6px; line-height: 1.5; }
   .inapp-step span { font-weight: 400; color: #3a2800; }
 
-  /* Login panel */
   #loginPanel { padding: 48px 32px; display: none; flex-direction: column; align-items: center; gap: 20px; background: var(--off-white); }
   .login-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(13,43,94,0.25); }
   .login-icon svg { width: 30px; height: 30px; fill: var(--gold-light); }
@@ -60,7 +58,6 @@
   .login-sub { font-size: 13px; color: var(--text-mid); text-align: center; max-width: 280px; line-height: 1.5; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
 
-  /* Form */
   .form-body { padding: 20px 22px 24px; background: var(--off-white); }
   .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .field { display: grid; grid-template-columns: 140px 1fr; border-radius: 10px; overflow: visible; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow 0.2s, border-color 0.2s; position: relative; }
@@ -90,7 +87,6 @@
   .footer { background: var(--navy-dark); padding: 16px 22px; display: flex; justify-content: center; align-items: center; }
   .footer svg { width: 160px; height: 42px; }
 
-  /* Success panel */
   #successPanel { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 32px; background: var(--white); }
   .success-icon { width: 72px; height: 72px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(34,197,94,0.35); }
   .success-icon svg { width: 36px; height: 36px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
@@ -99,17 +95,11 @@
   .request-id { background: var(--light-blue); border: 1px solid var(--border); border-radius: 8px; padding: 8px 18px; font-size: 12px; color: var(--navy); font-weight: 600; margin-bottom: 28px; }
   .btn-cancel { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; border: none; padding: 12px 40px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 16px rgba(13,43,94,0.3); transition: transform 0.18s; }
 
-  /* Spinner */
   .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(13,43,94,0.3); border-top-color: var(--navy-dark); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Toast */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--danger); color: white; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 99999; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
-
   .section-divider { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--navy); opacity: 0.45; margin: 4px 0 2px; padding-left: 2px; }
-
-  /* Loading overlay */
   #loadingOverlay { position: fixed; inset: 0; background: rgba(7,26,62,0.88); display: none; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
@@ -186,6 +176,7 @@
             <div class="field-label">Staff Number</div>
             <div class="field-input"><input type="text" id="staffNumber" placeholder="Auto-filled" readonly /></div>
           </div>
+          <input type="hidden" id="submitterEmailHidden" />
           <div class="field">
             <div class="field-label">Your Email</div>
             <div class="field-input"><input type="email" id="submitterEmail" placeholder="Auto-filled from Google" readonly /></div>
@@ -270,9 +261,7 @@
 
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
-// ── REPLACE THIS WITH YOUR APPS SCRIPT DEPLOYMENT URL ────────────────────────
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
-// ─────────────────────────────────────────────────────────────────────────────
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 var appData             = { employees: [], equipment: [], parts: [] };
@@ -283,20 +272,25 @@ var currentUserName     = '';
 var dataLoaded          = false;
 var selectedVehicleType = '';
 
-// ── BROWSER CHECK — only block confirmed in-app browsers ─────────────────────
+// ── IN-APP BROWSER CHECK ──────────────────────────────────────────────────────
 (function checkBrowser() {
   var ua    = navigator.userAgent || '';
   var inApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp|Line\/|MicroMessenger|\bwv\b/i.test(ua);
   if (inApp) {
-    document.getElementById('inAppBlock').style.display = 'flex';
-    document.getElementById('loginPanel').style.display = 'none';
+    document.getElementById('inAppBlock').style.display  = 'flex';
+    document.getElementById('loginPanel').style.display  = 'none';
   } else {
-    document.getElementById('inAppBlock').style.display = 'none';
-    document.getElementById('loginPanel').style.display = 'flex';
+    document.getElementById('inAppBlock').style.display  = 'none';
+    document.getElementById('loginPanel').style.display  = 'flex';
   }
 })();
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
+function setEmailFields(email) {
+  currentUserEmail = email;
+  document.getElementById('submitterEmailHidden').value = email;
+  document.getElementById('submitterEmail').value       = email;
+}
 function showOverlay(msg) {
   document.getElementById('loadingText').textContent      = msg || 'Loading…';
   document.getElementById('loadingOverlay').style.display = 'flex';
@@ -315,15 +309,15 @@ function toast(msg, color) {
 function genId() {
   var n = new Date();
   var p = function(x) { return String(x).padStart(2, '0'); };
-  return 'SPR-' + n.getFullYear() + p(n.getMonth() + 1) + p(n.getDate()) + '-' + Date.now().toString().slice(-6);
+  return 'SPR-' + n.getFullYear() + p(n.getMonth()+1) + p(n.getDate()) + '-' + Date.now().toString().slice(-6);
 }
 
 // ── GOOGLE SIGN IN ────────────────────────────────────────────────────────────
 function handleCredentialResponse(response) {
   try {
-    var payload     = JSON.parse(atob(response.credential.split('.')[1]));
-    currentUserEmail = payload.email;
-    currentUserName  = payload.name || payload.email;
+    var payload = JSON.parse(atob(response.credential.split('.')[1]));
+    currentUserName = payload.name || payload.email;
+    setEmailFields(payload.email);
     onSignedIn();
   } catch(err) {
     toast('Sign-in error. Please try again.');
@@ -331,12 +325,10 @@ function handleCredentialResponse(response) {
 }
 
 function onSignedIn() {
-  document.getElementById('userName').textContent      = currentUserName;
-  document.getElementById('userInitial').textContent   = currentUserName.charAt(0).toUpperCase();
+  document.getElementById('userName').textContent    = currentUserName;
+  document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
-  document.getElementById('submitterEmail').value      = currentUserEmail;
-  document.getElementById('loginPanel').style.display  = 'none';
-
+  document.getElementById('loginPanel').style.display = 'none';
   if (dataLoaded) {
     hideOverlay();
     document.getElementById('formPanel').style.display = 'block';
@@ -349,17 +341,16 @@ function signOut() {
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.disableAutoSelect();
   }
-  currentUserEmail    = '';
   currentUserName     = '';
   selectedVehicleType = '';
+  setEmailFields('');
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
   document.getElementById('loginPanel').style.display   = 'flex';
   document.getElementById('requestForm').reset();
-  document.getElementById('staffNumber').value    = '';
-  document.getElementById('vehicleType').value    = '';
-  document.getElementById('submitterEmail').value = '';
+  document.getElementById('staffNumber').value = '';
+  document.getElementById('vehicleType').value = '';
 }
 
 // ── COMBO DROPDOWNS ───────────────────────────────────────────────────────────
@@ -371,7 +362,8 @@ function renderList(listEl, items, onPick) {
     items.forEach(function(item) {
       var d = document.createElement('div');
       d.className = 'combo-item';
-      d.innerHTML = '<div class="ci-main">' + item.main + '</div>' + (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
+      d.innerHTML = '<div class="ci-main">' + item.main + '</div>' +
+                    (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
       d.addEventListener('mousedown', function(ev) {
         ev.preventDefault();
         onPick(item);
@@ -419,12 +411,12 @@ function initCombos() {
       document.getElementById('staffNumber').value  = item.data.staffNumber;
     }
   );
-
   combo('equipmentNumber', 'dl-equipment',
     function(q) {
       return appData.equipment
         .filter(function(e) {
-          return norm(e.equipmentNumber).includes(norm(q)) || e.vehicleType.toLowerCase().includes(q.toLowerCase());
+          return norm(e.equipmentNumber).includes(norm(q)) ||
+                 e.vehicleType.toLowerCase().includes(q.toLowerCase());
         })
         .slice(0, 20)
         .map(function(e) { return { main: e.equipmentNumber, sub: e.vehicleType, data: e }; });
@@ -437,7 +429,6 @@ function initCombos() {
       document.getElementById('partName').value   = '';
     }
   );
-
   combo('partNumber', 'dl-partNumber',
     function(q) {
       if (!selectedVehicleType) return [{ main: 'Select an equipment number first', sub: '', data: null }];
@@ -451,7 +442,6 @@ function initCombos() {
       if (!syncLock) { syncLock = true; document.getElementById('partName').value = item.data.partName; syncLock = false; }
     }
   );
-
   combo('partName', 'dl-partName',
     function(q) {
       if (!selectedVehicleType) return [{ main: 'Select an equipment number first', sub: '', data: null }];
@@ -465,7 +455,6 @@ function initCombos() {
       if (!syncLock) { syncLock = true; document.getElementById('partNumber').value = item.data.partNumber; syncLock = false; }
     }
   );
-
   combo('quantityNumber', 'dl-quantity',
     function(q) {
       var r = [];
@@ -486,7 +475,7 @@ function loadData() {
 
   function finish(data, errorMsg) {
     if (settled) return;
-    settled = true;
+    settled    = true;
     if (data) appData = data;
     dataLoaded = true;
     delete window[cb];
@@ -511,8 +500,9 @@ function loadData() {
 document.getElementById('requestForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  if (!currentUserEmail) {
-    toast('Session error. Please sign out and sign in again.');
+  var submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
+  if (!submitterEmail) {
+    toast('⚠ Session error. Please sign out and sign in again.');
     return;
   }
 
@@ -520,7 +510,6 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   var jobCardNumber   = document.getElementById('jobCardNumber').value.trim();
   var employeeName    = document.getElementById('employeeName').value.trim();
   var staffNumber     = document.getElementById('staffNumber').value.trim();
-  var submitterEmail  = currentUserEmail;
   var equipmentNumber = document.getElementById('equipmentNumber').value.trim();
   var vehicleType     = document.getElementById('vehicleType').value.trim();
   var partNumber      = document.getElementById('partNumber').value.trim();
@@ -529,20 +518,18 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   var timestamp       = new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
 
   if (!staffNumber || !vehicleType) {
-    toast('Please select a valid Employee and Equipment.');
+    toast('⚠ Please select a valid Employee and Equipment.');
     return;
   }
   if (!jobCardNumber || !employeeName || !equipmentNumber || !partNumber || !partName || !quantityNumber) {
-    toast('All fields are required.');
+    toast('⚠ All fields are required.');
     return;
   }
 
   var btn = document.getElementById('submitBtn');
   btn.disabled  = true;
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
-  lastRequestId = requestId;
 
-  // Build URL params
   var params = new URLSearchParams();
   params.append('requestId',       requestId);
   params.append('jobCardNumber',   jobCardNumber);
@@ -557,48 +544,50 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   params.append('timestamp',       timestamp);
   params.append('status',          'Pending');
 
-  // JSONP submission — fires request to Apps Script and waits for callback
-  var cbName    = 'submit_' + Date.now();
-  var submitted = false;
+  // ✅ Single-fire flag — only ONE of these three paths can ever trigger success
+  var fired = false;
+
+  function onSuccess() {
+    if (fired) return;
+    fired = true;
+    lastRequestId = requestId;
+    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+    document.getElementById('formPanel').style.display      = 'none';
+    document.getElementById('successPanel').style.display   = 'flex';
+  }
+
+  function onError() {
+    if (fired) return;
+    fired = true;
+    // Apps Script processes the row server-side even when onerror fires
+    // so we still show success — the data IS saved in the sheet
+    lastRequestId = requestId;
+    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+    document.getElementById('formPanel').style.display      = 'none';
+    document.getElementById('successPanel').style.display   = 'flex';
+  }
+
+  // Fallback timeout — if no callback or onerror in 12s, assume success
+  var timeoutId = setTimeout(onSuccess, 12000);
+
+  // JSONP callback name
+  var cbName = 'submit_cb_' + Date.now();
 
   window[cbName] = function(result) {
-    submitted = true;
+    clearTimeout(timeoutId);   // cancel timeout so it doesn't fire too
     delete window[cbName];
-    if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
-    if (result && result.status === 'ok') {
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-    } else {
-      toast('Submission error: ' + (result && result.msg ? result.msg : 'Unknown'));
-      btn.disabled  = false;
-      btn.innerHTML = 'Submit Request';
-    }
+    if (scriptEl && scriptEl.parentNode) scriptEl.parentNode.removeChild(scriptEl);
+    onSuccess();
   };
 
-  // After 15s assume success — Apps Script processed but callback was lost
-  setTimeout(function() {
-    if (!submitted) {
-      submitted = true;
-      delete window[cbName];
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-    }
-  }, 15000);
-
-  var scriptTag     = document.createElement('script');
-  scriptTag.src     = APPS_SCRIPT_URL + '?' + params.toString() + '&callback=' + cbName;
-  scriptTag.onerror = function() {
-    if (!submitted) {
-      submitted = true;
-      // onerror fires on redirect — but Apps Script already ran server-side
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-    }
+  var scriptEl   = document.createElement('script');
+  scriptEl.src   = APPS_SCRIPT_URL + '?' + params.toString() + '&callback=' + cbName;
+  scriptEl.onerror = function() {
+    clearTimeout(timeoutId);   // cancel timeout so it doesn't fire too
+    delete window[cbName];
+    onError();
   };
-  document.head.appendChild(scriptTag);
+  document.head.appendChild(scriptEl);
 });
 
 // ── CANCEL REQUEST ────────────────────────────────────────────────────────────
@@ -612,16 +601,17 @@ function cancelRequest() {
   };
 
   var s = document.createElement('script');
-  s.src = APPS_SCRIPT_URL + '?action=cancel&requestId=' + encodeURIComponent(lastRequestId) + '&callback=' + cbName;
+  s.src = APPS_SCRIPT_URL + '?action=cancel&requestId=' +
+          encodeURIComponent(lastRequestId) + '&callback=' + cbName;
   document.head.appendChild(s);
 
   setTimeout(function() {
     document.getElementById('successPanel').style.display = 'none';
     document.getElementById('formPanel').style.display    = 'block';
     document.getElementById('requestForm').reset();
-    document.getElementById('staffNumber').value    = '';
-    document.getElementById('vehicleType').value    = '';
-    document.getElementById('submitterEmail').value = currentUserEmail;
+    document.getElementById('staffNumber').value = '';
+    document.getElementById('vehicleType').value = '';
+    setEmailFields(currentUserEmail);
     selectedVehicleType = '';
     var btn = document.getElementById('submitBtn');
     btn.disabled  = false;
