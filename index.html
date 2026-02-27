@@ -55,6 +55,10 @@
   .login-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); text-align: center; }
   .login-sub { font-size: 13px; color: var(--text-mid); text-align: center; max-width: 280px; line-height: 1.5; }
   #googleSignInButtonTarget { display: flex; justify-content: center; min-height: 44px; }
+  .browser-warning { background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 12px; padding: 13px 16px; width: 100%; max-width: 320px; display: flex; gap: 10px; align-items: flex-start; }
+  .browser-warning-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+  .browser-warning-text { font-size: 12px; color: #78350f; line-height: 1.6; }
+  .browser-warning-text strong { font-weight: 600; display: block; margin-bottom: 2px; }
   .form-body { padding: 20px 22px 24px; background: var(--off-white); }
   .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .field { display: grid; grid-template-columns: 140px 1fr; border-radius: 10px; overflow: visible; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow 0.2s, border-color 0.2s; position: relative; }
@@ -142,6 +146,13 @@
     </div>
     <div class="login-title">Welcome to SIAEC<br>Spare Parts Request</div>
     <p class="login-sub">Please sign in with your Google account to submit a spare parts request.</p>
+    <div class="browser-warning">
+      <div class="browser-warning-icon">&#9888;&#65039;</div>
+      <div class="browser-warning-text">
+        <strong>Opening from WhatsApp or Telegram?</strong>
+        Sign-in won&#39;t work inside those apps. Please open this link directly in Safari (iPhone) or Chrome (Android).
+      </div>
+    </div>
     <div id="googleSignInButtonTarget"></div>
   </div>
 
@@ -267,42 +278,40 @@ var dataLoaded          = false;
 var selectedVehicleType = '';
 
 // ── CHECK URL FOR ?submitted=true ON PAGE LOAD (handles iOS redirect return) ──
-(function checkReturnFromSubmit() {
+// ── STARTUP — one place that decides what panel to show first ────────────────
+(function startup() {
   var params    = new URLSearchParams(window.location.search);
   var submitted = params.get('submitted');
   var requestId = params.get('requestId');
   var error     = params.get('error');
 
+  // Case 1: Returned from iOS redirect after successful submission
   if (submitted === 'true' && requestId) {
-    // Clean URL without reloading
     window.history.replaceState({}, document.title, window.location.pathname);
-    // Store the request ID so Cancel works
     lastRequestId = requestId;
-    // Show success panel immediately — no need to wait for sign-in
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-    document.getElementById('formPanel').style.display      = 'none';
     document.getElementById('successPanel').style.display   = 'flex';
-    // Hide login panel since we're showing success
-    document.getElementById('loginPanel').style.display     = 'none';
+    return; // done — login and form stay hidden
   }
 
+  // Case 2: Returned from iOS redirect with an error
   if (error) {
     window.history.replaceState({}, document.title, window.location.pathname);
-    setTimeout(function() {
-      toast('Submission error: ' + error + '. Please try again.');
-    }, 500);
+    document.getElementById('loginPanel').style.display = 'flex';
+    setTimeout(function() { toast('Submission failed. Please try again.'); }, 400);
+    return;
   }
-})();
 
-// ── IN-APP BROWSER CHECK ──────────────────────────────────────────────────────
-(function checkBrowser() {
+  // Case 3: Opened inside WhatsApp / Telegram in-app browser
   var ua    = navigator.userAgent || '';
   var inApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp|Line\/|MicroMessenger|\bwv\b/i.test(ua);
   if (inApp) {
     document.getElementById('inAppBlock').style.display = 'flex';
-    document.getElementById('loginPanel').style.display = 'none';
+    return;
   }
-  // Note: loginPanel default visibility handled by checkReturnFromSubmit above
+
+  // Case 4: Normal fresh load — show login panel
+  document.getElementById('loginPanel').style.display = 'flex';
 })();
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
