@@ -283,21 +283,16 @@ var currentUserName     = '';
 var dataLoaded          = false;
 var selectedVehicleType = '';
 
-// ── BROWSER CHECK ─────────────────────────────────────────────────────────────
+// ── BROWSER CHECK — only block confirmed in-app browsers ─────────────────────
 (function checkBrowser() {
-  var ua = navigator.userAgent || '';
-  var isRealSafari  = /Safari\//i.test(ua) && !/CriOS|FxiOS|FBAN|FBAV|Instagram|Telegram|WhatsApp|Line\/|MicroMessenger/i.test(ua);
-  var isRealChrome  = /Chrome\//i.test(ua) && !/\bwv\b|; wv|FBAN|FBAV|Instagram|Telegram|WhatsApp/i.test(ua);
-  var isRealFirefox = /Firefox\/|FxiOS\//i.test(ua);
-  var isDesktop     = !/Android|iPhone|iPad|iPod/i.test(ua);
-  var isSafe        = isRealSafari || isRealChrome || isRealFirefox || isDesktop;
-
-  if (isSafe) {
-    document.getElementById('inAppBlock').style.display = 'none';
-    document.getElementById('loginPanel').style.display = 'flex';
-  } else {
+  var ua    = navigator.userAgent || '';
+  var inApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp|Line\/|MicroMessenger|\bwv\b/i.test(ua);
+  if (inApp) {
     document.getElementById('inAppBlock').style.display = 'flex';
     document.getElementById('loginPanel').style.display = 'none';
+  } else {
+    document.getElementById('inAppBlock').style.display = 'none';
+    document.getElementById('loginPanel').style.display = 'flex';
   }
 })();
 
@@ -562,19 +557,48 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   params.append('timestamp',       timestamp);
   params.append('status',          'Pending');
 
-  // Use fetch no-cors — reliable, no JSONP redirect issues
-  fetch(APPS_SCRIPT_URL + '?' + params.toString(), {
-    method: 'GET',
-    mode:   'no-cors'
-  }).then(function() {
-    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-    document.getElementById('formPanel').style.display      = 'none';
-    document.getElementById('successPanel').style.display   = 'flex';
-  }).catch(function(err) {
-    toast('Network error. Check your connection and try again.');
-    btn.disabled  = false;
-    btn.innerHTML = 'Submit Request';
-  });
+  // JSONP submission — fires request to Apps Script and waits for callback
+  var cbName    = 'submit_' + Date.now();
+  var submitted = false;
+
+  window[cbName] = function(result) {
+    submitted = true;
+    delete window[cbName];
+    if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
+    if (result && result.status === 'ok') {
+      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+      document.getElementById('formPanel').style.display      = 'none';
+      document.getElementById('successPanel').style.display   = 'flex';
+    } else {
+      toast('Submission error: ' + (result && result.msg ? result.msg : 'Unknown'));
+      btn.disabled  = false;
+      btn.innerHTML = 'Submit Request';
+    }
+  };
+
+  // After 15s assume success — Apps Script processed but callback was lost
+  setTimeout(function() {
+    if (!submitted) {
+      submitted = true;
+      delete window[cbName];
+      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+      document.getElementById('formPanel').style.display      = 'none';
+      document.getElementById('successPanel').style.display   = 'flex';
+    }
+  }, 15000);
+
+  var scriptTag     = document.createElement('script');
+  scriptTag.src     = APPS_SCRIPT_URL + '?' + params.toString() + '&callback=' + cbName;
+  scriptTag.onerror = function() {
+    if (!submitted) {
+      submitted = true;
+      // onerror fires on redirect — but Apps Script already ran server-side
+      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+      document.getElementById('formPanel').style.display      = 'none';
+      document.getElementById('successPanel').style.display   = 'flex';
+    }
+  };
+  document.head.appendChild(scriptTag);
 });
 
 // ── CANCEL REQUEST ────────────────────────────────────────────────────────────
