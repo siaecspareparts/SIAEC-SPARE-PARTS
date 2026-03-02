@@ -236,7 +236,8 @@
           </div>
         </div>
         <div class="submit-area">
-          <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
+          <!-- FIX: type="button" prevents iOS from re-focusing the last input on tap -->
+          <button type="button" class="btn-submit" id="submitBtn" onclick="handleSubmit()">Submit Request</button>
         </div>
       </form>
     </div>
@@ -263,10 +264,11 @@
 
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
-// ── UPDATE BOTH OF THESE after re-deploying ───────────────────────────────────
+// !! IMPORTANT: Replace the URL below with your actual hosted form URL !!
+// e.g. "https://yourusername.github.io/yourrepo/form.html"
+// Without this, iPhone submissions will redirect to the wrong page.
 var APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
-var THIS_PAGE_URL    = "https://YOUR_FORM_URL_HERE"; // e.g. https://yourname.github.io/form.html
-// ────────────────────────────────────────────────────────────────────────────
+var THIS_PAGE_URL    = "https://siaecspareparts.github.io/SIAEC-SPARE-PARTS/";
 var GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 var appData             = { employees: [], equipment: [], parts: [] };
@@ -277,24 +279,21 @@ var currentUserName     = '';
 var dataLoaded          = false;
 var selectedVehicleType = '';
 
-// ── CHECK URL FOR ?submitted=true ON PAGE LOAD (handles iOS redirect return) ──
-// ── STARTUP — one place that decides what panel to show first ────────────────
+// ── STARTUP ───────────────────────────────────────────────────────────────────
 (function startup() {
   var params    = new URLSearchParams(window.location.search);
   var submitted = params.get('submitted');
   var requestId = params.get('requestId');
   var error     = params.get('error');
 
-  // Case 1: Returned from iOS redirect after successful submission
   if (submitted === 'true' && requestId) {
     window.history.replaceState({}, document.title, window.location.pathname);
     lastRequestId = requestId;
     document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
     document.getElementById('successPanel').style.display   = 'flex';
-    return; // done — login and form stay hidden
+    return;
   }
 
-  // Case 2: Returned from iOS redirect with an error
   if (error) {
     window.history.replaceState({}, document.title, window.location.pathname);
     document.getElementById('loginPanel').style.display = 'flex';
@@ -302,7 +301,6 @@ var selectedVehicleType = '';
     return;
   }
 
-  // Case 3: Opened inside WhatsApp / Telegram in-app browser
   var ua    = navigator.userAgent || '';
   var inApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp|Line\/|MicroMessenger|\bwv\b/i.test(ua);
   if (inApp) {
@@ -310,7 +308,6 @@ var selectedVehicleType = '';
     return;
   }
 
-  // Case 4: Normal fresh load — show login panel
   document.getElementById('loginPanel').style.display = 'flex';
 })();
 
@@ -344,6 +341,13 @@ function isIOS() {
   return /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
+// FIX: Close all dropdowns and blur active element before submitting
+function closeAllDropdowns() {
+  if (document.activeElement) document.activeElement.blur();
+  document.querySelectorAll('.combo-list').forEach(function(l) {
+    l.classList.remove('open');
+  });
+}
 
 // ── GOOGLE SIGN IN ────────────────────────────────────────────────────────────
 function handleCredentialResponse(response) {
@@ -361,7 +365,6 @@ function onSignedIn() {
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
   document.getElementById('loginPanel').style.display = 'none';
-  // If success panel is showing (returned from iOS redirect), don't overwrite it
   if (document.getElementById('successPanel').style.display === 'flex') return;
   if (dataLoaded) {
     hideOverlay();
@@ -398,6 +401,12 @@ function renderList(listEl, items, onPick) {
       d.innerHTML = '<div class="ci-main">' + item.main + '</div>' +
                     (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
       d.addEventListener('mousedown', function(ev) {
+        ev.preventDefault();
+        onPick(item);
+        listEl.classList.remove('open');
+      });
+      // FIX: Also handle touchend for iOS so tapping a dropdown item works reliably
+      d.addEventListener('touchend', function(ev) {
         ev.preventDefault();
         onPick(item);
         listEl.classList.remove('open');
@@ -524,11 +533,11 @@ function loadData() {
 }
 
 // ── FORM SUBMISSION ───────────────────────────────────────────────────────────
-// iOS Safari: uses window.location (top-level navigation) — Apps Script writes
-//             row then redirects back to this page with ?submitted=true
-// Android/Desktop: uses JSONP (no page navigation, instant success screen)
-document.getElementById('requestForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+// FIX: Extracted into named function called by button onclick (type="button")
+// This prevents iOS Safari from re-opening dropdowns on form submit
+function handleSubmit() {
+  // FIX: Close all dropdowns and dismiss keyboard before doing anything else
+  closeAllDropdowns();
 
   var submitterEmail = currentUserEmail ||
                        document.getElementById('submitterEmailHidden').value || '';
@@ -577,13 +586,12 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   params.append('status',          'Pending');
 
   if (isIOS()) {
-    // ── iOS: direct navigation — the only method iOS Safari cannot block ──
-    // Apps Script writes the row, then redirects back here with ?submitted=true
+    // iOS: direct navigation — Apps Script writes row then redirects back with ?submitted=true
     params.append('redirect', 'true');
     window.location.href = APPS_SCRIPT_URL + '?' + params.toString();
 
   } else {
-    // ── Android / Desktop: JSONP — fast, no page reload ──────────────────
+    // Android / Desktop: JSONP — fast, no page reload
     var cbName    = 'submit_' + Date.now();
     var responded = false;
 
@@ -618,13 +626,12 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
     s.src = APPS_SCRIPT_URL + '?' + params.toString();
     document.head.appendChild(s);
   }
-});
+}
 
 // ── CANCEL REQUEST ────────────────────────────────────────────────────────────
 function cancelRequest() {
   if (!lastRequestId) return;
 
-  // Use JSONP for cancel on all devices
   var cbName = 'cancel_' + Date.now();
   window[cbName] = function() { delete window[cbName]; };
   var s = document.createElement('script');
