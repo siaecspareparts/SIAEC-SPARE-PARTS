@@ -482,8 +482,30 @@ function renderList(listEl, items, onPick) {
       var d = document.createElement('div');
       d.className = 'combo-item' + (item.isOthers ? ' ci-others' : '');
       d.innerHTML = '<div class="ci-main">' + item.main + '</div>' + (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
-      d.addEventListener('mousedown', function(ev) { ev.preventDefault(); onPick(item); listEl.classList.remove('open'); });
-      d.addEventListener('touchend',  function(ev) { ev.preventDefault(); onPick(item); listEl.classList.remove('open'); });
+
+      // Desktop: mousedown selects the item
+      d.addEventListener('mousedown', function(ev) {
+        ev.preventDefault();
+        onPick(item);
+        listEl.classList.remove('open');
+      });
+
+      // Mobile: only treat touchend as a tap if the finger didn't scroll.
+      // Record Y on touchstart; if finger moved more than 8px it was a scroll — ignore it.
+      var touchStartY = 0;
+      d.addEventListener('touchstart', function(ev) {
+        touchStartY = ev.touches[0].clientY;
+      }, { passive: true });
+      d.addEventListener('touchend', function(ev) {
+        var moved = Math.abs(ev.changedTouches[0].clientY - touchStartY);
+        if (moved < 8) {
+          ev.preventDefault();
+          onPick(item);
+          listEl.classList.remove('open');
+        }
+        // moved >= 8 means user was scrolling — do nothing, let the list scroll naturally
+      });
+
       listEl.appendChild(d);
     });
   }
