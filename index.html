@@ -41,6 +41,7 @@
   .user-avatar-placeholder { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--navy-dark); flex-shrink: 0; }
   .user-name { font-size: 10px; color: var(--white); font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sign-out-btn { background: none; border: none; cursor: pointer; color: var(--gold-light); font-size: 10px; font-family: 'DM Sans', sans-serif; padding: 0; text-decoration: underline; white-space: nowrap; }
+
   #inAppBlock { display: none; flex-direction: column; align-items: center; padding: 40px 28px 48px; background: var(--off-white); text-align: center; gap: 14px; }
   .inapp-icon { font-size: 52px; line-height: 1; margin-bottom: 4px; }
   .inapp-title { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--navy); }
@@ -49,6 +50,7 @@
   .inapp-box-title { font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
   .inapp-step { font-size: 12px; font-weight: 500; margin-bottom: 6px; line-height: 1.5; }
   .inapp-step span { font-weight: 400; color: #3a2800; }
+
   #loginPanel { padding: 48px 32px; display: none; flex-direction: column; align-items: center; gap: 20px; background: var(--off-white); }
   .login-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(13,43,94,0.25); }
   .login-icon svg { width: 30px; height: 30px; fill: var(--gold-light); }
@@ -59,6 +61,7 @@
   .browser-warning-icon { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
   .browser-warning-text { font-size: 12px; color: #78350f; line-height: 1.6; }
   .browser-warning-text strong { font-weight: 600; display: block; margin-bottom: 2px; }
+
   .form-body { padding: 20px 22px 24px; background: var(--off-white); }
   .field-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .field { display: grid; grid-template-columns: 140px 1fr; border-radius: 10px; overflow: visible; box-shadow: var(--shadow-sm); border: 1px solid var(--border); transition: box-shadow 0.2s, border-color 0.2s; position: relative; }
@@ -77,12 +80,12 @@
   .combo-list.open { display: block; }
   .combo-item { padding: 10px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f0f4fa; color: var(--text-dark); }
   .combo-item:last-child { border-bottom: none; }
-  .combo-item:hover { background: var(--light-blue); }
+  .combo-item:hover, .combo-item:active { background: var(--light-blue); }
   .combo-item .ci-main { font-weight: 600; color: var(--navy); }
   .combo-item .ci-sub { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
   .combo-empty { padding: 10px 14px; font-size: 12px; color: var(--text-mid); font-style: italic; }
   .submit-area { display: flex; justify-content: center; margin-top: 18px; }
-  .btn-submit { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%); color: var(--navy-dark); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: none; padding: 14px 48px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.35); transition: transform 0.18s, box-shadow 0.18s; }
+  .btn-submit { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%); color: var(--navy-dark); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: none; padding: 14px 48px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.35); transition: transform 0.18s, box-shadow 0.18s; -webkit-appearance: none; }
   .btn-submit:hover { transform: translateY(-2px); }
   .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .footer { background: var(--navy-dark); padding: 16px 22px; display: flex; justify-content: center; align-items: center; }
@@ -100,6 +103,7 @@
   .toast.show { transform: translateX(-50%) translateY(0); }
   .section-divider { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--navy); opacity: 0.45; margin: 4px 0 2px; padding-left: 2px; }
   #loadingOverlay { position: fixed; inset: 0; background: rgba(7,26,62,0.88); display: none; align-items: center; justify-content: center; z-index: 99998; flex-direction: column; gap: 12px; }
+  #loadingOverlay.active { display: flex; }
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
 </style>
@@ -108,7 +112,7 @@
 
 <div id="loadingOverlay">
   <div class="load-spinner"></div>
-  <div class="loading-text" id="loadingText">Loading dropdown data...</div>
+  <div class="loading-text" id="loadingText">Loading dropdown data…</div>
 </div>
 
 <div class="card">
@@ -128,6 +132,7 @@
     </div>
   </div>
 
+  <!-- In-app browser block -->
   <div id="inAppBlock">
     <div class="inapp-icon">&#128683;</div>
     <div class="inapp-title">Cannot open here</div>
@@ -140,6 +145,7 @@
     </div>
   </div>
 
+  <!-- Login panel -->
   <div id="loginPanel">
     <div class="login-icon">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -150,12 +156,13 @@
       <div class="browser-warning-icon">&#9888;&#65039;</div>
       <div class="browser-warning-text">
         <strong>Opening from WhatsApp or Telegram?</strong>
-        Sign-in won&#39;t work inside those apps. Please open this link directly in Safari (iPhone) or Chrome (Android).
+        Sign-in won&#39;t work inside those apps. Open this link in Safari (iPhone) or Chrome (Android).
       </div>
     </div>
     <div id="googleSignInButtonTarget"></div>
   </div>
 
+  <!-- Form panel -->
   <div id="formPanel" style="display:none;">
     <div class="form-body">
       <form id="requestForm" novalidate>
@@ -169,7 +176,7 @@
             <div class="field-label">Employee Name</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="employeeName" placeholder="Type or select..." autocomplete="off" />
+                <input class="combo-input" id="employeeName" placeholder="Type or select…" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-employee"></div>
               </div>
@@ -191,7 +198,7 @@
             <div class="field-label">Equipment Number</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="equipmentNumber" placeholder="Type or select..." autocomplete="off" />
+                <input class="combo-input" id="equipmentNumber" placeholder="Type or select…" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-equipment"></div>
               </div>
@@ -208,7 +215,7 @@
             <div class="field-label">Part Number</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="partNumber" placeholder="Select equipment first..." autocomplete="off" />
+                <input class="combo-input" id="partNumber" placeholder="Select equipment first…" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-partNumber"></div>
               </div>
@@ -218,7 +225,7 @@
             <div class="field-label">Part Name</div>
             <div class="field-input accent">
               <div class="combo-wrap">
-                <input class="combo-input accent-bg" id="partName" placeholder="Select equipment first..." autocomplete="off" />
+                <input class="combo-input accent-bg" id="partName" placeholder="Select equipment first…" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-partName"></div>
               </div>
@@ -228,7 +235,7 @@
             <div class="field-label">Quantity</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="quantityNumber" placeholder="Select quantity..." autocomplete="off" />
+                <input class="combo-input" id="quantityNumber" placeholder="Select quantity…" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-quantity"></div>
               </div>
@@ -236,7 +243,7 @@
           </div>
         </div>
         <div class="submit-area">
-          <!-- FIX: type="button" prevents iOS from re-focusing the last input on tap -->
+          <!-- type="button" prevents iOS from re-triggering dropdown focus on tap -->
           <button type="button" class="btn-submit" id="submitBtn" onclick="handleSubmit()">Submit Request</button>
         </div>
       </form>
@@ -249,13 +256,14 @@
     </div>
   </div>
 
+  <!-- Success panel -->
   <div id="successPanel" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;background:var(--white);">
     <div class="success-icon">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <div class="success-title">Request Submitted</div>
     <p class="success-sub">Your request is saved. An approval email will be sent shortly.<br>You have 5 minutes to cancel if needed.</p>
-    <div class="request-id" id="requestIdDisplay">Request ID: --</div>
+    <div class="request-id" id="requestIdDisplay">Request ID: —</div>
     <button class="btn-cancel" onclick="cancelRequest()">Cancel Request</button>
   </div>
 </div>
@@ -264,11 +272,7 @@
 
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
-// !! IMPORTANT: Replace the URL below with your actual hosted form URL !!
-// e.g. "https://yourusername.github.io/yourrepo/form.html"
-// Without this, iPhone submissions will redirect to the wrong page.
 var APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
-var THIS_PAGE_URL    = "https://siaecspareparts.github.io/SIAEC-SPARE-PARTS/";
 var GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
 
 var appData             = { employees: [], equipment: [], parts: [] };
@@ -277,38 +281,20 @@ var syncLock            = false;
 var currentUserEmail    = '';
 var currentUserName     = '';
 var dataLoaded          = false;
+var pendingSignIn       = false;
 var selectedVehicleType = '';
 
-// ── STARTUP ───────────────────────────────────────────────────────────────────
+// ── STARTUP: detect in-app browser ───────────────────────────────────────────
 (function startup() {
-  var params    = new URLSearchParams(window.location.search);
-  var submitted = params.get('submitted');
-  var requestId = params.get('requestId');
-  var error     = params.get('error');
-
-  if (submitted === 'true' && requestId) {
-    window.history.replaceState({}, document.title, window.location.pathname);
-    lastRequestId = requestId;
-    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-    document.getElementById('successPanel').style.display   = 'flex';
-    return;
-  }
-
-  if (error) {
-    window.history.replaceState({}, document.title, window.location.pathname);
-    document.getElementById('loginPanel').style.display = 'flex';
-    setTimeout(function() { toast('Submission failed. Please try again.'); }, 400);
-    return;
-  }
-
   var ua    = navigator.userAgent || '';
   var inApp = /FBAN|FBAV|Instagram|Telegram|WhatsApp|Line\/|MicroMessenger|\bwv\b/i.test(ua);
   if (inApp) {
-    document.getElementById('inAppBlock').style.display = 'flex';
-    return;
+    document.getElementById('inAppBlock').style.display  = 'flex';
+    document.getElementById('loginPanel').style.display  = 'none';
+  } else {
+    document.getElementById('inAppBlock').style.display  = 'none';
+    document.getElementById('loginPanel').style.display  = 'flex';
   }
-
-  document.getElementById('loginPanel').style.display = 'flex';
 })();
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -318,11 +304,11 @@ function setEmailFields(email) {
   document.getElementById('submitterEmail').value       = email;
 }
 function showOverlay(msg) {
-  document.getElementById('loadingText').textContent      = msg || 'Loading...';
-  document.getElementById('loadingOverlay').style.display = 'flex';
+  document.getElementById('loadingText').textContent = msg || 'Loading…';
+  document.getElementById('loadingOverlay').classList.add('active');
 }
 function hideOverlay() {
-  document.getElementById('loadingOverlay').style.display = 'none';
+  document.getElementById('loadingOverlay').classList.remove('active');
 }
 function norm(s) { return String(s).replace(/[-\s]/g, '').toUpperCase(); }
 function toast(msg, color) {
@@ -333,20 +319,12 @@ function toast(msg, color) {
   setTimeout(function() { t.classList.remove('show'); }, 3500);
 }
 function genId() {
-  var n = new Date();
-  var p = function(x) { return String(x).padStart(2, '0'); };
+  var n = new Date(), p = function(x) { return String(x).padStart(2, '0'); };
   return 'SPR-' + n.getFullYear() + p(n.getMonth()+1) + p(n.getDate()) + '-' + Date.now().toString().slice(-6);
 }
-function isIOS() {
-  return /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
-         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-// FIX: Close all dropdowns and blur active element before submitting
 function closeAllDropdowns() {
   if (document.activeElement) document.activeElement.blur();
-  document.querySelectorAll('.combo-list').forEach(function(l) {
-    l.classList.remove('open');
-  });
+  document.querySelectorAll('.combo-list').forEach(function(l) { l.classList.remove('open'); });
 }
 
 // ── GOOGLE SIGN IN ────────────────────────────────────────────────────────────
@@ -365,12 +343,12 @@ function onSignedIn() {
   document.getElementById('userInitial').textContent = currentUserName.charAt(0).toUpperCase();
   document.getElementById('userBadge').classList.add('visible');
   document.getElementById('loginPanel').style.display = 'none';
-  if (document.getElementById('successPanel').style.display === 'flex') return;
   if (dataLoaded) {
     hideOverlay();
     document.getElementById('formPanel').style.display = 'block';
   } else {
-    showOverlay('Loading dropdown data...');
+    pendingSignIn = true;
+    showOverlay('Signed in! Loading dropdown data…');
   }
 }
 function signOut() {
@@ -379,6 +357,7 @@ function signOut() {
   }
   currentUserName     = '';
   selectedVehicleType = '';
+  pendingSignIn       = false;
   setEmailFields('');
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
@@ -400,17 +379,8 @@ function renderList(listEl, items, onPick) {
       d.className = 'combo-item';
       d.innerHTML = '<div class="ci-main">' + item.main + '</div>' +
                     (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
-      d.addEventListener('mousedown', function(ev) {
-        ev.preventDefault();
-        onPick(item);
-        listEl.classList.remove('open');
-      });
-      // FIX: Also handle touchend for iOS so tapping a dropdown item works reliably
-      d.addEventListener('touchend', function(ev) {
-        ev.preventDefault();
-        onPick(item);
-        listEl.classList.remove('open');
-      });
+      d.addEventListener('mousedown', function(ev) { ev.preventDefault(); onPick(item); listEl.classList.remove('open'); });
+      d.addEventListener('touchend',  function(ev) { ev.preventDefault(); onPick(item); listEl.classList.remove('open'); });
       listEl.appendChild(d);
     });
   }
@@ -513,13 +483,14 @@ function loadData() {
   var settled = false;
   function finish(data, errorMsg) {
     if (settled) return;
-    settled    = true;
+    settled = true;
     if (data) appData = data;
     dataLoaded = true;
     delete window[cb];
     initCombos();
     hideOverlay();
-    if (currentUserEmail && document.getElementById('successPanel').style.display !== 'flex') {
+    if (pendingSignIn) {
+      pendingSignIn = false;
       document.getElementById('formPanel').style.display = 'block';
     }
     if (errorMsg) toast(errorMsg);
@@ -533,14 +504,12 @@ function loadData() {
 }
 
 // ── FORM SUBMISSION ───────────────────────────────────────────────────────────
-// FIX: Extracted into named function called by button onclick (type="button")
-// This prevents iOS Safari from re-opening dropdowns on form submit
+// Uses no-cors fetch on ALL devices — stays on page, no redirect, works on iPhone Safari + Android + Desktop
+// Apps Script receives the request, writes the row, and queues the 5-min Power Automate trigger
 function handleSubmit() {
-  // FIX: Close all dropdowns and dismiss keyboard before doing anything else
   closeAllDropdowns();
 
-  var submitterEmail = currentUserEmail ||
-                       document.getElementById('submitterEmailHidden').value || '';
+  var submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
   if (!submitterEmail) {
     toast('Session error. Please sign out and sign in again.');
     return;
@@ -561,15 +530,14 @@ function handleSubmit() {
     toast('Please select a valid Employee and Equipment.');
     return;
   }
-  if (!jobCardNumber || !employeeName || !equipmentNumber ||
-      !partNumber || !partName || !quantityNumber) {
+  if (!jobCardNumber || !employeeName || !equipmentNumber || !partNumber || !partName || !quantityNumber) {
     toast('All fields are required.');
     return;
   }
 
   var btn = document.getElementById('submitBtn');
   btn.disabled  = true;
-  btn.innerHTML = '<span class="spinner"></span> Submitting...';
+  btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
   var params = new URLSearchParams();
   params.append('requestId',       requestId);
@@ -585,65 +553,28 @@ function handleSubmit() {
   params.append('timestamp',       timestamp);
   params.append('status',          'Pending');
 
-  if (isIOS()) {
-    // iOS: direct navigation — Apps Script writes row then redirects back with ?submitted=true
-    params.append('redirect', 'true');
-    window.location.href = APPS_SCRIPT_URL + '?' + params.toString();
-
-  } else {
-    // Android / Desktop: JSONP — fast, no page reload
-    var cbName    = 'submit_' + Date.now();
-    var responded = false;
-
-    window[cbName] = function(result) {
-      responded = true;
-      delete window[cbName];
-      if (result && result.status === 'ok') {
-        lastRequestId = requestId;
-        document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-        document.getElementById('formPanel').style.display      = 'none';
-        document.getElementById('successPanel').style.display   = 'flex';
-      } else {
-        toast('Error: ' + (result && result.msg ? result.msg : 'Unknown error'));
-        btn.disabled  = false;
-        btn.innerHTML = 'Submit Request';
-      }
-    };
-
-    // Fallback: if JSONP doesn't respond in 8s, show success anyway
-    setTimeout(function() {
-      if (!responded) {
-        delete window[cbName];
-        lastRequestId = requestId;
-        document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-        document.getElementById('formPanel').style.display      = 'none';
-        document.getElementById('successPanel').style.display   = 'flex';
-      }
-    }, 8000);
-
-    params.append('callback', cbName);
-    var s = document.createElement('script');
-    s.src = APPS_SCRIPT_URL + '?' + params.toString();
-    document.head.appendChild(s);
-  }
+  // no-cors fetch: page never navigates away (fixes the Google Drive error on iPhone)
+  // Apps Script still receives all params, writes to sheet, and creates the 5-min PA trigger
+  fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+    .catch(function() {})   // expected — no-cors can't read response but request is sent
+    .finally(function() {
+      lastRequestId = requestId;
+      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+      document.getElementById('formPanel').style.display      = 'none';
+      document.getElementById('successPanel').style.display   = 'flex';
+    });
 }
 
 // ── CANCEL REQUEST ────────────────────────────────────────────────────────────
 function cancelRequest() {
   if (!lastRequestId) return;
-
-  var cbName = 'cancel_' + Date.now();
-  window[cbName] = function() { delete window[cbName]; };
-  var s = document.createElement('script');
-  s.src = APPS_SCRIPT_URL + '?action=cancel&requestId=' +
-          encodeURIComponent(lastRequestId) + '&callback=' + cbName;
-  document.head.appendChild(s);
+  fetch(APPS_SCRIPT_URL + '?action=cancel&requestId=' + encodeURIComponent(lastRequestId), {
+    method: 'GET', mode: 'no-cors'
+  }).catch(function() {});
 
   toast('Request cancelled.', '#0d2b5e');
-
   setTimeout(function() {
     document.getElementById('successPanel').style.display = 'none';
-    document.getElementById('loginPanel').style.display   = 'none';
     document.getElementById('formPanel').style.display    = 'block';
     document.getElementById('requestForm').reset();
     document.getElementById('staffNumber').value = '';
