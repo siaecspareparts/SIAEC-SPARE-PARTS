@@ -83,7 +83,11 @@
   .combo-item:hover, .combo-item:active { background: var(--light-blue); }
   .combo-item .ci-main { font-weight: 600; color: var(--navy); }
   .combo-item .ci-sub { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
-  .combo-empty { padding: 10px 14px; font-size: 12px; color: var(--text-mid); font-style: italic; }
+  /* Others option styled in gold to stand out */
+  .combo-item.ci-others { border-top: 1px solid var(--border); background: #fffdf5; }
+  .combo-item.ci-others .ci-main { color: var(--gold-dark); }
+  .combo-item.ci-others:hover { background: #fff8e1; }
+
   .submit-area { display: flex; justify-content: center; margin-top: 18px; }
   .btn-submit { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%); color: var(--navy-dark); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: none; padding: 14px 48px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.35); transition: transform 0.18s; -webkit-appearance: none; }
   .btn-submit:hover { transform: translateY(-2px); }
@@ -91,29 +95,23 @@
   .footer { background: var(--navy-dark); padding: 16px 22px; display: flex; justify-content: center; align-items: center; }
   .footer svg { width: 160px; height: 42px; }
 
-  /* ── Success panel ── */
   #successPanel { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 32px; background: var(--white); }
   .success-icon { width: 72px; height: 72px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(34,197,94,0.35); }
   .success-icon svg { width: 36px; height: 36px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
   .success-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); text-align: center; margin-bottom: 6px; }
   .success-sub { font-size: 13px; color: var(--text-mid); text-align: center; margin-bottom: 8px; line-height: 1.6; }
   .request-id { background: var(--light-blue); border: 1px solid var(--border); border-radius: 8px; padding: 8px 18px; font-size: 12px; color: var(--navy); font-weight: 600; margin-bottom: 16px; }
-
-  /* Cancel button + countdown */
   .cancel-area { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 8px; }
   .btn-cancel { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; border: none; padding: 12px 40px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 16px rgba(13,43,94,0.3); transition: opacity 0.3s; }
   .btn-cancel:disabled { opacity: 0.35; cursor: not-allowed; }
   #cancelCountdown { font-size: 12px; color: var(--text-mid); text-align: center; }
   #cancelCountdown.expired { color: var(--danger); font-weight: 600; }
-
-  /* Countdown ring */
   .countdown-ring { position: relative; width: 44px; height: 44px; }
   .countdown-ring svg { transform: rotate(-90deg); }
   .countdown-ring circle { fill: none; stroke-width: 3; }
   .ring-bg { stroke: #e2e8f0; }
   .ring-fill { stroke: var(--gold); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
   .ring-number { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--navy); }
-
   .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(13,43,94,0.3); border-top-color: var(--navy-dark); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--danger); color: white; padding: 12px 22px; border-radius: 50px; font-size: 13px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 99999; white-space: nowrap; }
@@ -123,6 +121,28 @@
   #loadingOverlay.active { display: flex; }
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+  /* ── OTHERS manual-entry box ─────────────────────────────────────────────
+     Hidden by default. Slides in when user picks "Others" from either
+     Part Number or Part Name dropdown.
+     Re-uses the exact same .field row styling as the rest of the form.
+  ──────────────────────────────────────────────────────────────────────── */
+  #othersBox {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    background: #fffdf5;
+    border: 1.5px dashed var(--gold);
+    border-radius: 12px;
+    padding: 12px 14px 14px;
+  }
+  #othersBox.visible { display: flex; }
+  .others-note {
+    font-size: 11px;
+    color: var(--gold-dark);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
 </style>
 </head>
 <body>
@@ -206,6 +226,7 @@
             <div class="field-input"><input type="email" id="submitterEmail" placeholder="Auto-filled from Google" readonly /></div>
           </div>
         </div>
+
         <p class="section-divider">Equipment Details</p>
         <div class="field-group">
           <div class="field">
@@ -223,6 +244,7 @@
             <div class="field-input"><input type="text" id="vehicleType" placeholder="Auto-filled" readonly /></div>
           </div>
         </div>
+
         <p class="section-divider">Parts Request</p>
         <div class="field-group">
           <div class="field">
@@ -245,6 +267,30 @@
               </div>
             </div>
           </div>
+
+          <!-- ════════════════════════════════════════════════════════════════
+               OTHERS MANUAL ENTRY BOX
+               Shown only when user picks "+ Others (not in list)" from either
+               Part Number or Part Name dropdown.
+               Uses the same .field row styling as the rest of the form.
+          ═════════════════════════════════════════════════════════════════ -->
+          <div id="othersBox">
+            <div class="others-note">&#9998;&nbsp; Part not in catalogue — please enter manually</div>
+            <div class="field">
+              <div class="field-label">Part Number</div>
+              <div class="field-input">
+                <input type="text" id="othersPartNumber" placeholder="Type part number…" autocomplete="off" />
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Part Name</div>
+              <div class="field-input accent">
+                <input type="text" id="othersPartName" placeholder="Type part description…" autocomplete="off" />
+              </div>
+            </div>
+          </div>
+          <!-- ════════════════════════════════════════════════════════════ -->
+
           <div class="field">
             <div class="field-label">Quantity</div>
             <div class="field-input">
@@ -256,6 +302,7 @@
             </div>
           </div>
         </div>
+
         <div class="submit-area">
           <button type="button" class="btn-submit" id="submitBtn" onclick="handleSubmit()">Submit Request</button>
         </div>
@@ -269,7 +316,6 @@
     </div>
   </div>
 
-  <!-- Success panel with 1-minute cancel countdown -->
   <div id="successPanel" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 32px;background:var(--white);">
     <div class="success-icon">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -277,9 +323,7 @@
     <div class="success-title">Request Submitted</div>
     <p class="success-sub">Your request is pending approval.<br>A confirmation email has been sent to you.</p>
     <div class="request-id" id="requestIdDisplay">Request ID: —</div>
-
     <div class="cancel-area">
-      <!-- Countdown ring -->
       <div class="countdown-ring">
         <svg width="44" height="44" viewBox="0 0 44 44">
           <circle class="ring-bg" cx="22" cy="22" r="19"/>
@@ -300,9 +344,7 @@
 <script>
 var APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
 var GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
-
-// ── Cancel window: must match CANCEL_WINDOW_MS in Code.gs ────────────────────
-var CANCEL_WINDOW_SECS = 60; // 1 minute
+var CANCEL_WINDOW_SECS = 60;
 
 var appData             = { employees: [], equipment: [], parts: [] };
 var lastRequestId       = null;
@@ -314,6 +356,9 @@ var pendingSignIn       = false;
 var selectedVehicleType = '';
 var cancelTimer         = null;
 var cancelSecsRemaining = 0;
+
+// ── NEW: tracks whether the Others box is currently active ───────────────────
+var isOthersPart = false;
 
 (function startup() {
   var ua    = navigator.userAgent || '';
@@ -353,37 +398,43 @@ function closeAllDropdowns() {
   document.querySelectorAll('.combo-list').forEach(function(l) { l.classList.remove('open'); });
 }
 
-// ── CANCEL COUNTDOWN TIMER ────────────────────────────────────────────────────
-var CIRCUMFERENCE = 2 * Math.PI * 19; // = ~119.4
+// ── OTHERS BOX helpers ───────────────────────────────────────────────────────
+function showOthersBox() {
+  isOthersPart = true;
+  document.getElementById('othersBox').classList.add('visible');
+  // Clear the combo inputs so they don't show "Others" as a value
+  document.getElementById('partNumber').value = '';
+  document.getElementById('partName').value   = '';
+  setTimeout(function() { document.getElementById('othersPartNumber').focus(); }, 80);
+}
+function hideOthersBox() {
+  isOthersPart = false;
+  document.getElementById('othersBox').classList.remove('visible');
+  document.getElementById('othersPartNumber').value = '';
+  document.getElementById('othersPartName').value   = '';
+}
 
+// ── CANCEL COUNTDOWN ──────────────────────────────────────────────────────────
+var CIRCUMFERENCE = 2 * Math.PI * 19;
 function startCancelCountdown() {
   cancelSecsRemaining = CANCEL_WINDOW_SECS;
   updateCancelUI(cancelSecsRemaining);
-
   if (cancelTimer) clearInterval(cancelTimer);
   cancelTimer = setInterval(function() {
     cancelSecsRemaining--;
     updateCancelUI(cancelSecsRemaining);
-    if (cancelSecsRemaining <= 0) {
-      clearInterval(cancelTimer);
-      cancelTimer = null;
-      lockCancelButton();
-    }
+    if (cancelSecsRemaining <= 0) { clearInterval(cancelTimer); cancelTimer = null; lockCancelButton(); }
   }, 1000);
 }
-
 function updateCancelUI(secsLeft) {
-  document.getElementById('ringNumber').textContent       = secsLeft;
+  document.getElementById('ringNumber').textContent        = secsLeft;
   document.getElementById('cancelSecondsLeft').textContent = secsLeft;
-  // Stroke dashoffset goes from 0 (full) to CIRCUMFERENCE (empty)
   var offset = CIRCUMFERENCE * (1 - secsLeft / CANCEL_WINDOW_SECS);
   document.getElementById('ringFill').style.strokeDashoffset = offset;
 }
-
 function lockCancelButton() {
-  var btn = document.getElementById('cancelBtn');
-  btn.disabled = true;
-  var cd  = document.getElementById('cancelCountdown');
+  document.getElementById('cancelBtn').disabled = true;
+  var cd = document.getElementById('cancelCountdown');
   cd.innerHTML = 'Cancel window expired — request is being processed';
   cd.classList.add('expired');
   document.getElementById('ringNumber').textContent = '0';
@@ -410,7 +461,7 @@ function onSignedIn() {
 function signOut() {
   if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
   if (cancelTimer) clearInterval(cancelTimer);
-  currentUserName = ''; selectedVehicleType = ''; pendingSignIn = false;
+  currentUserName = ''; selectedVehicleType = ''; pendingSignIn = false; isOthersPart = false;
   setEmailFields('');
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
@@ -419,6 +470,7 @@ function signOut() {
   document.getElementById('requestForm').reset();
   document.getElementById('staffNumber').value = '';
   document.getElementById('vehicleType').value = '';
+  hideOthersBox();
 }
 
 // ── COMBO DROPDOWNS ───────────────────────────────────────────────────────────
@@ -428,7 +480,7 @@ function renderList(listEl, items, onPick) {
   else {
     items.forEach(function(item) {
       var d = document.createElement('div');
-      d.className = 'combo-item';
+      d.className = 'combo-item' + (item.isOthers ? ' ci-others' : '');
       d.innerHTML = '<div class="ci-main">' + item.main + '</div>' + (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
       d.addEventListener('mousedown', function(ev) { ev.preventDefault(); onPick(item); listEl.classList.remove('open'); });
       d.addEventListener('touchend',  function(ev) { ev.preventDefault(); onPick(item); listEl.classList.remove('open'); });
@@ -453,30 +505,78 @@ function getFilteredParts(q, matchBy) {
     return p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq);
   }).slice(0, 30);
 }
+
+// The "Others" sentinel objects appended to part dropdowns
+var OTHERS_ITEM = { main: '+ Others (not in list)', sub: 'Enter part details manually', isOthers: true, data: null };
+
 function initCombos() {
+  // Employee — unchanged
   combo('employeeName','dl-employee',
     function(q){ return appData.employees.filter(function(e){return e.name.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.name,sub:'Staff No: '+e.staffNumber,data:e};}); },
     function(item){ document.getElementById('employeeName').value=item.data.name; document.getElementById('staffNumber').value=item.data.staffNumber; });
+
+  // Equipment — unchanged, but also hides Others box when equipment changes
   combo('equipmentNumber','dl-equipment',
     function(q){ return appData.equipment.filter(function(e){return norm(e.equipmentNumber).includes(norm(q))||e.vehicleType.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.equipmentNumber,sub:e.vehicleType,data:e};}); },
-    function(item){ document.getElementById('equipmentNumber').value=item.data.equipmentNumber; document.getElementById('vehicleType').value=item.data.vehicleType; selectedVehicleType=item.data.vehicleType; document.getElementById('partNumber').value=''; document.getElementById('partName').value=''; });
+    function(item){
+      document.getElementById('equipmentNumber').value=item.data.equipmentNumber;
+      document.getElementById('vehicleType').value=item.data.vehicleType;
+      selectedVehicleType=item.data.vehicleType;
+      document.getElementById('partNumber').value='';
+      document.getElementById('partName').value='';
+      hideOthersBox(); // reset Others box when equipment changes
+    });
+
+  // ── Part Number — Others appended at bottom ──────────────────────────────
   combo('partNumber','dl-partNumber',
-    function(q){ if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}]; var r=getFilteredParts(q,'number'); return r.length?r.map(function(p){return{main:p.partNumber,sub:p.partName,data:p};}): [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}]; },
-    function(item){ if(!item.data) return; document.getElementById('partNumber').value=item.data.partNumber; if(!syncLock){syncLock=true;document.getElementById('partName').value=item.data.partName;syncLock=false;} });
+    function(q){
+      if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
+      var r=getFilteredParts(q,'number');
+      var items=r.length
+        ? r.map(function(p){return{main:p.partNumber,sub:p.partName,data:p};})
+        : [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}];
+      items.push(OTHERS_ITEM); // ← always show Others at the bottom
+      return items;
+    },
+    function(item){
+      if(item.isOthers){ showOthersBox(); return; }       // ← open manual box
+      if(!item.data) return;
+      hideOthersBox();                                    // ← hide if real part picked
+      document.getElementById('partNumber').value=item.data.partNumber;
+      if(!syncLock){syncLock=true;document.getElementById('partName').value=item.data.partName;syncLock=false;}
+    });
+
+  // ── Part Name — Others appended at bottom ───────────────────────────────
   combo('partName','dl-partName',
-    function(q){ if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}]; var r=getFilteredParts(q,'name'); return r.length?r.map(function(p){return{main:p.partName,sub:p.partNumber,data:p};}): [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}]; },
-    function(item){ if(!item.data) return; document.getElementById('partName').value=item.data.partName; if(!syncLock){syncLock=true;document.getElementById('partNumber').value=item.data.partNumber;syncLock=false;} });
+    function(q){
+      if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
+      var r=getFilteredParts(q,'name');
+      var items=r.length
+        ? r.map(function(p){return{main:p.partName,sub:p.partNumber,data:p};})
+        : [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}];
+      items.push(OTHERS_ITEM); // ← always show Others at the bottom
+      return items;
+    },
+    function(item){
+      if(item.isOthers){ showOthersBox(); return; }       // ← open manual box
+      if(!item.data) return;
+      hideOthersBox();                                    // ← hide if real part picked
+      document.getElementById('partName').value=item.data.partName;
+      if(!syncLock){syncLock=true;document.getElementById('partNumber').value=item.data.partNumber;syncLock=false;}
+    });
+
+  // Quantity — unchanged
   combo('quantityNumber','dl-quantity',
-    function(q){ var r=[]; for(var i=1;i<=999;i++){if(!q||String(i).startsWith(q))r.push({main:String(i),sub:''});if(r.length>=30)break;} return r; },
-    function(item){ document.getElementById('quantityNumber').value=item.main; });
+    function(q){var r=[];for(var i=1;i<=999;i++){if(!q||String(i).startsWith(q))r.push({main:String(i),sub:''});if(r.length>=30)break;}return r;},
+    function(item){document.getElementById('quantityNumber').value=item.main;});
 }
 
 function loadData() {
   var cb='cb_'+Date.now(), settled=false;
-  function finish(data,errorMsg){ if(settled)return; settled=true; if(data)appData=data; dataLoaded=true; delete window[cb]; initCombos(); hideOverlay(); if(pendingSignIn){pendingSignIn=false;document.getElementById('formPanel').style.display='block';} if(errorMsg)toast(errorMsg); }
+  function finish(data,errorMsg){if(settled)return;settled=true;if(data)appData=data;dataLoaded=true;delete window[cb];initCombos();hideOverlay();if(pendingSignIn){pendingSignIn=false;document.getElementById('formPanel').style.display='block';}if(errorMsg)toast(errorMsg);}
   window[cb]=function(data){finish(data,null);};
   setTimeout(function(){finish(null,'Dropdowns could not load. Please refresh.');},15000);
-  var s=document.createElement('script'); s.src=APPS_SCRIPT_URL+'?action=getData&callback='+cb; s.onerror=function(){finish(null,'Could not reach server.');};
+  var s=document.createElement('script');s.src=APPS_SCRIPT_URL+'?action=getData&callback='+cb;s.onerror=function(){finish(null,'Could not reach server.');};
   document.head.appendChild(s);
 }
 
@@ -492,35 +592,54 @@ function handleSubmit() {
   var staffNumber     = document.getElementById('staffNumber').value.trim();
   var equipmentNumber = document.getElementById('equipmentNumber').value.trim();
   var vehicleType     = document.getElementById('vehicleType').value.trim();
-  var partNumber      = document.getElementById('partNumber').value.trim();
-  var partName        = document.getElementById('partName').value.trim();
   var quantityNumber  = document.getElementById('quantityNumber').value.trim();
-  var timestamp       = new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
+  var timestamp       = new Date().toLocaleString('en-SG', {timeZone:'Asia/Singapore'});
 
-  if (!staffNumber || !vehicleType) { toast('Please select a valid Employee and Equipment.'); return; }
-  if (!jobCardNumber || !employeeName || !equipmentNumber || !partNumber || !partName || !quantityNumber) { toast('All fields are required.'); return; }
+  // ── Resolve Part Number + Part Name based on Others state ────────────────
+  var partNumber, partName;
+  if (isOthersPart) {
+    partNumber = document.getElementById('othersPartNumber').value.trim();
+    partName   = document.getElementById('othersPartName').value.trim();
+    if (!partNumber || !partName) {
+      toast('Please fill in both Part Number and Part Name.');
+      return;
+    }
+  } else {
+    partNumber = document.getElementById('partNumber').value.trim();
+    partName   = document.getElementById('partName').value.trim();
+  }
+
+  if (!staffNumber || !vehicleType)  { toast('Please select a valid Employee and Equipment.'); return; }
+  if (!jobCardNumber || !employeeName || !equipmentNumber || !partNumber || !partName || !quantityNumber) {
+    toast('All fields are required.'); return;
+  }
 
   var btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
   var params = new URLSearchParams();
-  params.append('requestId', requestId); params.append('jobCardNumber', jobCardNumber);
-  params.append('employeeName', employeeName); params.append('staffNumber', staffNumber);
-  params.append('submitterEmail', submitterEmail); params.append('equipmentNumber', equipmentNumber);
-  params.append('vehicleType', vehicleType); params.append('partNumber', partNumber);
-  params.append('partName', partName); params.append('quantityNumber', quantityNumber);
-  params.append('timestamp', timestamp); params.append('status', 'Pending');
+  params.append('requestId',       requestId);
+  params.append('jobCardNumber',   jobCardNumber);
+  params.append('employeeName',    employeeName);
+  params.append('staffNumber',     staffNumber);
+  params.append('submitterEmail',  submitterEmail);
+  params.append('equipmentNumber', equipmentNumber);
+  params.append('vehicleType',     vehicleType);
+  params.append('partNumber',      partNumber);
+  params.append('partName',        partName);
+  params.append('quantityNumber',  quantityNumber);
+  params.append('timestamp',       timestamp);
+  params.append('status',          'Pending');
+  params.append('isNewPart',       isOthersPart ? 'true' : 'false'); // ← tells PA this is a new part
 
-  fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
-    .catch(function() {})
-    .finally(function() {
+  fetch(APPS_SCRIPT_URL + '?' + params.toString(), {method:'GET', mode:'no-cors'})
+    .catch(function(){})
+    .finally(function(){
       lastRequestId = requestId;
       document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
       document.getElementById('formPanel').style.display      = 'none';
       document.getElementById('successPanel').style.display   = 'flex';
-      // Reset cancel button and start countdown
-      var cancelBtn = document.getElementById('cancelBtn');
-      cancelBtn.disabled = false;
+      document.getElementById('cancelBtn').disabled = false;
       var cd = document.getElementById('cancelCountdown');
       cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
       cd.classList.remove('expired');
@@ -532,32 +651,28 @@ function handleSubmit() {
 // ── CANCEL REQUEST ────────────────────────────────────────────────────────────
 function cancelRequest() {
   if (!lastRequestId) return;
-  var btn = document.getElementById('cancelBtn');
-  btn.disabled = true;
+  document.getElementById('cancelBtn').disabled = true;
   if (cancelTimer) { clearInterval(cancelTimer); cancelTimer = null; }
-
-  fetch(APPS_SCRIPT_URL + '?action=cancel&requestId=' + encodeURIComponent(lastRequestId), {
-    method: 'GET', mode: 'no-cors'
-  }).catch(function() {});
-
+  fetch(APPS_SCRIPT_URL + '?action=cancel&requestId=' + encodeURIComponent(lastRequestId), {method:'GET',mode:'no-cors'}).catch(function(){});
   toast('Request cancelled.', '#0d2b5e');
-  setTimeout(function() {
+  setTimeout(function(){
     document.getElementById('successPanel').style.display = 'none';
     document.getElementById('formPanel').style.display    = 'block';
     document.getElementById('requestForm').reset();
     document.getElementById('staffNumber').value = '';
     document.getElementById('vehicleType').value = '';
     setEmailFields(currentUserEmail);
-    selectedVehicleType = '';
-    var submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = false; submitBtn.innerHTML = 'Submit Request';
+    selectedVehicleType = ''; isOthersPart = false;
+    hideOthersBox();
+    var sb = document.getElementById('submitBtn');
+    sb.disabled = false; sb.innerHTML = 'Submit Request';
     lastRequestId = null;
   }, 1500);
 }
 
 function initGoogleSignIn() {
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleCredentialResponse, auto_select: false, cancel_on_tap_outside: false, itp_support: true });
-  google.accounts.id.renderButton(document.getElementById('googleSignInButtonTarget'), { theme: 'outline', size: 'large', width: 280, shape: 'pill' });
+  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleCredentialResponse,auto_select:false,cancel_on_tap_outside:false,itp_support:true});
+  google.accounts.id.renderButton(document.getElementById('googleSignInButtonTarget'),{theme:'outline',size:'large',width:280,shape:'pill'});
 }
 function waitForGoogleThenInit() {
   if (window.google && google.accounts && google.accounts.id) initGoogleSignIn();
