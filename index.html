@@ -518,16 +518,14 @@ function combo(inputId, listId, getItems, onPick) {
 }
 
 // ── PART SEARCH — FIX: searches partNumber, altPartNumber, AND partName in ALL fields ──
-function getFilteredParts(q) {
+function getFilteredParts(q, matchBy) {
   if (!selectedVehicleType) return [];
   return appData.parts.filter(function(p) {
     if (p.vehicleType.trim().toLowerCase() !== selectedVehicleType.trim().toLowerCase()) return false;
     if (!q) return true;
     var nq = norm(q);
-    var ql = q.toLowerCase();
-    return norm(p.partNumber).includes(nq) ||
-           (p.altPartNumber && norm(p.altPartNumber).includes(nq)) ||
-           p.partName.toLowerCase().includes(ql);
+    if (matchBy === 'number') return norm(p.partNumber).includes(nq) || (p.altPartNumber && norm(p.altPartNumber).includes(nq)) || p.partName.toLowerCase().includes(q.toLowerCase());
+    return p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq) || (p.altPartNumber && norm(p.altPartNumber).includes(nq));
   }).slice(0, 30);
 }
 
@@ -610,11 +608,6 @@ function loadData() {
   document.head.appendChild(s);
 }
 
-function isIOS() {
-  return /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
-         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-
 function handleSubmit() {
   closeAllDropdowns();
   var submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
@@ -649,72 +642,38 @@ function handleSubmit() {
   var btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
-  var fields = {
-    requestId:       requestId,
-    jobCardNumber:   jobCardNumber,
-    employeeName:    employeeName,
-    staffNumber:     staffNumber,
-    submitterEmail:  submitterEmail,
-    equipmentNumber: equipmentNumber,
-    vehicleType:     vehicleType,
-    partNumber:      partNumber,
-    partName:        partName,
-    quantityNumber:  quantityNumber,
-    timestamp:       timestamp,
-    status:          'Pending',
-    isNewPart:       isOthersPart ? 'true' : 'false',
-    altPartNumber:   altPartNumber
-  };
+  var params = new URLSearchParams();
+  params.append('requestId',       requestId);
+  params.append('jobCardNumber',   jobCardNumber);
+  params.append('employeeName',    employeeName);
+  params.append('staffNumber',     staffNumber);
+  params.append('submitterEmail',  submitterEmail);
+  params.append('equipmentNumber', equipmentNumber);
+  params.append('vehicleType',     vehicleType);
+  params.append('partNumber',      partNumber);
+  params.append('partName',        partName);
+  params.append('quantityNumber',  quantityNumber);
+  params.append('timestamp',       timestamp);
+  params.append('status',          'Pending');
+  params.append('isNewPart',       isOthersPart ? 'true' : 'false');
+  params.append('altPartNumber',   altPartNumber);
 
-  if (isIOS()) {
-    // ── iOS Safari: direct page navigation — bypasses all cross-origin blocks ──
-    // Apps Script writes the row then redirects back here with ?submitted=true
-    var qs = Object.keys(fields).map(function(k) {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(fields[k]);
-    }).join('&');
-    window.location.href = APPS_SCRIPT_URL + '?redirect=true&' + qs;
-
-  } else {
-    // ── Android / Desktop: JSONP — no page reload needed ────────────────────
-    var cbName    = 'submit_cb_' + Date.now();
-    var responded = false;
-
-    window[cbName] = function(result) {
-      responded = true;
-      delete window[cbName];
-      if (result && result.status === 'ok') {
-        showSuccessPanel(requestId);
-      } else {
-        toast('Submission error. Please try again.');
-        btn.disabled = false; btn.innerHTML = 'Submit Request';
-      }
-    };
-
-    // Fallback: if JSONP callback never fires, show success anyway after 8s
-    setTimeout(function() {
-      if (!responded) { delete window[cbName]; showSuccessPanel(requestId); }
-    }, 8000);
-
-    var qs = Object.keys(fields).map(function(k) {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(fields[k]);
-    }).join('&');
-    var s = document.createElement('script');
-    s.src = APPS_SCRIPT_URL + '?callback=' + cbName + '&' + qs;
-    document.head.appendChild(s);
-  }
-}
-
-function showSuccessPanel(requestId) {
-  lastRequestId = requestId;
-  document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-  document.getElementById('formPanel').style.display      = 'none';
-  document.getElementById('successPanel').style.display   = 'flex';
-  document.getElementById('cancelBtn').disabled = false;
-  var cd = document.getElementById('cancelCountdown');
-  cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
-  cd.classList.remove('expired');
-  document.getElementById('ringFill').style.stroke = 'var(--gold)';
-  startCancelCountdown();
+  // Same fetch no-cors approach as the proven working version —
+  // fires the request, then immediately shows success UI without waiting.
+  fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+    .catch(function() {})
+    .finally(function() {
+      lastRequestId = requestId;
+      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+      document.getElementById('formPanel').style.display      = 'none';
+      document.getElementById('successPanel').style.display   = 'flex';
+      document.getElementById('cancelBtn').disabled = false;
+      var cd = document.getElementById('cancelCountdown');
+      cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
+      cd.classList.remove('expired');
+      document.getElementById('ringFill').style.stroke = 'var(--gold)';
+      startCancelCountdown();
+    });
 }
 
 function cancelRequest() {
@@ -771,28 +730,6 @@ function waitForGoogleThenInit() {
   if (window.google && google.accounts && google.accounts.id) initGoogleSignIn();
   else setTimeout(waitForGoogleThenInit, 100);
 }
-
-// ── iOS return: check URL for ?submitted=true after redirect back ─────────────
-(function checkIOSReturn() {
-  var params    = new URLSearchParams(window.location.search);
-  if (params.get('submitted') === 'true') {
-    window.history.replaceState({}, document.title, window.location.pathname);
-    var rid = params.get('requestId') || '';
-    // Wait for sign-in & data to load, then show success panel
-    var attempts = 0;
-    var wait = setInterval(function() {
-      attempts++;
-      if (dataLoaded || attempts > 40) {
-        clearInterval(wait);
-        if (rid) showSuccessPanel(rid);
-      }
-    }, 150);
-  }
-  if (params.get('error')) {
-    window.history.replaceState({}, document.title, window.location.pathname);
-    setTimeout(function() { toast('Submission failed. Please try again.'); }, 600);
-  }
-})();
 
 waitForGoogleThenInit();
 loadData();
