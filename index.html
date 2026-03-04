@@ -76,17 +76,17 @@
   .combo-input { width: 100%; min-height: 42px; padding: 8px 30px 8px 12px; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-dark); background: transparent; border-radius: 0 10px 10px 0; }
   .combo-input.accent-bg { background: var(--light-blue); }
   .combo-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--navy); font-size: 10px; }
-  .combo-list { position: absolute; top: calc(100% + 4px); left: -140px; width: calc(100% + 140px); background: white; border: 1.5px solid var(--gold); border-radius: 10px; box-shadow: 0 8px 24px rgba(13,43,94,0.18); max-height: 220px; overflow-y: auto; z-index: 9999; display: none; }
+  .combo-list { position: absolute; top: calc(100% + 4px); left: -140px; width: calc(100% + 140px); background: white; border: 1.5px solid var(--gold); border-radius: 10px; box-shadow: 0 8px 24px rgba(13,43,94,0.18); max-height: 220px; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 9999; display: none; }
   .combo-list.open { display: block; }
   .combo-item { padding: 10px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f0f4fa; color: var(--text-dark); }
   .combo-item:last-child { border-bottom: none; }
   .combo-item:hover, .combo-item:active { background: var(--light-blue); }
   .combo-item .ci-main { font-weight: 600; color: var(--navy); }
   .combo-item .ci-sub { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
-  /* Others option styled in gold to stand out */
   .combo-item.ci-others { border-top: 1px solid var(--border); background: #fffdf5; }
   .combo-item.ci-others .ci-main { color: var(--gold-dark); }
   .combo-item.ci-others:hover { background: #fff8e1; }
+  .combo-empty { padding: 10px 14px; font-size: 12px; color: var(--text-mid); font-style: italic; }
 
   .submit-area { display: flex; justify-content: center; margin-top: 18px; }
   .btn-submit { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%); color: var(--navy-dark); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: none; padding: 14px 48px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.35); transition: transform 0.18s; -webkit-appearance: none; }
@@ -122,11 +122,7 @@
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
 
-  /* ── OTHERS manual-entry box ─────────────────────────────────────────────
-     Hidden by default. Slides in when user picks "Others" from either
-     Part Number or Part Name dropdown.
-     Re-uses the exact same .field row styling as the rest of the form.
-  ──────────────────────────────────────────────────────────────────────── */
+  /* ── OTHERS manual-entry box ── */
   #othersBox {
     display: none;
     flex-direction: column;
@@ -268,12 +264,7 @@
             </div>
           </div>
 
-          <!-- ════════════════════════════════════════════════════════════════
-               OTHERS MANUAL ENTRY BOX
-               Shown only when user picks "+ Others (not in list)" from either
-               Part Number or Part Name dropdown.
-               Uses the same .field row styling as the rest of the form.
-          ═════════════════════════════════════════════════════════════════ -->
+          <!-- OTHERS manual entry — shown when user picks "+ Others (not in list)" -->
           <div id="othersBox">
             <div class="others-note">&#9998;&nbsp; Part not in catalogue — please enter manually</div>
             <div class="field">
@@ -289,7 +280,6 @@
               </div>
             </div>
           </div>
-          <!-- ════════════════════════════════════════════════════════════ -->
 
           <div class="field">
             <div class="field-label">Quantity</div>
@@ -356,9 +346,7 @@ var pendingSignIn       = false;
 var selectedVehicleType = '';
 var cancelTimer         = null;
 var cancelSecsRemaining = 0;
-
-// ── NEW: tracks whether the Others box is currently active ───────────────────
-var isOthersPart = false;
+var isOthersPart        = false;
 
 (function startup() {
   var ua    = navigator.userAgent || '';
@@ -398,11 +386,10 @@ function closeAllDropdowns() {
   document.querySelectorAll('.combo-list').forEach(function(l) { l.classList.remove('open'); });
 }
 
-// ── OTHERS BOX helpers ───────────────────────────────────────────────────────
+// ── OTHERS BOX helpers ────────────────────────────────────────────────────────
 function showOthersBox() {
   isOthersPart = true;
   document.getElementById('othersBox').classList.add('visible');
-  // Clear the combo inputs so they don't show "Others" as a value
   document.getElementById('partNumber').value = '';
   document.getElementById('partName').value   = '';
   setTimeout(function() { document.getElementById('othersPartNumber').focus(); }, 80);
@@ -483,15 +470,14 @@ function renderList(listEl, items, onPick) {
       d.className = 'combo-item' + (item.isOthers ? ' ci-others' : '');
       d.innerHTML = '<div class="ci-main">' + item.main + '</div>' + (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
 
-      // Desktop: mousedown selects the item
+      // Desktop: mousedown selects item
       d.addEventListener('mousedown', function(ev) {
         ev.preventDefault();
         onPick(item);
         listEl.classList.remove('open');
       });
 
-      // Mobile: only treat touchend as a tap if the finger didn't scroll.
-      // Record Y on touchstart; if finger moved more than 8px it was a scroll — ignore it.
+      // Mobile: only select if finger didn't scroll (moved < 8px)
       var touchStartY = 0;
       d.addEventListener('touchstart', function(ev) {
         touchStartY = ev.touches[0].clientY;
@@ -503,7 +489,6 @@ function renderList(listEl, items, onPick) {
           onPick(item);
           listEl.classList.remove('open');
         }
-        // moved >= 8 means user was scrolling — do nothing, let the list scroll naturally
       });
 
       listEl.appendChild(d);
@@ -517,27 +502,30 @@ function combo(inputId, listId, getItems, onPick) {
   inp.addEventListener('input', function() { renderList(lst, getItems(inp.value), onPick); });
   inp.addEventListener('blur',  function() { setTimeout(function() { lst.classList.remove('open'); }, 200); });
 }
-function getFilteredParts(q, matchBy) {
+
+// ── PART SEARCH — matches partNumber, altPartNumber, AND partName (description)
+function getFilteredParts(q) {
   if (!selectedVehicleType) return [];
   return appData.parts.filter(function(p) {
     if (p.vehicleType.trim().toLowerCase() !== selectedVehicleType.trim().toLowerCase()) return false;
     if (!q) return true;
     var nq = norm(q);
-    if (matchBy === 'number') return norm(p.partNumber).includes(nq) || (p.altPartNumber && norm(p.altPartNumber).includes(nq)) || p.partName.toLowerCase().includes(q.toLowerCase());
-    return p.partName.toLowerCase().includes(q.toLowerCase()) || norm(p.partNumber).includes(nq);
+    var ql = q.toLowerCase();
+    return norm(p.partNumber).includes(nq) ||
+           (p.altPartNumber && norm(p.altPartNumber).includes(nq)) ||
+           p.partName.toLowerCase().includes(ql);
   }).slice(0, 30);
 }
 
-// The "Others" sentinel objects appended to part dropdowns
 var OTHERS_ITEM = { main: '+ Others (not in list)', sub: 'Enter part details manually', isOthers: true, data: null };
 
 function initCombos() {
-  // Employee — unchanged
+  // Employee
   combo('employeeName','dl-employee',
     function(q){ return appData.employees.filter(function(e){return e.name.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.name,sub:'Staff No: '+e.staffNumber,data:e};}); },
     function(item){ document.getElementById('employeeName').value=item.data.name; document.getElementById('staffNumber').value=item.data.staffNumber; });
 
-  // Equipment — unchanged, but also hides Others box when equipment changes
+  // Equipment — also resets Others box when equipment changes
   combo('equipmentNumber','dl-equipment',
     function(q){ return appData.equipment.filter(function(e){return norm(e.equipmentNumber).includes(norm(q))||e.vehicleType.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.equipmentNumber,sub:e.vehicleType,data:e};}); },
     function(item){
@@ -546,48 +534,58 @@ function initCombos() {
       selectedVehicleType=item.data.vehicleType;
       document.getElementById('partNumber').value='';
       document.getElementById('partName').value='';
-      hideOthersBox(); // reset Others box when equipment changes
+      hideOthersBox();
     });
 
-  // ── Part Number — Others appended at bottom ──────────────────────────────
+  // Part Number — searches partNumber + altPartNumber + description
+  // Shows altPartNumber in sub-text when present
   combo('partNumber','dl-partNumber',
     function(q){
       if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
-      var r=getFilteredParts(q,'number');
-      var items=r.length
-        ? r.map(function(p){return{main:p.partNumber,sub:p.partName,data:p};})
+      var r = getFilteredParts(q);
+      var items = r.length
+        ? r.map(function(p){
+            var sub = p.partName;
+            if(p.altPartNumber && p.altPartNumber.trim()) sub += '  |  Alt: ' + p.altPartNumber;
+            return {main:p.partNumber, sub:sub, data:p};
+          })
         : [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}];
-      items.push(OTHERS_ITEM); // ← always show Others at the bottom
+      items.push(OTHERS_ITEM);
       return items;
     },
     function(item){
-      if(item.isOthers){ showOthersBox(); return; }       // ← open manual box
+      if(item.isOthers){ showOthersBox(); return; }
       if(!item.data) return;
-      hideOthersBox();                                    // ← hide if real part picked
+      hideOthersBox();
       document.getElementById('partNumber').value=item.data.partNumber;
       if(!syncLock){syncLock=true;document.getElementById('partName').value=item.data.partName;syncLock=false;}
     });
 
-  // ── Part Name — Others appended at bottom ───────────────────────────────
+  // Part Name — searches partName + altPartNumber + partNumber
+  // Shows altPartNumber in sub-text when present
   combo('partName','dl-partName',
     function(q){
       if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
-      var r=getFilteredParts(q,'name');
-      var items=r.length
-        ? r.map(function(p){return{main:p.partName,sub:p.partNumber,data:p};})
+      var r = getFilteredParts(q);
+      var items = r.length
+        ? r.map(function(p){
+            var sub = p.partNumber;
+            if(p.altPartNumber && p.altPartNumber.trim()) sub += '  |  Alt: ' + p.altPartNumber;
+            return {main:p.partName, sub:sub, data:p};
+          })
         : [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}];
-      items.push(OTHERS_ITEM); // ← always show Others at the bottom
+      items.push(OTHERS_ITEM);
       return items;
     },
     function(item){
-      if(item.isOthers){ showOthersBox(); return; }       // ← open manual box
+      if(item.isOthers){ showOthersBox(); return; }
       if(!item.data) return;
-      hideOthersBox();                                    // ← hide if real part picked
+      hideOthersBox();
       document.getElementById('partName').value=item.data.partName;
       if(!syncLock){syncLock=true;document.getElementById('partNumber').value=item.data.partNumber;syncLock=false;}
     });
 
-  // Quantity — unchanged
+  // Quantity
   combo('quantityNumber','dl-quantity',
     function(q){var r=[];for(var i=1;i<=999;i++){if(!q||String(i).startsWith(q))r.push({main:String(i),sub:''});if(r.length>=30)break;}return r;},
     function(item){document.getElementById('quantityNumber').value=item.main;});
@@ -617,7 +615,7 @@ function handleSubmit() {
   var quantityNumber  = document.getElementById('quantityNumber').value.trim();
   var timestamp       = new Date().toLocaleString('en-SG', {timeZone:'Asia/Singapore'});
 
-  // ── Resolve Part Number + Part Name based on Others state ────────────────
+  // Resolve Part Number + Part Name based on Others state
   var partNumber, partName;
   if (isOthersPart) {
     partNumber = document.getElementById('othersPartNumber').value.trim();
@@ -652,7 +650,7 @@ function handleSubmit() {
   params.append('quantityNumber',  quantityNumber);
   params.append('timestamp',       timestamp);
   params.append('status',          'Pending');
-  params.append('isNewPart',       isOthersPart ? 'true' : 'false'); // ← tells PA this is a new part
+  params.append('isNewPart',       isOthersPart ? 'true' : 'false');
 
   fetch(APPS_SCRIPT_URL + '?' + params.toString(), {method:'GET', mode:'no-cors'})
     .catch(function(){})
