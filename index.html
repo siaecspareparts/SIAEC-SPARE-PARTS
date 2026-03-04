@@ -610,6 +610,11 @@ function loadData() {
   document.head.appendChild(s);
 }
 
+function isIOS() {
+  return /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 function handleSubmit() {
   closeAllDropdowns();
   var submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
@@ -642,19 +647,7 @@ function handleSubmit() {
   }
 
   var btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting\u2026';
-
-  var iframeName = 'submit_frame_' + Date.now();
-  var iframe = document.createElement('iframe');
-  iframe.name = iframeName;
-  iframe.style.cssText = 'display:none;position:absolute;width:0;height:0;border:none;';
-  document.body.appendChild(iframe);
-
-  var hiddenForm = document.createElement('form');
-  hiddenForm.method = 'GET';
-  hiddenForm.action = APPS_SCRIPT_URL;
-  hiddenForm.target = iframeName;
-  hiddenForm.style.display = 'none';
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
   var fields = {
     requestId:       requestId,
@@ -673,35 +666,55 @@ function handleSubmit() {
     altPartNumber:   altPartNumber
   };
 
-  Object.keys(fields).forEach(function(key) {
-    var input = document.createElement('input');
-    input.type = 'hidden'; input.name = key; input.value = fields[key];
-    hiddenForm.appendChild(input);
-  });
-  document.body.appendChild(hiddenForm);
+  if (isIOS()) {
+    // ── iOS Safari: direct page navigation — bypasses all cross-origin blocks ──
+    // Apps Script writes the row then redirects back here with ?submitted=true
+    var qs = Object.keys(fields).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(fields[k]);
+    }).join('&');
+    window.location.href = APPS_SCRIPT_URL + '?redirect=true&' + qs;
 
-  var shown = false;
-  function showSuccess() {
-    if (shown) return; shown = true;
-    lastRequestId = requestId;
-    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-    document.getElementById('formPanel').style.display      = 'none';
-    document.getElementById('successPanel').style.display   = 'flex';
-    document.getElementById('cancelBtn').disabled = false;
-    var cd = document.getElementById('cancelCountdown');
-    cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
-    cd.classList.remove('expired');
-    document.getElementById('ringFill').style.stroke = 'var(--gold)';
-    startCancelCountdown();
+  } else {
+    // ── Android / Desktop: JSONP — no page reload needed ────────────────────
+    var cbName    = 'submit_cb_' + Date.now();
+    var responded = false;
+
+    window[cbName] = function(result) {
+      responded = true;
+      delete window[cbName];
+      if (result && result.status === 'ok') {
+        showSuccessPanel(requestId);
+      } else {
+        toast('Submission error. Please try again.');
+        btn.disabled = false; btn.innerHTML = 'Submit Request';
+      }
+    };
+
+    // Fallback: if JSONP callback never fires, show success anyway after 8s
     setTimeout(function() {
-      if (iframe.parentNode)     iframe.parentNode.removeChild(iframe);
-      if (hiddenForm.parentNode) hiddenForm.parentNode.removeChild(hiddenForm);
-    }, 5000);
-  }
+      if (!responded) { delete window[cbName]; showSuccessPanel(requestId); }
+    }, 8000);
 
-  iframe.onload = function() { showSuccess(); };
-  setTimeout(showSuccess, 3000);
-  hiddenForm.submit();
+    var qs = Object.keys(fields).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(fields[k]);
+    }).join('&');
+    var s = document.createElement('script');
+    s.src = APPS_SCRIPT_URL + '?callback=' + cbName + '&' + qs;
+    document.head.appendChild(s);
+  }
+}
+
+function showSuccessPanel(requestId) {
+  lastRequestId = requestId;
+  document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+  document.getElementById('formPanel').style.display      = 'none';
+  document.getElementById('successPanel').style.display   = 'flex';
+  document.getElementById('cancelBtn').disabled = false;
+  var cd = document.getElementById('cancelCountdown');
+  cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
+  cd.classList.remove('expired');
+  document.getElementById('ringFill').style.stroke = 'var(--gold)';
+  startCancelCountdown();
 }
 
 function cancelRequest() {
@@ -758,6 +771,29 @@ function waitForGoogleThenInit() {
   if (window.google && google.accounts && google.accounts.id) initGoogleSignIn();
   else setTimeout(waitForGoogleThenInit, 100);
 }
+
+// ── iOS return: check URL for ?submitted=true after redirect back ─────────────
+(function checkIOSReturn() {
+  var params    = new URLSearchParams(window.location.search);
+  if (params.get('submitted') === 'true') {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    var rid = params.get('requestId') || '';
+    // Wait for sign-in & data to load, then show success panel
+    var attempts = 0;
+    var wait = setInterval(function() {
+      attempts++;
+      if (dataLoaded || attempts > 40) {
+        clearInterval(wait);
+        if (rid) showSuccessPanel(rid);
+      }
+    }, 150);
+  }
+  if (params.get('error')) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    setTimeout(function() { toast('Submission failed. Please try again.'); }, 600);
+  }
+})();
+
 waitForGoogleThenInit();
 loadData();
 </script>
