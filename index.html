@@ -88,7 +88,6 @@
   .combo-item.ci-others:hover { background: #fff8e1; }
   .combo-empty { padding: 10px 14px; font-size: 12px; color: var(--text-mid); font-style: italic; }
 
-  /* ── Alt Part Number badge shown below Part Number after selection ── */
   .alt-badge {
     display: none;
     font-size: 11px;
@@ -138,7 +137,6 @@
   .loading-text { color: var(--gold-light); font-size: 14px; text-align: center; padding: 0 24px; }
   .load-spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
 
-  /* ── OTHERS manual-entry box ── */
   #othersBox {
     display: none;
     flex-direction: column;
@@ -161,7 +159,7 @@
 
 <div id="loadingOverlay">
   <div class="load-spinner"></div>
-  <div class="loading-text" id="loadingText">Loading dropdown data…</div>
+  <div class="loading-text" id="loadingText">Loading dropdown data\u2026</div>
 </div>
 
 <div class="card">
@@ -222,7 +220,7 @@
             <div class="field-label">Employee Name</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="employeeName" placeholder="Type or select…" autocomplete="off" />
+                <input class="combo-input" id="employeeName" placeholder="Type or select\u2026" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-employee"></div>
               </div>
@@ -245,7 +243,7 @@
             <div class="field-label">Equipment Number</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="equipmentNumber" placeholder="Type or select…" autocomplete="off" />
+                <input class="combo-input" id="equipmentNumber" placeholder="Type or select\u2026" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-equipment"></div>
               </div>
@@ -263,40 +261,38 @@
             <div class="field-label">Part Number</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="partNumber" placeholder="Select equipment first…" autocomplete="off" />
+                <input class="combo-input" id="partNumber" placeholder="Select equipment first\u2026" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-partNumber"></div>
               </div>
             </div>
           </div>
 
-          <!-- ✅ NEW: Alt Part Number badge — appears below Part Number when applicable -->
           <div class="alt-badge" id="altBadge"></div>
 
           <div class="field">
             <div class="field-label">Part Name</div>
             <div class="field-input accent">
               <div class="combo-wrap">
-                <input class="combo-input accent-bg" id="partName" placeholder="Select equipment first…" autocomplete="off" />
+                <input class="combo-input accent-bg" id="partName" placeholder="Select equipment first\u2026" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-partName"></div>
               </div>
             </div>
           </div>
 
-          <!-- OTHERS manual entry — shown when user picks "+ Others (not in list)" -->
           <div id="othersBox">
-            <div class="others-note">&#9998;&nbsp; Part not in catalogue — please enter manually</div>
+            <div class="others-note">&#9998;&nbsp; Part not in catalogue \u2014 please enter manually</div>
             <div class="field">
               <div class="field-label">Part Number</div>
               <div class="field-input">
-                <input type="text" id="othersPartNumber" placeholder="Type part number…" autocomplete="off" />
+                <input type="text" id="othersPartNumber" placeholder="Type part number\u2026" autocomplete="off" />
               </div>
             </div>
             <div class="field">
               <div class="field-label">Part Name</div>
               <div class="field-input accent">
-                <input type="text" id="othersPartName" placeholder="Type part description…" autocomplete="off" />
+                <input type="text" id="othersPartName" placeholder="Type part description\u2026" autocomplete="off" />
               </div>
             </div>
           </div>
@@ -305,7 +301,7 @@
             <div class="field-label">Quantity</div>
             <div class="field-input">
               <div class="combo-wrap">
-                <input class="combo-input" id="quantityNumber" placeholder="Select quantity…" autocomplete="off" />
+                <input class="combo-input" id="quantityNumber" placeholder="Select quantity\u2026" autocomplete="off" />
                 <span class="combo-arrow">&#9660;</span>
                 <div class="combo-list" id="dl-quantity"></div>
               </div>
@@ -332,7 +328,7 @@
     </div>
     <div class="success-title">Request Submitted</div>
     <p class="success-sub">Your request is pending approval.<br>A confirmation email has been sent to you.</p>
-    <div class="request-id" id="requestIdDisplay">Request ID: —</div>
+    <div class="request-id" id="requestIdDisplay">Request ID: \u2014</div>
     <div class="cancel-area">
       <div class="countdown-ring">
         <svg width="44" height="44" viewBox="0 0 44 44">
@@ -367,7 +363,7 @@ var selectedVehicleType = '';
 var cancelTimer         = null;
 var cancelSecsRemaining = 0;
 var isOthersPart        = false;
-var selectedAltPartNumber = ''; // ✅ NEW: tracks alt part number of selected part
+var selectedAltPartNumber = '';
 
 (function startup() {
   var ua    = navigator.userAgent || '';
@@ -387,7 +383,7 @@ function setEmailFields(email) {
   document.getElementById('submitterEmail').value       = email;
 }
 function showOverlay(msg) {
-  document.getElementById('loadingText').textContent = msg || 'Loading…';
+  document.getElementById('loadingText').textContent = msg || 'Loading\u2026';
   document.getElementById('loadingOverlay').classList.add('active');
 }
 function hideOverlay() { document.getElementById('loadingOverlay').classList.remove('active'); }
@@ -407,12 +403,11 @@ function closeAllDropdowns() {
   document.querySelectorAll('.combo-list').forEach(function(l) { l.classList.remove('open'); });
 }
 
-// ✅ NEW: Show/hide the alt part number badge below Part Number field
 function setAltBadge(altNum) {
   selectedAltPartNumber = altNum || '';
   var badge = document.getElementById('altBadge');
   if (altNum && altNum.trim()) {
-    badge.textContent = '🔗 Also known as: ' + altNum;
+    badge.textContent = '\ud83d\udd17 Also known as: ' + altNum;
     badge.classList.add('visible');
   } else {
     badge.textContent = '';
@@ -420,10 +415,9 @@ function setAltBadge(altNum) {
   }
 }
 
-// ── OTHERS BOX helpers ────────────────────────────────────────────────────────
 function showOthersBox() {
   isOthersPart = true;
-  setAltBadge(''); // clear badge when switching to Others
+  setAltBadge('');
   document.getElementById('othersBox').classList.add('visible');
   document.getElementById('partNumber').value = '';
   document.getElementById('partName').value   = '';
@@ -436,7 +430,6 @@ function hideOthersBox() {
   document.getElementById('othersPartName').value   = '';
 }
 
-// ── CANCEL COUNTDOWN ──────────────────────────────────────────────────────────
 var CIRCUMFERENCE = 2 * Math.PI * 19;
 function startCancelCountdown() {
   cancelSecsRemaining = CANCEL_WINDOW_SECS;
@@ -457,13 +450,12 @@ function updateCancelUI(secsLeft) {
 function lockCancelButton() {
   document.getElementById('cancelBtn').disabled = true;
   var cd = document.getElementById('cancelCountdown');
-  cd.innerHTML = 'Cancel window expired — request is being processed';
+  cd.innerHTML = 'Cancel window expired \u2014 request is being processed';
   cd.classList.add('expired');
   document.getElementById('ringNumber').textContent = '0';
   document.getElementById('ringFill').style.stroke  = '#ef4444';
 }
 
-// ── GOOGLE SIGN IN ────────────────────────────────────────────────────────────
 function handleCredentialResponse(response) {
   try {
     var payload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -478,14 +470,14 @@ function onSignedIn() {
   document.getElementById('userBadge').classList.add('visible');
   document.getElementById('loginPanel').style.display = 'none';
   if (dataLoaded) { hideOverlay(); document.getElementById('formPanel').style.display = 'block'; }
-  else { pendingSignIn = true; showOverlay('Signed in! Loading dropdown data…'); }
+  else { pendingSignIn = true; showOverlay('Signed in! Loading dropdown data\u2026'); }
 }
 function signOut() {
   if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
   if (cancelTimer) clearInterval(cancelTimer);
   currentUserName = ''; selectedVehicleType = ''; pendingSignIn = false; isOthersPart = false;
   setEmailFields('');
-  setAltBadge(''); // ✅ clear badge on sign out
+  setAltBadge('');
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
@@ -496,7 +488,6 @@ function signOut() {
   hideOthersBox();
 }
 
-// ── COMBO DROPDOWNS ───────────────────────────────────────────────────────────
 function renderList(listEl, items, onPick) {
   listEl.innerHTML = '';
   if (!items.length) { listEl.innerHTML = '<div class="combo-empty">No results found</div>'; }
@@ -505,28 +496,15 @@ function renderList(listEl, items, onPick) {
       var d = document.createElement('div');
       d.className = 'combo-item' + (item.isOthers ? ' ci-others' : '');
       d.innerHTML = '<div class="ci-main">' + item.main + '</div>' + (item.sub ? '<div class="ci-sub">' + item.sub + '</div>' : '');
-
-      // Desktop: mousedown selects item
       d.addEventListener('mousedown', function(ev) {
-        ev.preventDefault();
-        onPick(item);
-        listEl.classList.remove('open');
+        ev.preventDefault(); onPick(item); listEl.classList.remove('open');
       });
-
-      // Mobile: only select if finger didn't scroll (moved < 8px)
       var touchStartY = 0;
-      d.addEventListener('touchstart', function(ev) {
-        touchStartY = ev.touches[0].clientY;
-      }, { passive: true });
+      d.addEventListener('touchstart', function(ev) { touchStartY = ev.touches[0].clientY; }, { passive: true });
       d.addEventListener('touchend', function(ev) {
         var moved = Math.abs(ev.changedTouches[0].clientY - touchStartY);
-        if (moved < 8) {
-          ev.preventDefault();
-          onPick(item);
-          listEl.classList.remove('open');
-        }
+        if (moved < 8) { ev.preventDefault(); onPick(item); listEl.classList.remove('open'); }
       });
-
       listEl.appendChild(d);
     });
   }
@@ -539,7 +517,7 @@ function combo(inputId, listId, getItems, onPick) {
   inp.addEventListener('blur',  function() { setTimeout(function() { lst.classList.remove('open'); }, 200); });
 }
 
-// ── PART SEARCH — matches partNumber, altPartNumber, AND partName ─────────────
+// ── PART SEARCH — FIX: searches partNumber, altPartNumber, AND partName in ALL fields ──
 function getFilteredParts(q) {
   if (!selectedVehicleType) return [];
   return appData.parts.filter(function(p) {
@@ -556,12 +534,10 @@ function getFilteredParts(q) {
 var OTHERS_ITEM = { main: '+ Others (not in list)', sub: 'Enter part details manually', isOthers: true, data: null };
 
 function initCombos() {
-  // Employee
   combo('employeeName','dl-employee',
     function(q){ return appData.employees.filter(function(e){return e.name.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.name,sub:'Staff No: '+e.staffNumber,data:e};}); },
     function(item){ document.getElementById('employeeName').value=item.data.name; document.getElementById('staffNumber').value=item.data.staffNumber; });
 
-  // Equipment — resets part fields and badge when equipment changes
   combo('equipmentNumber','dl-equipment',
     function(q){ return appData.equipment.filter(function(e){return norm(e.equipmentNumber).includes(norm(q))||e.vehicleType.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.equipmentNumber,sub:e.vehicleType,data:e};}); },
     function(item){
@@ -570,20 +546,18 @@ function initCombos() {
       selectedVehicleType=item.data.vehicleType;
       document.getElementById('partNumber').value='';
       document.getElementById('partName').value='';
-      setAltBadge(''); // ✅ clear badge when equipment changes
+      setAltBadge('');
       hideOthersBox();
     });
 
-  // Part Number — searches partNumber + altPartNumber + partName
-  // ✅ Shows altPartNumber in sub-text; sets badge + stores selectedAltPartNumber on pick
+  // FIX: Part Number dropdown — shows alt number in sub-text, searches all 3 fields
   combo('partNumber','dl-partNumber',
     function(q){
       if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
       var r = getFilteredParts(q);
       var items = r.length
         ? r.map(function(p){
-            var sub = p.partName;
-            if(p.altPartNumber && p.altPartNumber.trim()) sub += '  |  Alt: ' + p.altPartNumber;
+            var sub = p.partName + (p.altPartNumber ? ' \u00b7 Alt: ' + p.altPartNumber : '');
             return {main:p.partNumber, sub:sub, data:p};
           })
         : [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}];
@@ -595,19 +569,18 @@ function initCombos() {
       if(!item.data) return;
       hideOthersBox();
       document.getElementById('partNumber').value=item.data.partNumber;
-      setAltBadge(item.data.altPartNumber); // ✅ show badge with alt number
+      setAltBadge(item.data.altPartNumber);
       if(!syncLock){syncLock=true;document.getElementById('partName').value=item.data.partName;syncLock=false;}
     });
 
-  // Part Name — same search logic, badge set on pick too
+  // FIX: Part Name dropdown — shows alt number in sub-text, searches all 3 fields
   combo('partName','dl-partName',
     function(q){
       if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
       var r = getFilteredParts(q);
       var items = r.length
         ? r.map(function(p){
-            var sub = p.partNumber;
-            if(p.altPartNumber && p.altPartNumber.trim()) sub += '  |  Alt: ' + p.altPartNumber;
+            var sub = p.partNumber + (p.altPartNumber ? ' \u00b7 Alt: ' + p.altPartNumber : '');
             return {main:p.partName, sub:sub, data:p};
           })
         : [{main:'No parts found for '+selectedVehicleType,sub:'',data:null}];
@@ -619,11 +592,10 @@ function initCombos() {
       if(!item.data) return;
       hideOthersBox();
       document.getElementById('partName').value=item.data.partName;
-      setAltBadge(item.data.altPartNumber); // ✅ show badge with alt number
+      setAltBadge(item.data.altPartNumber);
       if(!syncLock){syncLock=true;document.getElementById('partNumber').value=item.data.partNumber;syncLock=false;}
     });
 
-  // Quantity
   combo('quantityNumber','dl-quantity',
     function(q){var r=[];for(var i=1;i<=999;i++){if(!q||String(i).startsWith(q))r.push({main:String(i),sub:''});if(r.length>=30)break;}return r;},
     function(item){document.getElementById('quantityNumber').value=item.main;});
@@ -638,7 +610,6 @@ function loadData() {
   document.head.appendChild(s);
 }
 
-// ── FORM SUBMISSION — uses hidden iframe (works on iPhone Safari/Chrome) ───────
 function handleSubmit() {
   closeAllDropdowns();
   var submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
@@ -653,17 +624,16 @@ function handleSubmit() {
   var quantityNumber  = document.getElementById('quantityNumber').value.trim();
   var timestamp       = new Date().toLocaleString('en-SG', {timeZone:'Asia/Singapore'});
 
-  // Resolve part fields
   var partNumber, partName, altPartNumber;
   if (isOthersPart) {
     partNumber    = document.getElementById('othersPartNumber').value.trim();
     partName      = document.getElementById('othersPartName').value.trim();
-    altPartNumber = ''; // Others parts have no alt number
+    altPartNumber = '';
     if (!partNumber || !partName) { toast('Please fill in both Part Number and Part Name.'); return; }
   } else {
     partNumber    = document.getElementById('partNumber').value.trim();
     partName      = document.getElementById('partName').value.trim();
-    altPartNumber = selectedAltPartNumber; // ✅ carry the tracked alt part number
+    altPartNumber = selectedAltPartNumber;
   }
 
   if (!staffNumber || !vehicleType)  { toast('Please select a valid Employee and Equipment.'); return; }
@@ -672,9 +642,8 @@ function handleSubmit() {
   }
 
   var btn = document.getElementById('submitBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting\u2026';
 
-  // ── Hidden iframe submission — works on all browsers including iPhone ────
   var iframeName = 'submit_frame_' + Date.now();
   var iframe = document.createElement('iframe');
   iframe.name = iframeName;
@@ -701,7 +670,7 @@ function handleSubmit() {
     timestamp:       timestamp,
     status:          'Pending',
     isNewPart:       isOthersPart ? 'true' : 'false',
-    altPartNumber:   altPartNumber  // ✅ sent to Apps Script → saved in column M
+    altPartNumber:   altPartNumber
   };
 
   Object.keys(fields).forEach(function(key) {
@@ -731,11 +700,10 @@ function handleSubmit() {
   }
 
   iframe.onload = function() { showSuccess(); };
-  setTimeout(showSuccess, 3000); // fallback if onload doesn't fire
+  setTimeout(showSuccess, 3000);
   hiddenForm.submit();
 }
 
-// ── CANCEL REQUEST — also uses hidden iframe ──────────────────────────────────
 function cancelRequest() {
   if (!lastRequestId) return;
   document.getElementById('cancelBtn').disabled = true;
@@ -769,7 +737,7 @@ function cancelRequest() {
     document.getElementById('staffNumber').value = '';
     document.getElementById('vehicleType').value = '';
     setEmailFields(currentUserEmail);
-    setAltBadge(''); // ✅ clear badge on cancel
+    setAltBadge('');
     selectedVehicleType = ''; isOthersPart = false;
     hideOthersBox();
     var sb = document.getElementById('submitBtn');
