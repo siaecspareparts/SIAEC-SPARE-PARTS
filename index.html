@@ -88,6 +88,22 @@
   .combo-item.ci-others:hover { background: #fff8e1; }
   .combo-empty { padding: 10px 14px; font-size: 12px; color: var(--text-mid); font-style: italic; }
 
+  /* ── Alt Part Number badge shown below Part Number after selection ── */
+  .alt-badge {
+    display: none;
+    font-size: 11px;
+    color: var(--gold-dark);
+    background: #fffbe6;
+    border: 1px solid var(--gold-light);
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-top: -4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .alt-badge.visible { display: block; }
+
   .submit-area { display: flex; justify-content: center; margin-top: 18px; }
   .btn-submit { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%); color: var(--navy-dark); font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: none; padding: 14px 48px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 20px rgba(201,168,76,0.35); transition: transform 0.18s; -webkit-appearance: none; }
   .btn-submit:hover { transform: translateY(-2px); }
@@ -253,6 +269,10 @@
               </div>
             </div>
           </div>
+
+          <!-- ✅ NEW: Alt Part Number badge — appears below Part Number when applicable -->
+          <div class="alt-badge" id="altBadge"></div>
+
           <div class="field">
             <div class="field-label">Part Name</div>
             <div class="field-input accent">
@@ -347,6 +367,7 @@ var selectedVehicleType = '';
 var cancelTimer         = null;
 var cancelSecsRemaining = 0;
 var isOthersPart        = false;
+var selectedAltPartNumber = ''; // ✅ NEW: tracks alt part number of selected part
 
 (function startup() {
   var ua    = navigator.userAgent || '';
@@ -386,9 +407,23 @@ function closeAllDropdowns() {
   document.querySelectorAll('.combo-list').forEach(function(l) { l.classList.remove('open'); });
 }
 
+// ✅ NEW: Show/hide the alt part number badge below Part Number field
+function setAltBadge(altNum) {
+  selectedAltPartNumber = altNum || '';
+  var badge = document.getElementById('altBadge');
+  if (altNum && altNum.trim()) {
+    badge.textContent = '🔗 Also known as: ' + altNum;
+    badge.classList.add('visible');
+  } else {
+    badge.textContent = '';
+    badge.classList.remove('visible');
+  }
+}
+
 // ── OTHERS BOX helpers ────────────────────────────────────────────────────────
 function showOthersBox() {
   isOthersPart = true;
+  setAltBadge(''); // clear badge when switching to Others
   document.getElementById('othersBox').classList.add('visible');
   document.getElementById('partNumber').value = '';
   document.getElementById('partName').value   = '';
@@ -450,6 +485,7 @@ function signOut() {
   if (cancelTimer) clearInterval(cancelTimer);
   currentUserName = ''; selectedVehicleType = ''; pendingSignIn = false; isOthersPart = false;
   setEmailFields('');
+  setAltBadge(''); // ✅ clear badge on sign out
   document.getElementById('userBadge').classList.remove('visible');
   document.getElementById('formPanel').style.display    = 'none';
   document.getElementById('successPanel').style.display = 'none';
@@ -503,7 +539,7 @@ function combo(inputId, listId, getItems, onPick) {
   inp.addEventListener('blur',  function() { setTimeout(function() { lst.classList.remove('open'); }, 200); });
 }
 
-// ── PART SEARCH — matches partNumber, altPartNumber, AND partName (description)
+// ── PART SEARCH — matches partNumber, altPartNumber, AND partName ─────────────
 function getFilteredParts(q) {
   if (!selectedVehicleType) return [];
   return appData.parts.filter(function(p) {
@@ -525,7 +561,7 @@ function initCombos() {
     function(q){ return appData.employees.filter(function(e){return e.name.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.name,sub:'Staff No: '+e.staffNumber,data:e};}); },
     function(item){ document.getElementById('employeeName').value=item.data.name; document.getElementById('staffNumber').value=item.data.staffNumber; });
 
-  // Equipment — also resets Others box when equipment changes
+  // Equipment — resets part fields and badge when equipment changes
   combo('equipmentNumber','dl-equipment',
     function(q){ return appData.equipment.filter(function(e){return norm(e.equipmentNumber).includes(norm(q))||e.vehicleType.toLowerCase().includes(q.toLowerCase());}).slice(0,20).map(function(e){return{main:e.equipmentNumber,sub:e.vehicleType,data:e};}); },
     function(item){
@@ -534,11 +570,12 @@ function initCombos() {
       selectedVehicleType=item.data.vehicleType;
       document.getElementById('partNumber').value='';
       document.getElementById('partName').value='';
+      setAltBadge(''); // ✅ clear badge when equipment changes
       hideOthersBox();
     });
 
-  // Part Number — searches partNumber + altPartNumber + description
-  // Shows altPartNumber in sub-text when present
+  // Part Number — searches partNumber + altPartNumber + partName
+  // ✅ Shows altPartNumber in sub-text; sets badge + stores selectedAltPartNumber on pick
   combo('partNumber','dl-partNumber',
     function(q){
       if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
@@ -558,11 +595,11 @@ function initCombos() {
       if(!item.data) return;
       hideOthersBox();
       document.getElementById('partNumber').value=item.data.partNumber;
+      setAltBadge(item.data.altPartNumber); // ✅ show badge with alt number
       if(!syncLock){syncLock=true;document.getElementById('partName').value=item.data.partName;syncLock=false;}
     });
 
-  // Part Name — searches partName + altPartNumber + partNumber
-  // Shows altPartNumber in sub-text when present
+  // Part Name — same search logic, badge set on pick too
   combo('partName','dl-partName',
     function(q){
       if(!selectedVehicleType) return [{main:'Select an equipment number first',sub:'',data:null}];
@@ -582,6 +619,7 @@ function initCombos() {
       if(!item.data) return;
       hideOthersBox();
       document.getElementById('partName').value=item.data.partName;
+      setAltBadge(item.data.altPartNumber); // ✅ show badge with alt number
       if(!syncLock){syncLock=true;document.getElementById('partNumber').value=item.data.partNumber;syncLock=false;}
     });
 
@@ -600,7 +638,7 @@ function loadData() {
   document.head.appendChild(s);
 }
 
-// ── FORM SUBMISSION ───────────────────────────────────────────────────────────
+// ── FORM SUBMISSION — uses hidden iframe (works on iPhone Safari/Chrome) ───────
 function handleSubmit() {
   closeAllDropdowns();
   var submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
@@ -615,18 +653,17 @@ function handleSubmit() {
   var quantityNumber  = document.getElementById('quantityNumber').value.trim();
   var timestamp       = new Date().toLocaleString('en-SG', {timeZone:'Asia/Singapore'});
 
-  // Resolve Part Number + Part Name based on Others state
-  var partNumber, partName;
+  // Resolve part fields
+  var partNumber, partName, altPartNumber;
   if (isOthersPart) {
-    partNumber = document.getElementById('othersPartNumber').value.trim();
-    partName   = document.getElementById('othersPartName').value.trim();
-    if (!partNumber || !partName) {
-      toast('Please fill in both Part Number and Part Name.');
-      return;
-    }
+    partNumber    = document.getElementById('othersPartNumber').value.trim();
+    partName      = document.getElementById('othersPartName').value.trim();
+    altPartNumber = ''; // Others parts have no alt number
+    if (!partNumber || !partName) { toast('Please fill in both Part Number and Part Name.'); return; }
   } else {
-    partNumber = document.getElementById('partNumber').value.trim();
-    partName   = document.getElementById('partName').value.trim();
+    partNumber    = document.getElementById('partNumber').value.trim();
+    partName      = document.getElementById('partName').value.trim();
+    altPartNumber = selectedAltPartNumber; // ✅ carry the tracked alt part number
   }
 
   if (!staffNumber || !vehicleType)  { toast('Please select a valid Employee and Equipment.'); return; }
@@ -637,43 +674,93 @@ function handleSubmit() {
   var btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
-  var params = new URLSearchParams();
-  params.append('requestId',       requestId);
-  params.append('jobCardNumber',   jobCardNumber);
-  params.append('employeeName',    employeeName);
-  params.append('staffNumber',     staffNumber);
-  params.append('submitterEmail',  submitterEmail);
-  params.append('equipmentNumber', equipmentNumber);
-  params.append('vehicleType',     vehicleType);
-  params.append('partNumber',      partNumber);
-  params.append('partName',        partName);
-  params.append('quantityNumber',  quantityNumber);
-  params.append('timestamp',       timestamp);
-  params.append('status',          'Pending');
-  params.append('isNewPart',       isOthersPart ? 'true' : 'false');
+  // ── Hidden iframe submission — works on all browsers including iPhone ────
+  var iframeName = 'submit_frame_' + Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.name = iframeName;
+  iframe.style.cssText = 'display:none;position:absolute;width:0;height:0;border:none;';
+  document.body.appendChild(iframe);
 
-  fetch(APPS_SCRIPT_URL + '?' + params.toString(), {method:'GET', mode:'no-cors'})
-    .catch(function(){})
-    .finally(function(){
-      lastRequestId = requestId;
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-      document.getElementById('cancelBtn').disabled = false;
-      var cd = document.getElementById('cancelCountdown');
-      cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
-      cd.classList.remove('expired');
-      document.getElementById('ringFill').style.stroke = 'var(--gold)';
-      startCancelCountdown();
-    });
+  var hiddenForm = document.createElement('form');
+  hiddenForm.method = 'GET';
+  hiddenForm.action = APPS_SCRIPT_URL;
+  hiddenForm.target = iframeName;
+  hiddenForm.style.display = 'none';
+
+  var fields = {
+    requestId:       requestId,
+    jobCardNumber:   jobCardNumber,
+    employeeName:    employeeName,
+    staffNumber:     staffNumber,
+    submitterEmail:  submitterEmail,
+    equipmentNumber: equipmentNumber,
+    vehicleType:     vehicleType,
+    partNumber:      partNumber,
+    partName:        partName,
+    quantityNumber:  quantityNumber,
+    timestamp:       timestamp,
+    status:          'Pending',
+    isNewPart:       isOthersPart ? 'true' : 'false',
+    altPartNumber:   altPartNumber  // ✅ sent to Apps Script → saved in column M
+  };
+
+  Object.keys(fields).forEach(function(key) {
+    var input = document.createElement('input');
+    input.type = 'hidden'; input.name = key; input.value = fields[key];
+    hiddenForm.appendChild(input);
+  });
+  document.body.appendChild(hiddenForm);
+
+  var shown = false;
+  function showSuccess() {
+    if (shown) return; shown = true;
+    lastRequestId = requestId;
+    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+    document.getElementById('formPanel').style.display      = 'none';
+    document.getElementById('successPanel').style.display   = 'flex';
+    document.getElementById('cancelBtn').disabled = false;
+    var cd = document.getElementById('cancelCountdown');
+    cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
+    cd.classList.remove('expired');
+    document.getElementById('ringFill').style.stroke = 'var(--gold)';
+    startCancelCountdown();
+    setTimeout(function() {
+      if (iframe.parentNode)     iframe.parentNode.removeChild(iframe);
+      if (hiddenForm.parentNode) hiddenForm.parentNode.removeChild(hiddenForm);
+    }, 5000);
+  }
+
+  iframe.onload = function() { showSuccess(); };
+  setTimeout(showSuccess, 3000); // fallback if onload doesn't fire
+  hiddenForm.submit();
 }
 
-// ── CANCEL REQUEST ────────────────────────────────────────────────────────────
+// ── CANCEL REQUEST — also uses hidden iframe ──────────────────────────────────
 function cancelRequest() {
   if (!lastRequestId) return;
   document.getElementById('cancelBtn').disabled = true;
   if (cancelTimer) { clearInterval(cancelTimer); cancelTimer = null; }
-  fetch(APPS_SCRIPT_URL + '?action=cancel&requestId=' + encodeURIComponent(lastRequestId), {method:'GET',mode:'no-cors'}).catch(function(){});
+
+  var iframeName = 'cancel_frame_' + Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.name = iframeName;
+  iframe.style.cssText = 'display:none;position:absolute;width:0;height:0;border:none;';
+  document.body.appendChild(iframe);
+
+  var hiddenForm = document.createElement('form');
+  hiddenForm.method = 'GET';
+  hiddenForm.action = APPS_SCRIPT_URL;
+  hiddenForm.target = iframeName;
+  hiddenForm.style.display = 'none';
+
+  [['action','cancel'],['requestId', lastRequestId]].forEach(function(pair) {
+    var input = document.createElement('input');
+    input.type = 'hidden'; input.name = pair[0]; input.value = pair[1];
+    hiddenForm.appendChild(input);
+  });
+  document.body.appendChild(hiddenForm);
+  hiddenForm.submit();
+
   toast('Request cancelled.', '#0d2b5e');
   setTimeout(function(){
     document.getElementById('successPanel').style.display = 'none';
@@ -682,11 +769,16 @@ function cancelRequest() {
     document.getElementById('staffNumber').value = '';
     document.getElementById('vehicleType').value = '';
     setEmailFields(currentUserEmail);
+    setAltBadge(''); // ✅ clear badge on cancel
     selectedVehicleType = ''; isOthersPart = false;
     hideOthersBox();
     var sb = document.getElementById('submitBtn');
     sb.disabled = false; sb.innerHTML = 'Submit Request';
     lastRequestId = null;
+    setTimeout(function() {
+      if (iframe.parentNode)     iframe.parentNode.removeChild(iframe);
+      if (hiddenForm.parentNode) hiddenForm.parentNode.removeChild(hiddenForm);
+    }, 3000);
   }, 1500);
 }
 
