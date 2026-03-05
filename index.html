@@ -531,12 +531,21 @@ function initCombos() {
     function(q) {
       if (!selectedVehicleType) return [{ main: 'Select an equipment number first', sub: '', data: null }];
       var results = getFilteredParts(q, 'number');
-      if (!results.length) return [{ main: 'No parts found for ' + selectedVehicleType, sub: '', data: null }];
-      return results.map(function(p) { return { main: p.partNumber, sub: p.partName, data: p }; });
+      var items = results.length
+        ? results.map(function(p) {
+            var sub = p.partName + (p.altPartNumber ? ' · Alt: ' + p.altPartNumber : '');
+            return { main: p.partNumber, sub: sub, data: p };
+          })
+        : [{ main: 'No parts found for ' + selectedVehicleType, sub: 'Try typing a name instead', data: null }];
+      items.push(OTHERS_ITEM);
+      return items;
     },
     function(item) {
+      if (item.isOthers) { showOthersBox(); return; }
       if (!item.data) return;
+      hideOthersBox();
       document.getElementById('partNumber').value = item.data.partNumber;
+      setAltBadge(item.data.altPartNumber);
       if (!syncLock) { syncLock = true; document.getElementById('partName').value = item.data.partName; syncLock = false; }
     }
   );
@@ -545,12 +554,21 @@ function initCombos() {
     function(q) {
       if (!selectedVehicleType) return [{ main: 'Select an equipment number first', sub: '', data: null }];
       var results = getFilteredParts(q, 'name');
-      if (!results.length) return [{ main: 'No parts found for ' + selectedVehicleType, sub: '', data: null }];
-      return results.map(function(p) { return { main: p.partName, sub: p.partNumber, data: p }; });
+      var items = results.length
+        ? results.map(function(p) {
+            var sub = p.partNumber + (p.altPartNumber ? ' · Alt: ' + p.altPartNumber : '');
+            return { main: p.partName, sub: sub, data: p };
+          })
+        : [{ main: 'No parts found for ' + selectedVehicleType, sub: 'Try typing a number instead', data: null }];
+      items.push(OTHERS_ITEM);
+      return items;
     },
     function(item) {
+      if (item.isOthers) { showOthersBox(); return; }
       if (!item.data) return;
+      hideOthersBox();
       document.getElementById('partName').value = item.data.partName;
+      setAltBadge(item.data.altPartNumber);
       if (!syncLock) { syncLock = true; document.getElementById('partNumber').value = item.data.partNumber; syncLock = false; }
     }
   );
@@ -612,10 +630,21 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   var submitterEmail  = currentUserEmail;
   var equipmentNumber = document.getElementById('equipmentNumber').value.trim();
   var vehicleType     = document.getElementById('vehicleType').value.trim();
-  var partNumber      = document.getElementById('partNumber').value.trim();
-  var partName        = document.getElementById('partName').value.trim();
   var quantityNumber  = document.getElementById('quantityNumber').value.trim();
   var timestamp       = new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
+
+  // Part fields — use manual entry if "Others" was selected
+  var partNumber, partName, altPartNumber;
+  if (isOthersPart) {
+    partNumber    = document.getElementById('othersPartNumber').value.trim();
+    partName      = document.getElementById('othersPartName').value.trim();
+    altPartNumber = '';
+    if (!partNumber || !partName) { toast('Please fill in both Part Number and Part Name.'); return; }
+  } else {
+    partNumber    = document.getElementById('partNumber').value.trim();
+    partName      = document.getElementById('partName').value.trim();
+    altPartNumber = selectedAltPartNumber;
+  }
 
   if (!staffNumber || !vehicleType) {
     toast('Please select a valid Employee and Equipment.');
