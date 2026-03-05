@@ -617,50 +617,37 @@ function loadData() {
 // ── FORM SUBMISSION ───────────────────────────────────────────────────────────
 document.getElementById('requestForm').addEventListener('submit', function(e) {
   e.preventDefault();
-
-  if (!currentUserEmail) {
-    toast('Session error. Please sign out and sign in again.');
-    return;
-  }
+  closeAllDropdowns();
+  var submitterEmail = currentUserEmail || document.getElementById('submitterEmailHidden').value || '';
+  if (!submitterEmail) { toast('Session error. Please sign out and sign in again.'); return; }
 
   var requestId       = genId();
   var jobCardNumber   = document.getElementById('jobCardNumber').value.trim();
   var employeeName    = document.getElementById('employeeName').value.trim();
   var staffNumber     = document.getElementById('staffNumber').value.trim();
-  var submitterEmail  = currentUserEmail;
   var equipmentNumber = document.getElementById('equipmentNumber').value.trim();
   var vehicleType     = document.getElementById('vehicleType').value.trim();
   var quantityNumber  = document.getElementById('quantityNumber').value.trim();
-  var timestamp       = new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
+  var timestamp       = new Date().toLocaleString('en-SG', {timeZone:'Asia/Singapore'});
 
-  // Part fields — use manual entry if "Others" was selected
-  var partNumber, partName, altPartNumber;
+  var partNumber, partName;
   if (isOthersPart) {
-    partNumber    = document.getElementById('othersPartNumber').value.trim();
-    partName      = document.getElementById('othersPartName').value.trim();
-    altPartNumber = '';
+    partNumber = document.getElementById('othersPartNumber').value.trim();
+    partName   = document.getElementById('othersPartName').value.trim();
     if (!partNumber || !partName) { toast('Please fill in both Part Number and Part Name.'); return; }
   } else {
-    partNumber    = document.getElementById('partNumber').value.trim();
-    partName      = document.getElementById('partName').value.trim();
-    altPartNumber = selectedAltPartNumber;
+    partNumber = document.getElementById('partNumber').value.trim();
+    partName   = document.getElementById('partName').value.trim();
   }
 
-  if (!staffNumber || !vehicleType) {
-    toast('Please select a valid Employee and Equipment.');
-    return;
-  }
+  if (!staffNumber || !vehicleType)  { toast('Please select a valid Employee and Equipment.'); return; }
   if (!jobCardNumber || !employeeName || !equipmentNumber || !partNumber || !partName || !quantityNumber) {
-    toast('All fields are required.');
-    return;
+    toast('All fields are required.'); return;
   }
 
   var btn = document.getElementById('submitBtn');
-  btn.disabled  = true;
-  btn.innerHTML = '<span class="spinner"></span> Submitting…';
-  lastRequestId = requestId;
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
-  // Build URL params
   var params = new URLSearchParams();
   params.append('requestId',       requestId);
   params.append('jobCardNumber',   jobCardNumber);
@@ -675,110 +662,44 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   params.append('timestamp',       timestamp);
   params.append('status',          'Pending');
   params.append('isNewPart',       isOthersPart ? 'true' : 'false');
-  params.append('altPartNumber',   altPartNumber || '');
 
-  // JSONP submission — fires request to Apps Script and waits for callback
-  var cbName    = 'submit_' + Date.now();
-  var submitted = false;
-
-  function showSuccess() {
-    lastRequestId = requestId;
-    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-    document.getElementById('formPanel').style.display      = 'none';
-    document.getElementById('successPanel').style.display   = 'flex';
-    document.getElementById('cancelBtn').disabled = false;
-    var cd = document.getElementById('cancelCountdown');
-    cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
-    cd.classList.remove('expired');
-    document.getElementById('ringFill').style.stroke = 'var(--gold)';
-    startCancelCountdown();
-  }
-
-  window[cbName] = function(result) {
-    if (submitted) return;
-    submitted = true;
-    delete window[cbName];
-    if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
-    if (result && result.status === 'ok') {
-      showSuccess();
-    } else {
-      toast('Submission error: ' + (result && result.msg ? result.msg : 'Unknown'));
-      btn.disabled  = false;
-      btn.innerHTML = 'Submit Request';
-    }
-  };
-
-  // After 12s assume success — Apps Script processed but callback was lost
-  setTimeout(function() {
-    if (!submitted) { submitted = true; delete window[cbName]; showSuccess(); }
-  }, 12000);
-
-  var scriptTag     = document.createElement('script');
-  scriptTag.src     = APPS_SCRIPT_URL + '?' + params.toString() + '&callback=' + cbName;
-  // onerror fires on Apps Script redirect — data already written server-side
-  scriptTag.onerror = function() {
-    if (!submitted) { submitted = true; delete window[cbName]; showSuccess(); }
-  };
-  document.head.appendChild(scriptTag);
+  fetch(APPS_SCRIPT_URL + '?' + params.toString(), {method:'GET', mode:'no-cors'})
+    .catch(function(){})
+    .finally(function(){
+      lastRequestId = requestId;
+      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+      document.getElementById('formPanel').style.display      = 'none';
+      document.getElementById('successPanel').style.display   = 'flex';
+      document.getElementById('cancelBtn').disabled = false;
+      var cd = document.getElementById('cancelCountdown');
+      cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
+      cd.classList.remove('expired');
+      document.getElementById('ringFill').style.stroke = 'var(--gold)';
+      startCancelCountdown();
+    });
 });
 
-// ── CANCEL REQUEST ────────────────────────────────────────────────────────────
+ ── CANCEL REQUEST ────────────────────────────────────────────────────────────
 function cancelRequest() {
   if (!lastRequestId) return;
-
-  // Disable button and stop countdown immediately
   document.getElementById('cancelBtn').disabled = true;
   if (cancelTimer) { clearInterval(cancelTimer); cancelTimer = null; }
-
-  var reqToCancel = lastRequestId;
-  var cbName      = 'cancel_' + Date.now();
-  var scriptTag   = document.createElement('script');
-  var cbFired     = false;
-
-  // JSONP — Apps Script will delete the row from Form Output (= removes from sheet)
-  window[cbName] = function(result) {
-    cbFired = true;
-    delete window[cbName];
-    if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
-    if (result && result.status === 'too_late') {
-      toast('Cannot cancel — request already being processed.', '#ef4444');
-    } else {
-      toast('Request cancelled.', '#0d2b5e');
-    }
-  };
-
-  // Fallback: JSONP sometimes doesn't fire on mobile due to redirect —
-  // assume cancelled anyway after 6s
-  setTimeout(function() {
-    if (!cbFired && window[cbName]) {
-      delete window[cbName];
-      toast('Request cancelled.', '#0d2b5e');
-    }
-  }, 6000);
-
-  scriptTag.src = APPS_SCRIPT_URL
-    + '?action=cancel'
-    + '&requestId=' + encodeURIComponent(reqToCancel)
-    + '&callback='  + cbName;
-  document.head.appendChild(scriptTag);
-
-  // Reset UI after 1.5s regardless of server response
-  setTimeout(function() {
-    lastRequestId = null;
+  fetch(APPS_SCRIPT_URL + '?action=cancel&requestId=' + encodeURIComponent(lastRequestId), {method:'GET',mode:'no-cors'}).catch(function(){});
+  toast('Request cancelled.', '#0d2b5e');
+  setTimeout(function(){
     document.getElementById('successPanel').style.display = 'none';
     document.getElementById('formPanel').style.display    = 'block';
     document.getElementById('requestForm').reset();
     document.getElementById('staffNumber').value = '';
     document.getElementById('vehicleType').value = '';
-    document.getElementById('submitterEmail').value = currentUserEmail;
-    selectedVehicleType = '';
+    setEmailFields(currentUserEmail);
+    selectedVehicleType = ''; isOthersPart = false;
+    hideOthersBox();
     var sb = document.getElementById('submitBtn');
-    sb.disabled  = false;
-    sb.innerHTML = 'Submit Request';
+    sb.disabled = false; sb.innerHTML = 'Submit Request';
+    lastRequestId = null;
   }, 1500);
 }
-
-// ── GOOGLE SIGN IN INIT ───────────────────────────────────────────────────────
 function initGoogleSignIn() {
   google.accounts.id.initialize({
     client_id:             GOOGLE_CLIENT_ID,
