@@ -681,14 +681,26 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
   var cbName    = 'submit_' + Date.now();
   var submitted = false;
 
+  function showSuccess() {
+    lastRequestId = requestId;
+    document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
+    document.getElementById('formPanel').style.display      = 'none';
+    document.getElementById('successPanel').style.display   = 'flex';
+    document.getElementById('cancelBtn').disabled = false;
+    var cd = document.getElementById('cancelCountdown');
+    cd.innerHTML = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
+    cd.classList.remove('expired');
+    document.getElementById('ringFill').style.stroke = 'var(--gold)';
+    startCancelCountdown();
+  }
+
   window[cbName] = function(result) {
+    if (submitted) return;
     submitted = true;
     delete window[cbName];
     if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
     if (result && result.status === 'ok') {
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
+      showSuccess();
     } else {
       toast('Submission error: ' + (result && result.msg ? result.msg : 'Unknown'));
       btn.disabled  = false;
@@ -696,27 +708,16 @@ document.getElementById('requestForm').addEventListener('submit', function(e) {
     }
   };
 
-  // After 15s assume success — Apps Script processed but callback was lost
+  // After 12s assume success — Apps Script processed but callback was lost
   setTimeout(function() {
-    if (!submitted) {
-      submitted = true;
-      delete window[cbName];
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-    }
-  }, 15000);
+    if (!submitted) { submitted = true; delete window[cbName]; showSuccess(); }
+  }, 12000);
 
   var scriptTag     = document.createElement('script');
   scriptTag.src     = APPS_SCRIPT_URL + '?' + params.toString() + '&callback=' + cbName;
+  // onerror fires on Apps Script redirect — data already written server-side
   scriptTag.onerror = function() {
-    if (!submitted) {
-      submitted = true;
-      // onerror fires on redirect — but Apps Script already ran server-side
-      document.getElementById('requestIdDisplay').textContent = 'Request ID: ' + requestId;
-      document.getElementById('formPanel').style.display      = 'none';
-      document.getElementById('successPanel').style.display   = 'flex';
-    }
+    if (!submitted) { submitted = true; delete window[cbName]; showSuccess(); }
   };
   document.head.appendChild(scriptTag);
 });
