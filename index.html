@@ -299,7 +299,7 @@
           <circle class="ring-fill" id="ringFill" cx="22" cy="22" r="19"
             stroke-dasharray="119.4" stroke-dashoffset="0"/>
         </svg>
-        <div class="ring-number" id="ringNumber">60</div>
+        <div class="ring-number" id="ringNumber">30</div>
       </div>
       <button class="btn-cancel" id="cancelBtn" onclick="cancelRequest()">Cancel Request</button>
       <div id="cancelCountdown">You have <strong id="cancelSecondsLeft">60</strong>s to cancel</div>
@@ -313,7 +313,7 @@
 <script>
 const APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
-var CANCEL_WINDOW_SECS = 60;
+var CANCEL_WINDOW_SECS = 30;
 var CIRCUMFERENCE      = 2 * Math.PI * 19;
 
 var appData             = { employees: [], equipment: [], parts: [] };
@@ -637,7 +637,7 @@ function handleSubmit() {
       document.getElementById('formPanel').style.display      = 'none';
       document.getElementById('successPanel').style.display   = 'flex';
       document.getElementById('cancelBtn').disabled = false;
-      document.getElementById('cancelCountdown').innerHTML    = 'You have <strong id="cancelSecondsLeft">60</strong>s to cancel';
+      document.getElementById('cancelCountdown').innerHTML    = 'You have <strong id="cancelSecondsLeft">30</strong>s to cancel';
       document.getElementById('cancelCountdown').classList.remove('expired');
       document.getElementById('ringFill').style.stroke        = 'var(--gold)';
       startCancelCountdown();
