@@ -302,7 +302,7 @@
         <div class="ring-number" id="ringNumber">30</div>
       </div>
       <button class="btn-cancel" id="cancelBtn" onclick="cancelRequest()">Cancel Request</button>
-      <div id="cancelCountdown">You have <strong id="cancelSecondsLeft">60</strong>s to cancel</div>
+      <div id="cancelCountdown">You have <strong id="cancelSecondsLeft">30</strong>s to cancel</div>
     </div>
   </div>
 </div>
@@ -313,7 +313,7 @@
 <script>
 const APPS_SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbwf4-YicW6od4nMTPya_8akVjkS0XhvdmjpuLXBgAJinI-g9aiGTpk9jb7mFJz9HyjTtA/exec";
 const GOOGLE_CLIENT_ID = "961625730687-tr6kh5tj8tdninriurqf2scribl1one9.apps.googleusercontent.com";
-var CANCEL_WINDOW_SECS = 30;
+var CANCEL_WINDOW_SECS = 30;  // ← changed from 60 to 30
 var CIRCUMFERENCE      = 2 * Math.PI * 19;
 
 var appData             = { employees: [], equipment: [], parts: [] };
@@ -482,7 +482,7 @@ function combo(inputId, listId, getItems, onPick) {
   inp.addEventListener('blur',  function() { setTimeout(function() { lst.classList.remove('open'); }, 200); });
 }
 
-// ── PART SEARCH — checks partNumber, altPartNumber, AND partName in both fields
+// ── PART SEARCH ───────────────────────────────────────────────────────────────
 function getFilteredParts(q, matchBy) {
   if (!selectedVehicleType) return [];
   return appData.parts.filter(function(p) {
